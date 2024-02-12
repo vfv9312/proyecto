@@ -253,7 +253,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'home',
+    'dashboard_url' => 'Inicio',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
@@ -313,29 +313,43 @@ return [
         ],
         [
             'text'        => 'Principal',
-            'url'         => 'admin/pages',
-            'icon'        => 'fas fa-fw fa-image',
-            'label'       => 4,
+            'route'         => 'inicio.index',
+            'icon'        => 'fas fa-home',
+            'label'       => 0,
             'label_color' => 'success',
         ],
-        ['header' => 'account_settings'],
+        ['header' => 'Menu'],
         [
-            'text' => 'profile',
-            'url'  => 'admin/settings',
+            'text' => 'Cuenta',
+            'route'  => "profile.edit",
+            'icon_color' => 'purple',
             'icon' => 'fas fa-fw fa-user',
         ],
         [
-            'text' => 'change_password',
+            'text' => 'Reportes',
             'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
+            'icon_color' => 'blue',
+            'icon' => 'fas fa-folder-open',
         ],
         [
             'text'    => 'Negocio',
+            'icon_color' => 'green',
             'icon'    => 'fas fa-fw fa-store',
             'submenu' => [
                 [
                     'text' => 'Servicios',
                     'url'  => '#',
+                    'submenu' => [
+                        [
+                            'text' => 'Registrar',
+                            'url'  => '#',
+                        ],
+                        [
+                            'text'    => 'Consultar',
+                            'url'     => '#',
+                        ]
+                    ]
+
                 ],
                 [
                     'text'    => 'Productos',
@@ -348,16 +362,6 @@ return [
                         [
                             'text'    => 'Consultar',
                             'url'     => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                            ],
                         ],
                     ],
                 ],
@@ -365,31 +369,53 @@ return [
                     'text' => 'Ventas',
                     'url'  => '#',
                 ],
+                [
+                    'text' => 'Empleados',
+                    'url' => '#',
+                    'submenu' => [
+                        [
+                            'text' => 'Registrar',
+                            'url'  => '#',
+                        ],
+                        [
+                            'text'    => 'Consultar',
+                            'url'     => '#',
+                        ],
+                    ],
+                ],
             ],
         ],
-        ['header' => 'Vista rapida'],
+        [
+            'header' => 'Vista rapida',
+            'classes'  => 'text-yellow text-bold text-center',
+        ],
         [
             'text'       => 'Ventas',
-            'icon_color' => 'red',
+            'icon' => 'fas fa-shopping-cart',
+            'icon_color' => 'green',
             'url'        => 'admin/ventas',
         ],
         [
             'text'       => 'Clientes',
+            'icon' => 'fas fa-user-tie',
             'icon_color' => 'yellow',
             'url'        => '#',
         ],
         [
             'text'       => 'Empleados',
+            'icon' => 'fas fa-users',
             'icon_color' => 'cyan',
             'url'        => '#',
         ],
         [
             'text'       => 'Productos',
+            'icon' => 'fas fa-archive',
             'icon_color' => 'cyan',
             'url'        => '#',
         ],
         [
             'text'       => 'servicios',
+            'icon' => 'fas fa-headset',
             'icon_color' => 'cyan',
             'url'        => '#',
         ],
