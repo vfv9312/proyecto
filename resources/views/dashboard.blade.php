@@ -55,14 +55,37 @@
                 <div
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Título del Modal
+                        <h3 class=" text-center text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            Editar
                         </h3>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-500">
-                                Contenido del modal.
-                            </p>
-                        </div>
+
+                        <form class=" mt-8 flex flex-col items-center">
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Nombre comercial</span>
+                                <input
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Modelo</span>
+                                <input
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Color</span>
+                                <input
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Marca</span>
+                                <input
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Fotografia</span>
+                                <input type="file"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                        </form>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         <button type="button" id="enviarmodal"
@@ -85,6 +108,7 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 @stop
 

@@ -411,7 +411,7 @@ return [
             'text'       => 'Productos',
             'icon' => 'fas fa-archive',
             'icon_color' => 'cyan',
-            'url'        => '#',
+            'route'        => 'productos.index',
         ],
         [
             'text'       => 'servicios',
