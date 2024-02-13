@@ -13,6 +13,7 @@ class VentasController extends Controller
     public function index()
     {
         //
+        return view('ventas.index');
     }
 
     /**

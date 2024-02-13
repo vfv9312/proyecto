@@ -194,7 +194,7 @@ return [
     'classes_content' => '',
     'classes_sidebar' => 'sidebar-dark-primary elevation-4',
     'classes_sidebar_nav' => '',
-    'classes_topnav' => 'navbar-green navbar-light',
+    'classes_topnav' => 'navbar-green navbar-dark',
     'classes_topnav_nav' => 'navbar-expand',
     'classes_topnav_container' => 'container',
 
@@ -393,19 +393,19 @@ return [
             'text'       => 'Ventas',
             'icon' => 'fas fa-shopping-cart',
             'icon_color' => 'green',
-            'url'        => 'admin/ventas',
+            'route'        => 'ventas.index',
         ],
         [
             'text'       => 'Clientes',
             'icon' => 'fas fa-user-tie',
             'icon_color' => 'yellow',
-            'url'        => '#',
+            'route'        => 'clientes.index',
         ],
         [
             'text'       => 'Empleados',
             'icon' => 'fas fa-users',
             'icon_color' => 'cyan',
-            'url'        => '#',
+            'route'        => 'empleados.index',
         ],
         [
             'text'       => 'Productos',
@@ -417,7 +417,7 @@ return [
             'text'       => 'servicios',
             'icon' => 'fas fa-headset',
             'icon_color' => 'cyan',
-            'url'        => '#',
+            'route'        => 'servicios.index',
         ],
     ],
 

@@ -13,6 +13,12 @@ class ServiciosController extends Controller
     public function index()
     {
         //
+        $servicios = servicios::join('precios_servicios', 'servicios.id', '=', 'precios_servicios.id_servicio')
+            ->where('servicios.estatus', 1)
+            ->select('servicios.nombre_de_servicio', 'servicios.descripcion', 'precios_servicios.precio')
+            ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
+
+        return view('servicios.index', compact('servicios'));
     }
 
     /**

@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServiciosController;
+use App\Http\Controllers\VentasController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -48,4 +52,16 @@ Route::post('/registrar_producto', [ProductosController::class, 'create'])->name
 
 //eliminar productos
 Route::post('/eliminar_producto', [ProductosController::class, 'destroy'])->name('productos.destroy');
+
+//Lista de servicios
+Route::get('/servicios', [ServiciosController::class, 'index'])->name('servicios.index');
 require __DIR__ . '/auth.php';
+
+//Lista de empleados
+Route::get('/empleados', [EmpleadosController::class, 'index'])->name('empleados.index');
+
+//Lista de clientes
+Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
+
+//Lista de clientes
+Route::get('/venta', [VentasController::class, 'index'])->name('ventas.index');

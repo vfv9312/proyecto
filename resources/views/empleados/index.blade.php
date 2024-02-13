@@ -1,13 +1,12 @@
 @extends('adminlte::page')
 
-@section('title', 'productos')
+@section('title', 'empleados')
 
 @section('content_header')
-    <h1 class=" text-center">Productos</h1>
+    <h1>Empleados</h1>
 @stop
 
 @section('content')
-
     <main class="w-full h-3/4">
         <!-- mensaje de aviso que se registro el producto-->
         @if (session('correcto'))
@@ -101,24 +100,25 @@
         <!--tabla-->
         <h1>Listado</h1>
         <table>
-            @foreach ($productos as $producto)
+            @foreach ($empleados as $empleado)
                 <tr class= " border-b border-gray-200 text-sm">
                     <td class=" px-6 py-4">
-                        {{ $producto->nombre_comercial }}</td>
+                        {{ $empleado->nombre }}</td>
                     <td class="px-6 py-4">
-                        {{ $producto->modelo }}
+                        {{ $empleado->apellido }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ $producto->color }}
+                        {{ $empleado->rol_empleado }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ $producto->marca }}
+                        {{ $empleado->telefono }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {{ $empleado->email }}
                     </td>
                     <td class="px-6 py-4 flex justify-center items-center">
-                        <img class=" w-20" src={{ $producto->fotografia }}>
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $producto->precio }}
+                        <img class=" w-20" src={{ $empleado->fotografia }}>
                     </td>
                     <td>
                         <button
@@ -138,62 +138,21 @@
             @endforeach
         </table>
         <div class=" mt-3">
-            {{ $productos->links() }} <!-- Esto mostrará los enlaces de paginación -->
+            {{ $empleados->links() }} <!-- Esto mostrará los enlaces de paginación -->
         </div>
     </main>
-
-
 @stop
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!--Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
 @stop
 
 @section('js')
     <script>
-        // Obtén los elementos del DOM
-        const modalEditarRegistro = document.querySelector('#modalEditarRegistro');
-        const modalRegistrarProducto = document.querySelector('#modalRegistrarProducto')
-        const abrirModalEditar = document.querySelectorAll('.abrirModalEditar');
-        const abrirnModalRegisrarProducto = document.querySelector('#abrirnModalRegisrarProducto');
-
-        const cancelarModal = document.querySelector('.cerrarmodal');
-        const cancelarModalEditar = document.querySelector('#cerrarModalEditar');
-
-        // Selecciona todos los botones con la clase '.openModalButton'
-        abrirModalEditar.forEach(button => {
-            button.addEventListener('click', function() {
-                // Muestra el modal
-                modalEditarRegistro.classList.remove('hidden');
-            });
-        });
-        //Abre el modal para registrar un producto
-        abrirnModalRegisrarProducto.addEventListener('click', function() {
-            modalRegistrarProducto.classList.remove('hidden');
-        });
-
-        // Escucha el evento de click en el botón cancelar Modal de registro
-        cancelarModal.addEventListener('click', function() {
-            // Oculta el modal
-            modalRegistrarProducto.classList.add('hidden');
-        });
-
-        // Escucha el evento de click en el botón cancelar Modal de Editar
-        cerrarModalEditar.addEventListener('click', function() {
-
-            // Oculta el modal
-            modalEditarRegistro.classList.add('hidden');
-        });
-
-
-        //Oculta los elementos de alerta despues de 3 segundos
-        window.setTimeout(function() {
-            var alertCorrecto = document.getElementById('alert-correcto');
-            var alertIncorrect = document.getElementById('alert-incorrect');
-            if (alertCorrecto) alertCorrecto.style.display = 'none';
-            if (alertIncorrect) alertIncorrect.style.display = 'none';
-        }, 3000);
+        console.log('Hi!');
     </script>
 @stop

@@ -13,6 +13,12 @@ class EmpleadosController extends Controller
     public function index()
     {
         //
+        $empleados = empleados::join('personas', 'personas.id', '=', 'empleados.id_persona')
+            ->where('empleados.estatus', 1)
+            ->select('personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento', 'empleados.rol_empleado', 'empleados.fotografia')
+            ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
+
+        return view('empleados.index', compact('empleados'));
     }
 
     /**
