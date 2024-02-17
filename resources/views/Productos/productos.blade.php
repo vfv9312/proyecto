@@ -27,9 +27,12 @@
             class=" mb-4 bg-gradient-to-r from-green-500 via-green-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-full">
             Añadir producto
         </button>
+        <!--Hacemos responsivo el modal-->
         <!-- Modal -->
-        <div id="modalRegistrarProducto" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
-            role="dialog" aria-modal="true">
+        <div id="modalRegistrarProducto"
+            class="hidden fixed z-10 inset-0 overflow-y-auto
+                aria-labelledby="modal-title" role="dialog"
+            aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Fondo del modal -->
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -43,7 +46,7 @@
                             Registrar Producto
                         </h3>
 
-                        <form method="POST" action="{{ route('productos.create') }}"
+                        <form method="POST" action="{{ route('productos.store') }}"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -98,48 +101,55 @@
                 </div>
             </div>
         </div>
+
         <!--tabla-->
         <h1>Listado</h1>
-        <table>
-            @foreach ($productos as $producto)
-                <tr class= " border-b border-gray-200 text-sm">
-                    <td class=" px-6 py-4">
-                        {{ $producto->nombre_comercial }}</td>
-                    <td class="px-6 py-4">
-                        {{ $producto->modelo }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $producto->color }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $producto->marca }}
-                    </td>
-                    <td class="px-6 py-4 flex justify-center items-center">
-                        <img class=" w-20" src={{ $producto->fotografia }}>
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $producto->precio }}
-                    </td>
-                    <td>
-                        <button
-                            class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-edit"></i>
-                        </button>
+        <section class="overflow-x-auto">
+            <!--La clase overflow-x-auto hace que el div tenga un desplazamiento horizontal si su contenido es demasiado ancho para caber en la pantalla-->
+            <table class="min-w-full">
+                <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
+                @foreach ($productos as $producto)
+                    <tr class= " border-b border-gray-200 text-sm">
+                        <td class=" px-6 py-4">
+                            {{ $producto->nombre_comercial }}</td>
+                        <td class="px-6 py-4">
+                            {{ $producto->modelo }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->color }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->marca }}
+                        </td>
+                        <td class="px-6 py-4 flex justify-center items-center">
+                            <img class=" w-20" src={{ $producto->fotografia }}>
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->precio }}
+                        </td>
+                        <td>
+                            <a href="{{ route('productos.edit', $producto->id) }}">
+                                <button
+                                    class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
+                                    <i class="fas fa-edit"></i>
+                                </button></a>
 
-                    </td>
-                    <td>
-                        <button
-                            class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-trash"></i></button>
-                    </td>
+                        </td>
+                        <td>
+                            <a href="{{ route('productos.show', $producto->id) }}">
+                                <button
+                                    class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
+                                    <i class="fas fa-trash"></i></button></a>
+                        </td>
 
-                </tr>
-                <!-- Aquí deberías mostrar otros datos del producto -->
-            @endforeach
-        </table>
-        <div class=" mt-3">
-            {{ $productos->links() }} <!-- Esto mostrará los enlaces de paginación -->
-        </div>
+                    </tr>
+                    <!-- Aquí deberías mostrar otros datos del producto -->
+                @endforeach
+            </table>
+            <div class=" mt-3">
+                {{ $productos->links() }} <!-- Esto mostrará los enlaces de paginación -->
+            </div>
+        </section>
     </main>
 
 
@@ -153,6 +163,14 @@
 
 @section('js')
     <script>
+        //Oculta los elementos de alerta despues de 3 segundos
+        window.setTimeout(function() {
+            var alertCorrecto = document.getElementById('alert-correcto');
+            var alertIncorrect = document.getElementById('alert-incorrect');
+            if (alertCorrecto) alertCorrecto.style.display = 'none';
+            if (alertIncorrect) alertIncorrect.style.display = 'none';
+        }, 3000);
+
         // Obtén los elementos del DOM
         const modalEditarRegistro = document.querySelector('#modalEditarRegistro');
         const modalRegistrarProducto = document.querySelector('#modalRegistrarProducto')
@@ -186,14 +204,5 @@
             // Oculta el modal
             modalEditarRegistro.classList.add('hidden');
         });
-
-
-        //Oculta los elementos de alerta despues de 3 segundos
-        window.setTimeout(function() {
-            var alertCorrecto = document.getElementById('alert-correcto');
-            var alertIncorrect = document.getElementById('alert-incorrect');
-            if (alertCorrecto) alertCorrecto.style.display = 'none';
-            if (alertIncorrect) alertIncorrect.style.display = 'none';
-        }, 3000);
     </script>
 @stop

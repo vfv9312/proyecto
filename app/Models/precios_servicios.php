@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class precios_servicios extends Model
 {
     use HasFactory;
+    protected $guarded = [
+        'id'
+    ];
 }

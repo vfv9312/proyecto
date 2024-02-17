@@ -39,35 +39,15 @@
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <h3 class=" text-center text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Registrar Producto
+                            Registrar Servicio
                         </h3>
 
-                        <form method="POST" action="{{ route('productos.create') }}"
+                        <form method="POST" action="{{ route('servicios.store') }}"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Nombre comercial</span>
-                                <input name="txtnombre"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Modelo</span>
-                                <input name="txtmodelo"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Color</span>
-                                <input name="txtcolor"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Marca</span>
-                                <input name="txtmarca"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>precio</span>
-                                <input name="txtprecio" type="number"
+                                <span>Nombre de servicio</span>
+                                <input name="txtservicio"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -76,8 +56,8 @@
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Fotografia</span>
-                                <input type="file"
+                                <span>precio</span>
+                                <input name="txtprecio" type="number"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <button type="submit" id="enviarmodal"
@@ -99,37 +79,41 @@
         </div>
         <!--tabla-->
         <h1>Listado</h1>
-        <table>
-            @foreach ($servicios as $servicio)
-                <tr class= " border-b border-gray-200 text-sm">
-                    <td class=" px-6 py-4">
-                        {{ $servicio->nombre_de_servicio }}</td>
-                    <td class="px-6 py-4">
-                        {{ $servicio->descripcion }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $servicio->precio }}
-                    </td>
-                    <td>
-                        <button
-                            class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-edit"></i>
-                        </button>
+        <section class="overflow-x-auto">
+            <!--La clase overflow-x-auto hace que el div tenga un desplazamiento horizontal si su contenido es demasiado ancho para caber en la pantalla-->
+            <table class="min-w-full">
+                <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
 
-                    </td>
-                    <td>
-                        <button
-                            class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-trash"></i></button>
-                    </td>
+                @foreach ($servicios as $servicio)
+                    <tr class= " border-b border-gray-200 text-sm">
+                        <td class=" px-6 py-4">
+                            {{ $servicio->nombre_de_servicio }}</td>
+                        <td class="px-6 py-4">
+                            {{ $servicio->descripcion }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $servicio->precio }}
+                        </td>
+                        <td>
+                            <button
+                                class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-edit"></i>
+                            </button>
 
-                </tr>
-                <!-- Aquí deberías mostrar otros datos del producto -->
-            @endforeach
-        </table>
-        <div class=" mt-3">
-            {{ $servicios->links() }} <!-- Esto mostrará los enlaces de paginación -->
-        </div>
+                        </td>
+                        <td>
+                            <button
+                                class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-trash"></i></button>
+                        </td>
+
+                    </tr>
+                    <!-- Aquí deberías mostrar otros datos del producto -->
+                @endforeach
+            </table>
+            <div class=" mt-3">
+                {{ $servicios->links() }} <!-- Esto mostrará los enlaces de paginación -->
+            </div>
     </main>
 @stop
 
@@ -142,6 +126,46 @@
 
 @section('js')
     <script>
-        console.log('Hi!');
+        //Oculta los elementos de alerta despues de 3 segundos
+        window.setTimeout(function() {
+            var alertCorrecto = document.getElementById('alert-correcto');
+            var alertIncorrect = document.getElementById('alert-incorrect');
+            if (alertCorrecto) alertCorrecto.style.display = 'none';
+            if (alertIncorrect) alertIncorrect.style.display = 'none';
+        }, 3000);
+
+        // Obtén los elementos del DOM
+        const modalEditarRegistro = document.querySelector('#modalEditarRegistro');
+        const modalRegistrarProducto = document.querySelector('#modalRegistrarProducto')
+        const abrirModalEditar = document.querySelectorAll('.abrirModalEditar');
+        const abrirnModalRegisrarProducto = document.querySelector('#abrirnModalRegisrarProducto');
+
+        const cancelarModal = document.querySelector('.cerrarmodal');
+        const cancelarModalEditar = document.querySelector('#cerrarModalEditar');
+
+        // Selecciona todos los botones con la clase '.openModalButton'
+        abrirModalEditar.forEach(button => {
+            button.addEventListener('click', function() {
+                // Muestra el modal
+                modalEditarRegistro.classList.remove('hidden');
+            });
+        });
+        //Abre el modal para registrar un producto
+        abrirnModalRegisrarProducto.addEventListener('click', function() {
+            modalRegistrarProducto.classList.remove('hidden');
+        });
+
+        // Escucha el evento de click en el botón cancelar Modal de registro
+        cancelarModal.addEventListener('click', function() {
+            // Oculta el modal
+            modalRegistrarProducto.classList.add('hidden');
+        });
+
+        // Escucha el evento de click en el botón cancelar Modal de Editar
+        cerrarModalEditar.addEventListener('click', function() {
+
+            // Oculta el modal
+            modalEditarRegistro.classList.add('hidden');
+        });
     </script>
 @stop

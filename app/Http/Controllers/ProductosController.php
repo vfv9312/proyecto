@@ -23,7 +23,7 @@ class ProductosController extends Controller
 
         $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->where('productos.estatus', 1)
-            ->select('productos.nombre_comercial', 'productos.modelo', 'productos.color', 'productos.marca', 'productos.fotografia', 'precios_productos.precio')
+            ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'productos.color', 'productos.marca', 'productos.fotografia', 'precios_productos.precio')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
         return view('Productos.productos', compact('productos'));
@@ -34,6 +34,13 @@ class ProductosController extends Controller
      */
     public function create(Request $request)
     {
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
         // $producto = new productos();
         // Asegúrate de validar tus datos aquí
         // $producto->nombre_comercial = $request->nombre_comercial;
@@ -42,7 +49,7 @@ class ProductosController extends Controller
 
 
 
-        DB::beginTransaction();
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
             // Insertar en la tabla 'productos'
             $producto = productos::create([
@@ -88,9 +95,9 @@ VALUES (?, ?, ?, now(), now(),1)',
                     $request->txtdescripcion
                 ]
             );*/
-            DB::commit();
+            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
-            DB::rollBack();
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
             return $th->getMessage();
             $precioProducto = 0;
         }
@@ -105,14 +112,6 @@ VALUES (?, ?, ?, now(), now(),1)',
 
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(productos $productos)
@@ -123,17 +122,34 @@ VALUES (?, ?, ?, now(), now(),1)',
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(productos $productos)
+    public function edit(productos $producto)
     {
         //
+        return view('Productos.edit', compact('producto'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, productos $productos)
+    public function update(Request $request, productos $producto)
     {
         //
+        $producto->update([
+            'nombre_comercial' => $request->txtnombre,
+            'modelo' => $request->txtmodelo,
+            'color' => $request->txtcolor,
+            'marca' => $request->txtmarca,
+            'fotografia' => $request->txtfotografia,
+            'estatus' => $request->txtestatus1
+        ]);
+        // Actualizar la tabla precios_productos
+        $sql = precios_productos::where('id_producto', $producto->id)->first();
+
+        $sql->update([
+            'precio' => $request->txtprecio,
+            'descripcion' => $request->txtdescripcion,
+            'estatus' => $request->txtestatus
+        ]);
     }
 
     /**

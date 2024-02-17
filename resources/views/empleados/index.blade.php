@@ -99,47 +99,51 @@
         </div>
         <!--tabla-->
         <h1>Listado</h1>
-        <table>
-            @foreach ($empleados as $empleado)
-                <tr class= " border-b border-gray-200 text-sm">
-                    <td class=" px-6 py-4">
-                        {{ $empleado->nombre }}</td>
-                    <td class="px-6 py-4">
-                        {{ $empleado->apellido }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $empleado->rol_empleado }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $empleado->telefono }}
-                    </td>
+        <section class="overflow-x-auto">
+            <!--La clase overflow-x-auto hace que el div tenga un desplazamiento horizontal si su contenido es demasiado ancho para caber en la pantalla-->
+            <table class="min-w-full">
+                <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
 
-                    <td class="px-6 py-4">
-                        {{ $empleado->email }}
-                    </td>
-                    <td class="px-6 py-4 flex justify-center items-center">
-                        <img class=" w-20" src={{ $empleado->fotografia }}>
-                    </td>
-                    <td>
-                        <button
-                            class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-edit"></i>
-                        </button>
+                @foreach ($empleados as $empleado)
+                    <tr class= " border-b border-gray-200 text-sm">
+                        <td class=" px-6 py-4">
+                            {{ $empleado->nombre }}</td>
+                        <td class="px-6 py-4">
+                            {{ $empleado->apellido }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $empleado->rol_empleado }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $empleado->telefono }}
+                        </td>
 
-                    </td>
-                    <td>
-                        <button
-                            class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-trash"></i></button>
-                    </td>
+                        <td class="px-6 py-4">
+                            {{ $empleado->email }}
+                        </td>
+                        <td class="px-6 py-4 flex justify-center items-center">
+                            <img class=" w-20" src={{ $empleado->fotografia }}>
+                        </td>
+                        <td>
+                            <button
+                                class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-edit"></i>
+                            </button>
 
-                </tr>
-                <!-- Aquí deberías mostrar otros datos del producto -->
-            @endforeach
-        </table>
-        <div class=" mt-3">
-            {{ $empleados->links() }} <!-- Esto mostrará los enlaces de paginación -->
-        </div>
+                        </td>
+                        <td>
+                            <button
+                                class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-trash"></i></button>
+                        </td>
+
+                    </tr>
+                    <!-- Aquí deberías mostrar otros datos del producto -->
+                @endforeach
+            </table>
+            <div class=" mt-3">
+                {{ $empleados->links() }} <!-- Esto mostrará los enlaces de paginación -->
+            </div>
     </main>
 @stop
 

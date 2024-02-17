@@ -7,101 +7,67 @@
 @stop
 
 @section('content')
+    <div class="container mx-auto py-6 px-4">
+        <h1 class="text-2xl font-semibold mb-4">Carrito de compras</h1>
+        @php
+            $carrito = [
+                'producto1' => [
+                    'nombre' => 'Producto 1',
+                    'precio' => 100,
+                    'cantidad' => 2,
+                    'imagen' => 'https://via.placeholder.com/640x480.png/0088aa?text=quam',
+                    'descripcion' => 'Mediano',
+                ],
+                'producto2' => [
+                    'nombre' => 'Producto 2',
+                    'precio' => 200,
+                    'cantidad' => 1,
+                    'imagen' => 'https://via.placeholder.com/640x480.png/0088aa?text=quam',
+                    'descripcion' => 'Regular',
+                ],
+                'producto3' => [
+                    'nombre' => 'Producto 3',
+                    'precio' => 150,
+                    'cantidad' => 1,
+                    'imagen' => 'https://via.placeholder.com/640x480.png/0088aa?text=quam',
+                    'descripcion' => 'Bueno',
+                ],
+            ];
+            $total = 0;
+            foreach ($carrito as $producto) {
+                $total += $producto['precio'] * $producto['cantidad'];
+            }
 
-    <main class=" w-full h-3/4">
-        <h5 class=" text-center">Ultimos 15</h5>
-        <table class=" table-auto w-full">
-            <thead class=" bg-cyan-500">
-                <tr>
-                    <th class=" border-8 border-slate-600 ...">Nombre Comercial</th>
-                    <th class=" border-8 border-slate-600 ...">Modelo</th>
-                    <th class=" border-8 border-slate-600 ...">Color</th>
-                    <th class="border-8 border-slate-600 ...">Marca</th>
-                    <th class="border-8 border-slate-600 ...">Fotografia</th>
-                    <th class="border-8 border-slate-600 ">Ultima fecha de actualizacion</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($datos as $item)
-                    <tr>
-                        <td class="border border-slate-700 ...">{{ $item->nombre_comercial }}</td>
-                        <td class="border border-slate-700 ...">{{ $item->modelo }}</td>
-                        <td class="border border-slate-700 ...">{{ $item->color }}</td>
-                        <td class="border border-slate-700 ...">{{ $item->marca }}</td>
-                        <td class="border border-slate-700 flex justify-center items-center"><img class=" w-32"
-                                src={{ $item->fotografia }}></td>
-                        <td class="border border-slate-700 ...">{{ $item->updated_at }}</td>
-                        <!-- Botón para abrir el modal -->
-                        <td
-                            class="openModalButton border border-slate-600 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
-                            ✍🏽
-                        </td>
-                        <td
-                            class="border border-slate-600 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
-                            🗑</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <!-- Modal -->
-        <div id="myModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
-            aria-modal="true">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <!-- Fondo del modal -->
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-                <!-- Contenido del modal -->
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div
-                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class=" text-center text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Editar
-                        </h3>
-
-                        <form class=" mt-8 flex flex-col items-center">
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Nombre comercial</span>
-                                <input
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Modelo</span>
-                                <input
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Color</span>
-                                <input
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Marca</span>
-                                <input
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Fotografia</span>
-                                <input type="file"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                        </form>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="button" id="enviarmodal"
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                            Aceptar
-                        </button>
-                        <button type="button" id="cerrarmodal"
-                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
-                            Cancelar
-                        </button>
+        @endphp
+        @foreach ($carrito as $producto)
+            <div class="flex items-center justify-between border-b py-4">
+                <div class="flex items-center">
+                    <img class="h-16 w-16 object-cover" src="{{ $producto['imagen'] }}" alt="{{ $producto['nombre'] }}">
+                    <div class="ml-4">
+                        <h2 class="text-lg font-semibold">{{ $producto['nombre'] }}</h2>
+                        <p class="text-sm text-gray-600">{{ $producto['descripcion'] }}</p>
                     </div>
                 </div>
+
+                <div class="flex items-center">
+                    <input type="number" class="form-input w-20 mr-4" value="{{ $producto['cantidad'] }}">
+                    <button class="text-red-600 hover:underline">Eliminar</button>
+                </div>
+
+                <p class="text-lg font-semibold">${{ $producto['precio'] * $producto['cantidad'] }}</p>
             </div>
+        @endforeach
+
+        <div class="flex items-center justify-between mt-6">
+            <h2 class="text-xl font-semibold">Total:</h2>
+            <p class="text-xl font-semibold">{{ $total }}$</p>
         </div>
 
-    </main>
+        <div class="mt-6">
+            <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-500">Proceder al pago</button>
+        </div>
+    </div>
+
 
 
 @stop
@@ -113,24 +79,5 @@
 @stop
 
 @section('js')
-    <script>
-        // Obtén los elementos del DOM
-        const modal = document.getElementById('myModal');
-        const openModalButton = document.querySelectorAll('.openModalButton');
-
-        const cancelarModal = document.getElementById('cerrarmodal');
-
-        // Selecciona todos los botones con la clase '.openModalButton'
-        openModalButton.forEach(button => {
-            button.addEventListener('click', function() {
-                // Muestra el modal
-                modal.classList.remove('hidden');
-            });
-        });
-        // Escucha el evento de click en el botón
-        cancelarModal.addEventListener('click', function() {
-            // Muestra el modal
-            modal.classList.add('hidden');
-        });
-    </script>
+    <script></script>
 @stop

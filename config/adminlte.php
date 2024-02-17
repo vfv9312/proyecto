@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'AdminLTE 3',
+    'title' => 'Ecotoner',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -253,7 +253,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'Inicio',
+    'dashboard_url' => 'inicio',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
