@@ -125,7 +125,9 @@ VALUES (?, ?, ?, now(), now(),1)',
     public function edit(productos $producto)
     {
         //
-        return view('Productos.edit', compact('producto'));
+        $precioProducto = precios_productos::where('id_producto', $producto->id)->first();
+
+        return view('Productos.edit', compact('producto', 'precioProducto'));
     }
 
     /**
