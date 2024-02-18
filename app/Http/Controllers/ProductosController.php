@@ -6,6 +6,7 @@ use App\Models\precios_productos;
 use App\Models\productos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductosController extends Controller
 {
@@ -43,16 +44,28 @@ class ProductosController extends Controller
      */
     public function store(Request $request)
     {
-        // $producto = new productos();
-        // Asegúrate de validar tus datos aquí
-        // $producto->nombre_comercial = $request->nombre_comercial;
-        // Repite para todos los campos de tu formulario
-        //  $producto->save();
-
-
 
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
+            //para validar que sea una imagen el archivo cargado
+            $request->validate([
+                'file' => 'image|max:2048',
+            ]);
+
+            if ($request->hasFile('file')) {
+                //esto guardamos nuetra imagen en storage/app/public/imagenProducto
+                //no olvidar ejecutar el comando php artisan storage:link para crear un acceso directo
+                $file = $request->file('file')->store('public/imagenProductos');
+                /**
+                 * Genera la URL para un archivo almacenado en el almacenamiento.
+                 *
+                 * @param string $file La ruta del archivo.
+                 * @return string La URL del archivo.
+                 */
+                $url = Storage::url($file);
+                // Ahora puedes usar $filename para guardar el nombre del archivo en tu base de datos
+            }
+
             // Insertar en la tabla 'productos'
             $producto = productos::create([
                 'nombre_comercial' => $request->txtnombre,
@@ -60,7 +73,7 @@ class ProductosController extends Controller
                 'color' => $request->txtcolor,
                 'marca' => $request->txtmarca,
                 'descripcion' => $request->txtdescripcion,
-                'fotografia' => $request->txtfotografia,
+                'fotografia' => $url,
                 'estatus' => 1
             ]);
 
@@ -71,33 +84,7 @@ class ProductosController extends Controller
                 //'descripcion' => $request->txtdescripcion,
                 'estatus' => 1
             ]);
-            /*
-            // Insertar en la tabla 'productos'
-            $sql = DB::insert('INSERT INTO canacotu_tuxtla.productos
-            (nombre_comercial, modelo, color, marca, fotografia, created_at, updated_at, estatus)
-            VALUES (?,?, ?, ?, ?, now(), now(), ?);
 
-            ', [
-                $request->txtnombre,
-                $request->txtmodelo,
-                $request->txtcolor,
-                $request->txtmarca,
-                $request->txtfotografia,
-                1
-            ]);
-            // Obtener el ID del producto insertado
-            $idProducto = DB::getPdo()->lastInsertId();
-            // Insertar en la tabla 'precios_productos' usando el ID del producto
-            $sql = DB::insert(
-                'INSERT INTO canacotu_tuxtla.precios_productos
-(id_producto, precio, descripcion, created_at, updated_at, estatus)
-VALUES (?, ?, ?, now(), now(),1)',
-                [
-                    $idProducto,
-                    $request->txtprecio,
-                    $request->txtdescripcion
-                ]
-            );*/
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
@@ -200,16 +187,16 @@ VALUES (?, ?, ?, now(), now(),1)',
     {
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
-
+            //en este caso es id por que en la ruta asi dije que se llamaria PUT productos/{id}/desactivar ............. productos.desactivar › ProductosController@desactivar
             //conseguir el primer precio del producto que esten con estatus 1 y tengan el mismo id_producto
             $precioProducto = precios_productos::where('id_producto', $id->id)
                 ->where('estatus', 1)
                 ->first();
-
+            //estatus de producto actualizarlo a 0 y la fecha de eliminacion tambien
             $id->estatus = 0;
             $id->deleted_at = now();
             $productoDesactivado = $id->save();
-
+            //estatus de precio_producto actualizarlo a 0 y la fecha de eliminacion tambien
             $precioProducto->estatus = 0;
             $precioProducto->deleted_at = now();
             $precioProductoDesactivado = $precioProducto->save();

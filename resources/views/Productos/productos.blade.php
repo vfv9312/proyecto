@@ -46,7 +46,7 @@
                             Registrar Producto
                         </h3>
 
-                        <form method="POST" action="{{ route('productos.store') }}"
+                        <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -81,8 +81,11 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Fotografia</span>
-                                <input type="file"
+                                <input name="file" type="file" accept="image/*"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                @error('file')
+                                    <small class=" text-danger">{{ $message }} </small>
+                                @enderror
                             </label>
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
