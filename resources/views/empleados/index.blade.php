@@ -39,10 +39,10 @@
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <h3 class=" text-center text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Registrar Producto
+                            Registrar empleado
                         </h3>
 
-                        <form method="POST" action="{{ route('productos.create') }}"
+                        <form method="POST" action="{{ route('empleados.store') }}" enctype="multipart/form-data"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -52,7 +52,7 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Apellido</span>
-                                <input name="txapellido"
+                                <input name="txtapellido"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -132,17 +132,19 @@
                             <img class=" w-20" src={{ $empleado->fotografia }}>
                         </td>
                         <td>
-                            <button
+                            <button onclick="location.href='{{ route('empleados.edit', $empleado->id) }}';"
                                 class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
                                 <i class="fas fa-edit"></i>
                             </button>
                         </td>
                         <td>
-
-                            <button
-                                class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                                <i class="fas fa-trash"></i></button>
-
+                            <form action="{{ route('empleados.desactivar', $empleado->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <button
+                                    class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
+                                    <i class="fas fa-trash"></i></button>
+                            </form>
                         </td>
 
                     </tr>
