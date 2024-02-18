@@ -59,6 +59,7 @@ class ProductosController extends Controller
                 'modelo' => $request->txtmodelo,
                 'color' => $request->txtcolor,
                 'marca' => $request->txtmarca,
+                'descripcion' => $request->txtdescripcion,
                 'fotografia' => $request->txtfotografia,
                 'estatus' => 1
             ]);
@@ -67,7 +68,7 @@ class ProductosController extends Controller
             $precioProducto = precios_productos::create([
                 'id_producto' => $producto->id,
                 'precio' => $request->txtprecio,
-                'descripcion' => $request->txtdescripcion,
+                //'descripcion' => $request->txtdescripcion,
                 'estatus' => 1
             ]);
             /*
@@ -147,6 +148,7 @@ VALUES (?, ?, ?, now(), now(),1)',
                 'modelo' => $request->txtmodelo,
                 'color' => $request->txtcolor,
                 'marca' => $request->txtmarca,
+                'descripcion' => $request->txtdescripcion,
                 'fotografia' => $request->txtfotografia,
                 'estatus' => 1
             ]);
@@ -162,15 +164,13 @@ VALUES (?, ?, ?, now(), now(),1)',
             if ($precioActual != $request->txtprecio) {
                 //primero cambiamos el estatus del producto estatus
                 $preciosProductoActualizado->update([
-                    // 'precio' => $request->txtprecio,
-                    //  'descripcion' => $request->txtdescripcion,
                     'estatus' => 0
                 ]);
                 //ahora creamos el nuevo precio
                 $preciosProductoNuevo =  precios_productos::create([
                     'id_producto' => $producto->id,
                     'precio' => $request->txtprecio,
-                    'descripcion' => $request->txtdescripcion,
+                    //'descripcion' => $request->txtdescripcion,
                     'estatus' => 1
                 ]);
             } else {
@@ -196,11 +196,47 @@ VALUES (?, ?, ?, now(), now(),1)',
         }
     }
 
+    public function desactivar(productos $id)
+    {
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+        try {
+
+            //conseguir el primer precio del producto que esten con estatus 1 y tengan el mismo id_producto
+            $precioProducto = precios_productos::where('id_producto', $id->id)
+                ->where('estatus', 1)
+                ->first();
+
+            $id->estatus = 0;
+            $id->deleted_at = now();
+            $productoDesactivado = $id->save();
+
+            $precioProducto->estatus = 0;
+            $precioProducto->deleted_at = now();
+            $precioProductoDesactivado = $precioProducto->save();
+
+
+            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+            //si retorna un error de sql lo veremos en pantalla
+            return $th->getMessage();
+            $precioProductoDesactivado = false;
+        }
+        if ($productoDesactivado && $precioProductoDesactivado) {
+            session()->flash("correcto", "Producto eliminado correctamente");
+            return redirect()->route('productos.index');
+        } else {
+            session()->flash("incorrect", "Error al eliminar el registro");
+            return redirect()->route('productos.index');
+        }
+    }
+
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(productos $productos)
+    public function destroy(productos $producto)
     {
-        //
     }
 }

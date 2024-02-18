@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('modelo')->nullable();
             $table->string('color')->nullable();
             $table->string('marca')->nullable();
+            $table->text('descripcion')->nullable();
             $table->string('fotografia')->nullable();
             $table->timestamps();
             $table->softDeletes();

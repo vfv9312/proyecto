@@ -59,6 +59,7 @@ Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'veri
 //Route::post('/eliminar_producto', [ProductosController::class, 'destroy'])->name('productos.destroy');
 // productos
 Route::resource('productos', ProductosController::class)->middleware(['auth', 'verified']);
+Route::put('/productos/{id}/desactivar', [ProductosController::class, 'desactivar'])->name('productos.desactivar')->middleware(['auth', 'verified']);
 
 
 //servicios

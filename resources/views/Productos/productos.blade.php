@@ -128,18 +128,21 @@
                             {{ $producto->precio }}
                         </td>
                         <td>
-                            <a href="{{ route('productos.edit', $producto->id) }}">
-                                <button
-                                    class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
-                                    <i class="fas fa-edit"></i>
-                                </button></a>
+
+                            <button onclick="location.href='{{ route('productos.edit', $producto->id) }}';"
+                                class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-edit"></i>
+                            </button>
 
                         </td>
                         <td>
-                            <a href="{{ route('productos.show', $producto->id) }}">
+                            <form action="{{ route('productos.desactivar', $producto->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
                                 <button
                                     class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                                    <i class="fas fa-trash"></i></button></a>
+                                    <i class="fas fa-trash"></i></button>
+                            </form>
                         </td>
 
                     </tr>
