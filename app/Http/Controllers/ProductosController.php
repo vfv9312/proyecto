@@ -23,7 +23,9 @@ class ProductosController extends Controller
 
         $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->where('productos.estatus', 1)
+            ->where('precios_productos.estatus', 1)
             ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'productos.color', 'productos.marca', 'productos.fotografia', 'precios_productos.precio')
+            ->orderBy('productos.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
         return view('Productos.productos', compact('productos'));
@@ -124,9 +126,11 @@ VALUES (?, ?, ?, now(), now(),1)',
      */
     public function edit(productos $producto)
     {
-        //
-        $precioProducto = precios_productos::where('id_producto', $producto->id)->first();
-
+        //conseguir el primer precio del producto que esten con estatus 1 y tengan el mismo id_producto
+        $precioProducto = precios_productos::where('id_producto', $producto->id)
+            ->where('estatus', 1)
+            ->first();
+        //enviar los dos datos a la vista
         return view('Productos.edit', compact('producto', 'precioProducto'));
     }
 
@@ -135,23 +139,61 @@ VALUES (?, ?, ?, now(), now(),1)',
      */
     public function update(Request $request, productos $producto)
     {
-        //
-        $producto->update([
-            'nombre_comercial' => $request->txtnombre,
-            'modelo' => $request->txtmodelo,
-            'color' => $request->txtcolor,
-            'marca' => $request->txtmarca,
-            'fotografia' => $request->txtfotografia,
-            'estatus' => $request->txtestatus1
-        ]);
-        // Actualizar la tabla precios_productos
-        $sql = precios_productos::where('id_producto', $producto->id)->first();
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+        try {
+            //Actualizar la tabla producto
+            $productoActualizado = $producto->update([
+                'nombre_comercial' => $request->txtnombre,
+                'modelo' => $request->txtmodelo,
+                'color' => $request->txtcolor,
+                'marca' => $request->txtmarca,
+                'fotografia' => $request->txtfotografia,
+                'estatus' => 1
+            ]);
 
-        $sql->update([
-            'precio' => $request->txtprecio,
-            'descripcion' => $request->txtdescripcion,
-            'estatus' => $request->txtestatus
-        ]);
+            // Obetener el primer id del precio del producto que este relacionado donde el estatus sea 1
+            $preciosProductoActualizado = precios_productos::where('id_producto', $producto->id)
+                ->where('estatus', 1)
+                ->first();
+
+            // Obtén el precio actual
+            $precioActual = $preciosProductoActualizado->precio;
+            //si el precio actual es txt precio es diferente al que esta en el campo txtprecio actualizalo
+            if ($precioActual != $request->txtprecio) {
+                //primero cambiamos el estatus del producto estatus
+                $preciosProductoActualizado->update([
+                    // 'precio' => $request->txtprecio,
+                    //  'descripcion' => $request->txtdescripcion,
+                    'estatus' => 0
+                ]);
+                //ahora creamos el nuevo precio
+                $preciosProductoNuevo =  precios_productos::create([
+                    'id_producto' => $producto->id,
+                    'precio' => $request->txtprecio,
+                    'descripcion' => $request->txtdescripcion,
+                    'estatus' => 1
+                ]);
+            } else {
+                // Si el precio no ha cambiado, no crees un nuevo registro
+                $preciosProductoNuevo = true; // Para que la comprobación final siga funcionando
+            }
+
+
+            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+        } catch (\Throwable $th) {
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+            //si retorna un error de sql lo veremos en pantalla
+            return $th->getMessage();
+            //y que la ultima consulta sea false para mandar msj que salio mal la consulta
+            $preciosProductoActualizado = false;
+        }
+        if ($productoActualizado && $preciosProductoActualizado && $preciosProductoNuevo) {
+            session()->flash("correcto", "Producto actualizado correctamente");
+            return redirect()->route('productos.index');
+        } else {
+            session()->flash("incorrect", "Error al actualizar el registro");
+            return redirect()->route('productos.index');
+        }
     }
 
     /**

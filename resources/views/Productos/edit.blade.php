@@ -7,7 +7,8 @@
 @stop
 
 @section('content')
-    <form class="mt-8 flex flex-col items-center" action="{{ route('productos.update', $producto) }}" method="POST">
+    <form class="mt-8 flex flex-col items-center" action="{{ route('productos.update', $producto, $precioProducto) }}"
+        method="POST">
         @method('PUT')
         @include('Productos._form')
     </form>

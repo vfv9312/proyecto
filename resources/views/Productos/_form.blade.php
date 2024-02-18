@@ -1,4 +1,3 @@
-{{ $producto }}
 @csrf
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Nombre comercial</span>
@@ -24,13 +23,13 @@
     <span>precio</span>
     <input name="txtprecio" type="number"
         class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $producto->precio }}" />
+        value="{{ $precioProducto->precio }}" />
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Descripcion</span>
     <input name="txtdescripcion" type="text"
         class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $producto->descripcion }}" />
+        value="{{ $precioProducto->descripcion }}" />
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Fotografia</span>
