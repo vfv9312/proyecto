@@ -33,9 +33,14 @@
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Fotografia</span>
-    <input type="file" name="file"
-        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $producto->fotografia }}" />
+    <input type="file" name="file" accept="image/*"
+        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+    @if ($producto->fotografia)
+        <img class=" w-52" src="{{ $producto->fotografia }}" alt="Fotografia del producto" />
+    @endif
+    @error('file')
+        <small class=" text-danger">{{ $message }} </small>
+    @enderror
 </label>
 
 <div class="flex justify-between items-center">

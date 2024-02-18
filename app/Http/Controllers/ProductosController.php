@@ -136,9 +136,29 @@ class ProductosController extends Controller
                 'color' => $request->txtcolor,
                 'marca' => $request->txtmarca,
                 'descripcion' => $request->txtdescripcion,
-                'fotografia' => $request->txtfotografia,
                 'estatus' => 1
             ]);
+
+            //para validar que sea una imagen el archivo cargado
+            $request->validate([
+                'file' => 'image|max:2048',
+            ]);
+
+
+            // Verificar si se ha cargado una nueva fotografía
+            if ($request->hasFile('file')) {
+                // Guardar la nueva fotografía y obtener su nombre
+                $file = $request->file('file')->store('public/imagenProductos');
+
+                $url = Storage::url($file);
+
+                // Agregar el nombre de la nueva fotografía a los datos del producto
+                $datosProducto['fotografia'] = $file;
+
+                // Actualizar el producto con la nueva fotografía
+                $producto->update(['fotografia' => $url]);
+            }
+
 
             // Obetener el primer id del precio del producto que este relacionado donde el estatus sea 1
             $preciosProductoActualizado = precios_productos::where('id_producto', $producto->id)
@@ -169,7 +189,7 @@ class ProductosController extends Controller
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            //si retorna un error de sql lo veremos en pantalla
+            /*si retorna un error de sql lo veremos en pantalla*/
             return $th->getMessage();
             //y que la ultima consulta sea false para mandar msj que salio mal la consulta
             $preciosProductoActualizado = false;
