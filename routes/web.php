@@ -49,28 +49,17 @@ Route::middleware('auth')->group(function () {
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']);
 //Route::get('/Inicio', [PrincipalController::class, 'index'])->name('inicio.index');
 
-// lista de productos
-//Route::get('/Productos', [ProductosController::class, 'index'])->name('productos.index');
-//crear productos
-//Route::post('/registrar_producto', [ProductosController::class, 'create'])->name('productos.create');
-//editar producto
-//Route::('/editar_producto', [ProductosController::class, 'edit'])->name('productos.edit');
-//eliminar productos
-//Route::post('/eliminar_producto', [ProductosController::class, 'destroy'])->name('productos.destroy');
-// productos
+// lista de las rotuas de producto productos
 Route::resource('productos', ProductosController::class)->middleware(['auth', 'verified']);
 Route::put('/productos/{id}/desactivar', [ProductosController::class, 'desactivar'])->name('productos.desactivar')->middleware(['auth', 'verified']);
 
 
-//servicios
+//Lista de las rutas de servicios
 Route::resource('servicios', ServiciosController::class)->middleware(['auth', 'verified']);
-//Lista de servicios
-//Route::get('/servicios', [ServiciosController::class, 'index'])->name('servicios.index');
-//Crear servicios
-//Route::post('/registrar_servicios', [ServiciosController::class, 'create'])->name('servicios.create');
 
-//empleados
+//Lista de las rutas de empleados
 Route::resource('empleados', EmpleadosController::class)->middleware(['auth', 'verified']);
+Route::put('/empleados/{id}/desactivar', [EmpleadosController::class, 'desactivar'])->name('empleados.desactivar')->middleware(['auth', 'verified']);
 
 //Lista de empleados
 //Route::get('/empleados', [EmpleadosController::class, 'index'])->name('empleados.index');

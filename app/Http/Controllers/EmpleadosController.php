@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\empleados;
+use App\Models\personas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class EmpleadosController extends Controller
 {
@@ -15,6 +18,7 @@ class EmpleadosController extends Controller
         //
         $empleados = empleados::join('personas', 'personas.id', '=', 'empleados.id_persona')
             ->where('empleados.estatus', 1)
+            ->where('personas.estatus', 1)
             ->select('personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento', 'empleados.rol_empleado', 'empleados.fotografia')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
@@ -26,7 +30,6 @@ class EmpleadosController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -34,7 +37,38 @@ class EmpleadosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+        try {
+            //para validar que sea una imagen el archivo cargado
+            $request->validate([
+                'file' => 'image|max:2048',
+            ]);
+            //Guardar imagen en storage
+            if ($request->hasFile('file')) {
+                //esto guardamos nuetra imagen en storage/app/public/imagenEmpleado
+                //no olvidar ejecutar el comando php artisan storage:link para crear un acceso directo
+                $file = $request->file('file')->store('public/imagenEmpleado');
+                /**
+                 * Genera la URL para un archivo almacenado en el almacenamiento.
+                 *
+                 * @param string $file La ruta del archivo.
+                 * @return string La URL del archivo.
+                 */
+                $url = Storage::url($file);
+                // Ahora puedes usar $filename para guardar el nombre del archivo en tu base de datos
+            }
+            // Insertar en la tabla 'personas'
+            $empleado = personas::create([
+                'nombre' => $request->txtnombre,
+                'apellido' => $request->txtapellido,
+                'telefono' => $request->txttelefono,
+                'email' => $request->txtemail,
+                'estatus' => 1,
+
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     /**
@@ -59,6 +93,10 @@ class EmpleadosController extends Controller
     public function update(Request $request, empleados $empleados)
     {
         //
+    }
+
+    public function desactivar(Request $request, empleados $id)
+    {
     }
 
     /**

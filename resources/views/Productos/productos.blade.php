@@ -106,11 +106,18 @@
         </div>
 
         <!--tabla-->
-        <h1>Listado</h1>
         <section class="overflow-x-auto">
             <!--La clase overflow-x-auto hace que el div tenga un desplazamiento horizontal si su contenido es demasiado ancho para caber en la pantalla-->
             <table class="min-w-full">
                 <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
+                <tr class=" border text-gray-600 uppercase text-lg leading-normal">
+                    <td class="py-3 px-6 text-left border-r">Nombre comercial</td>
+                    <td class="py-3 px-6 text-left border-r">Modelo</td>
+                    <td class="py-3 px-6 text-left border-r">Color</td>
+                    <td class="py-3 px-6 text-left border-r">Marca</td>
+                    <td class="py-3 px-6 text-left border-r">Imagen</td>
+                    <td class="py-3 px-6 text-left border-r">Precio</td>
+                </tr>
                 @foreach ($productos as $producto)
                     <tr class= " border-b border-gray-200 text-sm">
                         <td class=" px-6 py-4">

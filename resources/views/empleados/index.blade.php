@@ -22,12 +22,12 @@
             </div>
         @endif
         <!-- boton anadir producto-->
-        <button id="abrirnModalRegisrarProducto"
+        <button id="abrirnModalRegisrarEmpleado"
             class=" mb-4 bg-gradient-to-r from-green-500 via-green-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-full">
-            Añadir producto
+            Añadir empleado
         </button>
         <!-- Modal -->
-        <div id="modalRegistrarProducto" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
+        <div id="modalRegistrarEmpleado" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
             role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Fondo del modal -->
@@ -46,38 +46,38 @@
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Nombre comercial</span>
+                                <span>Nombre</span>
                                 <input name="txtnombre"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Modelo</span>
-                                <input name="txtmodelo"
+                                <span>Apellido</span>
+                                <input name="txapellido"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Color</span>
-                                <input name="txtcolor"
+                                <span>telefono</span>
+                                <input name="txttelefono"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Marca</span>
-                                <input name="txtmarca"
+                                <span>Correo Electronico</span>
+                                <input name="txtemail"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>precio</span>
-                                <input name="txtprecio" type="number"
+                                <span>Fecha de nacimiento</span>
+                                <input name="txtfecha_nacimiento" type="date"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Descripcion</span>
-                                <input name="txtdescripcion" type="text"
+                                <span>Rol del empleado</span>
+                                <input name="txtrol" type="text"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Fotografia</span>
-                                <input type="file"
+                                <input type="file" name="file" accept="image/*"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <button type="submit" id="enviarmodal"
@@ -97,13 +97,20 @@
                 </div>
             </div>
         </div>
+
         <!--tabla-->
-        <h1>Listado</h1>
         <section class="overflow-x-auto">
             <!--La clase overflow-x-auto hace que el div tenga un desplazamiento horizontal si su contenido es demasiado ancho para caber en la pantalla-->
             <table class="min-w-full">
                 <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
-
+                <tr class=" border text-gray-600 uppercase text-lg leading-normal">
+                    <td class="py-3 px-6 text-left border-r">Nombre</td>
+                    <td class="py-3 px-6 text-left border-r">Apellido</td>
+                    <td class="py-3 px-6 text-left border-r">Rol</td>
+                    <td class="py-3 px-6 text-left border-r">Telefono</td>
+                    <td class="py-3 px-6 text-left border-r">Empleado</td>
+                    <td class="py-3 px-6 text-left border-r">Imagen</td>
+                </tr>
                 @foreach ($empleados as $empleado)
                     <tr class= " border-b border-gray-200 text-sm">
                         <td class=" px-6 py-4">
@@ -129,12 +136,13 @@
                                 class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
                                 <i class="fas fa-edit"></i>
                             </button>
-
                         </td>
                         <td>
+
                             <button
                                 class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
                                 <i class="fas fa-trash"></i></button>
+
                         </td>
 
                     </tr>
@@ -157,6 +165,29 @@
 
 @section('js')
     <script>
-        console.log('Hi!');
+        //Oculta los elementos de alerta despues de 3 segundos
+        window.setTimeout(function() {
+            var alertCorrecto = document.getElementById('alert-correcto');
+            var alertIncorrect = document.getElementById('alert-incorrect');
+            if (alertCorrecto) alertCorrecto.style.display = 'none';
+            if (alertIncorrect) alertIncorrect.style.display = 'none';
+        }, 3000);
+
+        // Obtén los elementos del DOM
+        const modalRegistrarEmpleado = document.querySelector('#modalRegistrarEmpleado')
+        const abrirnModalRegisrarEmpleado = document.querySelector('#abrirnModalRegisrarEmpleado');
+
+        const cancelarModal = document.querySelector('.cerrarmodal');
+
+        //Abre el modal para registrar un producto
+        abrirnModalRegisrarEmpleado.addEventListener('click', function() {
+            modalRegistrarEmpleado.classList.remove('hidden');
+        });
+
+        // Escucha el evento de click en el botón cancelar Modal de registro
+        cancelarModal.addEventListener('click', function() {
+            // Oculta el modal
+            modalRegistrarEmpleado.classList.add('hidden');
+        });
     </script>
 @stop
