@@ -6,6 +6,7 @@ use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiciosController;
+use App\Http\Controllers\SesionesCarritoController;
 use App\Http\Controllers\VentasController;
 use App\Models\servicios;
 use Illuminate\Support\Facades\DB;
@@ -46,8 +47,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+//Todo el proceso de venta
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']);
-//Route::get('/Inicio', [PrincipalController::class, 'index'])->name('inicio.index');
+Route::get('inicio/registro', [PrincipalController::class, 'registro'])->name('inicio.registro')->middleware(['auth', 'verified']);
+//logica para el carrito de compras
+Route::post('/incrementarContador/{id}', [SesionesCarritoController::class, 'incrementarContador'])->name('incrementarContador');
+Route::get('/carrito', [SesionesCarritoController::class, 'verCarrito'])->name('verCarrito');
+Route::post('/eliminarDelCarrito/{id}', [SesionesCarritoController::class, 'eliminarDelCarrito'])->name('eliminarDelCarrito');
+Route::get('/verCarrito', [SesionesCarritoController::class, 'mostrarCarrito'])->name('mostrarCarrito');
+
+
 
 // lista de las rotuas de producto productos
 Route::resource('productos', ProductosController::class)->middleware(['auth', 'verified']);
