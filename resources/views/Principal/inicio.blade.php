@@ -25,8 +25,8 @@
                     <span
                         class=" absolute bottom-0 left-0  bg-green-500 rounded-lg text-sm m-2">{{ $producto->marca }}</span>
                     <img class=" w-full h-full object-cover rounded-lg" src="{{ $producto->fotografia }}" alt="producto" />
-                    <div class=" absolute top-0 right-0 flex justify-center items-center bg-green-600 w-6 h-6 rounded-full m-2"
-                        data-id="{{ $producto->id }}" onclick="incrementarContador(this.getAttribute('data-id'))">
+                    <div
+                        class=" absolute top-0 right-0 flex justify-center items-center bg-green-600 w-6 h-6 rounded-full m-2">
                         <i class="fas fa-plus"></i>
                     </div>
                 </figure>
@@ -50,14 +50,5 @@
 @stop
 
 @section('js')
-    <script>
-        function incrementarContador(idProducto) {
-            fetch('/incrementarContador/' + idProducto, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-            });
-        }
-    </script>
+    <script></script>
 @stop
