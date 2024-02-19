@@ -49,7 +49,7 @@ Route::middleware('auth')->group(function () {
 
 //Todo el proceso de venta
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']);
-Route::get('inicio/registro', [PrincipalController::class, 'registro'])->name('inicio.registro')->middleware(['auth', 'verified']);
+Route::get('registro', [PrincipalController::class, 'registro'])->name('inicio.registro')->middleware(['auth', 'verified']);
 //logica para el carrito de compras
 Route::post('/incrementarContador/{id}', [SesionesCarritoController::class, 'incrementarContador'])->name('incrementarContador');
 Route::get('/carrito', [SesionesCarritoController::class, 'verCarrito'])->name('verCarrito');

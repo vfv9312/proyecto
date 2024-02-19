@@ -7,11 +7,7 @@
 @stop
 
 @section('content')
-    <p>Aqui venderemos.</p>
-
-    <div class="row">
-        <x-adminlte-input name="iLabel" label="Label" placeholder="placeholder" fgroup-class="col-md-6" disable-feedback />
-    </div>
+    <p>Registro.</p>
 
     <form method="POST" action="" class="max-w-xl mx-auto p-6 space-y-6">
         @csrf
@@ -79,6 +75,10 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <!-- Tailwind -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!--Font Awesome para los iconos-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 @stop
 
 @section('js')
