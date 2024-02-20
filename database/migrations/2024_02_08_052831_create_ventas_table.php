@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_empleado');
-            $table->unsignedBigInteger('id_cliente');
+            $table->unsignedBigInteger('id_empleado')->nullable();
+            $table->unsignedBigInteger('id_cliente')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(1);

@@ -52,7 +52,7 @@ class PrincipalController extends Controller
     {
         // Recibir los datos enviados desde el navegador
         $datos = $request->all();
-
+        dd($datos);
 
 
         $productos_venta = [];
@@ -61,6 +61,8 @@ class PrincipalController extends Controller
             $producto_precio = precios_productos::where('id_producto', $id_Producto)
                 ->where('estatus', 1)
                 ->first();
+
+
 
             if ($producto_precio) {
                 // $producto->cantidad = $cantidad; // Agrega la cantidad al objeto del producto
