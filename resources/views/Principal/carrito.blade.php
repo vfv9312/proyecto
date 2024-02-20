@@ -28,11 +28,12 @@
 
                     <div class="flex items-center">
 
-                        <input id="cantidad" type="number" class="form-input w-20 mr-4" oninput="handleInput(this.value)">
+                        <input id="cantidad" type="number" class="cantidad form-input w-20 mr-4"
+                            value="{{ $venta_producto['producto']->cantidad }}">
                         <button class="text-red-600 hover:underline">Eliminar</button>
                     </div>
 
-                    <p id="valorProducto" class="text-lg font-semibold">
+                    <p id="valorProducto" class="valorProducto text-lg font-semibold">
                     </p>
                 </div>
             @endforeach
@@ -54,7 +55,8 @@
             </div>
 
             <div class="mt-6">
-                <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-500">Proceder al pago</button>
+                <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-500">Proceder al
+                    pago</button>
 
             </div>
         </div>
@@ -71,23 +73,24 @@
 
 @section('js')
     <script>
-        var cantidad = {{ $venta_producto['producto']->cantidad }};
-        var precio = {{ $venta_producto['precio'] }};
-        let resultado = precio * cantidad;
-        let total = precio * cantidad;
+        window.addEventListener('DOMContentLoaded', (event) => {
+            var cantidades = document.querySelectorAll('.cantidad');
+            var resultados = document.querySelectorAll('.valorProducto');
+            var precios = @json(array_map(function ($item) {
+                    return $item['precio'];
+                }, $combined));
 
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.getElementById('cantidad').value = cantidad;
-            document.getElementById('valorProducto').textContent = resultado;
+            cantidades.forEach((cantidad, index) => {
+                var resultado = resultados[index];
+                var precio = precios[index];
+
+                // Calcula el resultado inicial
+                resultado.textContent = cantidad.value * precio;
+
+                cantidad.addEventListener('input', function() {
+                    resultado.textContent = this.value * precio;
+                });
+            });
         });
-
-        function handleInput(value) {
-            var cantidad = value;
-            resultado = cantidad * precio;
-            document.getElementById('valorProducto').textContent = resultado;
-
-
-            console.log($precio);
-        }
     </script>
 @stop
