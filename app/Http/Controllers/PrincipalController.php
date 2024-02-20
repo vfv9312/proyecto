@@ -7,6 +7,7 @@ use App\Models\productos;
 use App\Models\ventas;
 use App\Models\ventas_productos;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PrincipalController extends Controller
 {
@@ -52,37 +53,65 @@ class PrincipalController extends Controller
 
     public function guardarProductoVenta(Request $request)
     {
-        // Recibir los datos enviados desde el navegador
-        $datos = $request->all();
-        $producto_ids = $request->input('producto_id');
-        $cantidades = $request->input('cantidad');
-        dd($datos);
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
-        $productos_venta = [];
-        // Procesar y buscar los datos en la base de datos
-        foreach ($datos as $id_Producto => $cantidad) {
-            $producto_precio = precios_productos::where('id_producto', $id_Producto)
-                ->where('estatus', 1)
-                ->first();
+        try {
+            // Recibir los datos enviados desde el navegador
+            $datos = $request->all();
+            $producto_ids = $request->input('producto_id');
+            $cantidades = $request->input('cantidad');
 
+            $relacion = [];
+
+            for ($i = 0; $i < count($producto_ids); $i++) {
+                if ($cantidades[$i] > 0) {
+                    $relacion[$producto_ids[$i]] = $cantidades[$i];
+                }
+            }
 
             $venta = ventas::create([
-                'id_precio_producto' => $producto_precio->id,
-                'cantidad' => $cantidad,
-                'metodo_pago' => $request->txtmetodo_pago,
                 'estatus' => 2
             ]);
 
-            $producto_venta = ventas_productos::create([
-                'id_precio_producto' => $producto_precio->id,
-                'id_venta' => $venta->id,
-                'cantidad' => $cantidad,
-                'estatus' => 2
-            ]);
+            $productos_ventas = [];
+            $productos = [];
+            // Procesar y buscar los datos en la base de datos
+            foreach ($relacion as $id_Producto => $cantidad) {
+
+                $producto_precio = precios_productos::where('id_producto', $id_Producto)
+                    ->where('estatus', 1)
+                    ->first();
+
+                $producto = Productos::where('id', $id_Producto)->first();
+
+
+
+                $producto_venta = ventas_productos::create([
+                    'id_precio_producto' => $producto_precio->id,
+                    'id_venta' => $venta->id,
+                    'cantidad' => $cantidad,
+                    'estatus' => 2
+                ]);
+                $productos_ventas[] = $producto_venta;
+                $productos[] = $producto;
+            }
+            // Devolver una respuesta al navegador con los productos
+            //return response()->json(['productos' => $productos_venta]);
+
+
+            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+
+        } catch (\Throwable $th) {
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+            return $th->getMessage();
+            $producto_venta = false;
         }
-        // Devolver una respuesta al navegador con los productos
-        //return response()->json(['productos' => $productos_venta]);
-        return response()->json(['success' => true]);
+        if ($producto_venta == true) {
+            return view('Principal.carrito', ['producto_venta' => $productos_ventas, 'producto' => $productos, 'venta' => $venta]);
+        } else {
+            session()->flash("incorrect", "Error al procesar el carrito de compras");
+            return redirect()->route('productos.index');
+        }
     }
 
     public function carrito()

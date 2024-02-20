@@ -13,6 +13,20 @@
 @stop
 
 @section('content')
+    <!-- mensaje de aviso que se registro el producto-->
+    @if (session('correcto'))
+        <div class=" flex justify-center">
+            <div id="alert-correcto" class="bg-green-500 bg-opacity-50 text-white px-4 py-2 rounded mb-8 w-64 ">
+                {{ session('correcto') }}
+            </div>
+        </div>
+    @endif
+    @if (session('incorrect'))
+        <div id="alert-incorrect" class="bg-red-500 text-white px-4 py-2 rounded">
+            {{ session('incorrect') }}
+        </div>
+    @endif
+
 
     <form action="{{ route('inicio.guardarProductoVenta') }}" method="POST">
         @csrf
