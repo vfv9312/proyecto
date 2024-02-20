@@ -10,62 +10,56 @@
     <div class="container mx-auto py-6 px-4">
         <h1 class="text-2xl font-semibold mb-4">Carrito de compras</h1>
         @php
-            $carrito = [
-                'producto1' => [
-                    'nombre' => 'Producto 1',
-                    'precio' => 100,
-                    'cantidad' => 2,
-                    'imagen' => 'https://via.placeholder.com/640x480.png/0088aa?text=quam',
-                    'descripcion' => 'Mediano',
-                ],
-                'producto2' => [
-                    'nombre' => 'Producto 2',
-                    'precio' => 200,
-                    'cantidad' => 1,
-                    'imagen' => 'https://via.placeholder.com/640x480.png/0088aa?text=quam',
-                    'descripcion' => 'Regular',
-                ],
-                'producto3' => [
-                    'nombre' => 'Producto 3',
-                    'precio' => 150,
-                    'cantidad' => 1,
-                    'imagen' => 'https://via.placeholder.com/640x480.png/0088aa?text=quam',
-                    'descripcion' => 'Bueno',
-                ],
-            ];
-            $total = 0;
-            foreach ($carrito as $producto) {
-                $total += $producto['precio'] * $producto['cantidad'];
-            }
-
+            $sumaTotal = 0;
+            $combined = array_combine(array_keys($producto), array_values($producto_venta));
         @endphp
-        @foreach ($carrito as $producto)
+
+        @foreach ($combined as $prod => $venta_producto)
             <div class="flex items-center justify-between border-b py-4">
                 <div class="flex items-center">
-                    <img class="h-16 w-16 object-cover" src="{{ $producto['imagen'] }}" alt="{{ $producto['nombre'] }}">
+                    <img class="h-16 w-16 object-cover" src="{{ $producto[$prod]->fotografia }}"
+                        alt="{{ $producto[$prod]->nombre_comercial }}">
                     <div class="ml-4">
-                        <h2 class="text-lg font-semibold">{{ $producto['nombre'] }}</h2>
-                        <p class="text-sm text-gray-600">{{ $producto['descripcion'] }}</p>
+                        <h2 class="text-lg font-semibold">{{ $producto[$prod]->nombre_comercial }}</h2>
+                        <p class="text-sm text-gray-600">{{ $producto[$prod]->marca }}</p>
                     </div>
                 </div>
 
                 <div class="flex items-center">
-                    <input type="number" class="form-input w-20 mr-4" value="{{ $producto['cantidad'] }}">
+                    @php
+                        $cantidadM = $venta_producto['producto']->cantidad;
+                    @endphp
+                    <input type="number" class="form-input w-20 mr-4" value="{{ $cantidadM }}">
                     <button class="text-red-600 hover:underline">Eliminar</button>
                 </div>
 
-                <p class="text-lg font-semibold">${{ $producto['precio'] * $producto['cantidad'] }}</p>
+                <p class="text-lg font-semibold">
+                    ${{ $venta_producto['precio'] * $venta_producto['producto']->cantidad }}</p>
             </div>
+            @php
+                $sumaTotal += $venta_producto['precio'] * $venta_producto['producto']->cantidad;
+            @endphp
         @endforeach
 
         <div class="flex items-center justify-between mt-6">
             <h2 class="text-xl font-semibold">Total:</h2>
-            <p class="text-xl font-semibold">{{ $total }}$</p>
+            <p class="text-xl font-semibold">{{ $sumaTotal }}</p>
+        </div>
+        <div style="display: flex; justify-content: center;">
+
+            <select name="metodo_pago" id="metodo_pago">
+                <option value="">Seleccione un método de pago</option>
+                <option value="tarjeta_credito">Tarjeta de crédito</option>
+                <option value="paypal">PayPal</option>
+                <option value="transferencia_bancaria">Transferencia bancaria</option>
+                <option value="efectivo">Efectivo</option>
+                <!-- Agrega más opciones según sea necesario -->
+            </select>
         </div>
 
         <div class="mt-6">
-            <button onclick="window.location.href='{{ route('inicio.registro') }}'"
-                class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-500">Proceder al pago</button>
+            <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-500">Proceder al pago</button>
+
         </div>
     </div>
 
@@ -80,34 +74,5 @@
 @stop
 
 @section('js')
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            enviarDatosALaravel();
-        });
-
-        function enviarDatosALaravel() {
-            // Crear un objeto para almacenar los datos
-            let datos = {};
-
-            // Iterar sobre los elementos almacenados en sessionStorage
-            for (let i = 0; i < sessionStorage.length; i++) {
-                let clave = sessionStorage.key(i);
-                let valor = sessionStorage.getItem(clave);
-                datos[clave] = valor;
-            }
-
-            // Enviar los datos a Laravel utilizando Ajax
-            fetch('/guardarProductoVenta', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify(datos)
-                })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(error => console.error('Error:', error));
-        }
-    </script>
+    <script></script>
 @stop

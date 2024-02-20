@@ -51,7 +51,7 @@ class PrincipalController extends Controller
         return view('Principal.registro');
     }
 
-    public function guardarProductoVenta(Request $request)
+    public function carrito(Request $request)
     {
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
@@ -75,6 +75,7 @@ class PrincipalController extends Controller
 
             $productos_ventas = [];
             $productos = [];
+
             // Procesar y buscar los datos en la base de datos
             foreach ($relacion as $id_Producto => $cantidad) {
 
@@ -92,7 +93,11 @@ class PrincipalController extends Controller
                     'cantidad' => $cantidad,
                     'estatus' => 2
                 ]);
-                $productos_ventas[] = $producto_venta;
+                $productos_ventas[] = [
+                    'producto' => $producto_venta,
+                    'precio' => $producto_precio->precio,
+                ];
+
                 $productos[] = $producto;
             }
             // Devolver una respuesta al navegador con los productos
@@ -114,10 +119,6 @@ class PrincipalController extends Controller
         }
     }
 
-    public function carrito()
-    {
-        return view('Principal.carrito');
-    }
 
     /**
      * Show the form for editing the specified resource.

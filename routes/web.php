@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
 
 //Todo el proceso de venta
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']);
-Route::get('carrito', [PrincipalController::class, 'carrito'])->name('inicio.carrito')->middleware(['auth', 'verified']);
+Route::post('carrito', [PrincipalController::class, 'carrito'])->name('inicio.carrito')->middleware(['auth', 'verified']);
 Route::get('registro', [PrincipalController::class, 'registro'])->name('inicio.registro')->middleware(['auth', 'verified']);
 Route::post('guardarProductoVenta', [PrincipalController::class, 'guardarProductoVenta'])->name('inicio.guardarProductoVenta')->middleware(['auth', 'verified']);
 

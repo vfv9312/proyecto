@@ -28,7 +28,7 @@
     @endif
 
 
-    <form action="{{ route('inicio.guardarProductoVenta') }}" method="POST">
+    <form action="{{ route('inicio.carrito') }}" method="POST">
         @csrf
         <header class=" flex justify-between p-3">
             <h1>Productos</h1> <button type="submit" id="compras"
