@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\precios_productos;
 use App\Models\productos;
+use App\Models\ventas_productos;
 use Illuminate\Http\Request;
 
 class PrincipalController extends Controller
@@ -52,7 +53,7 @@ class PrincipalController extends Controller
     {
         // Recibir los datos enviados desde el navegador
         $datos = $request->all();
-        dd($datos);
+
 
 
         $productos_venta = [];
@@ -61,6 +62,17 @@ class PrincipalController extends Controller
             $producto_precio = precios_productos::where('id_producto', $id_Producto)
                 ->where('estatus', 1)
                 ->first();
+            dd($producto_precio->id);
+
+            $producto_venta = ventas_productos::create([
+                'id_precio_producto' => $producto_precio->id,
+                'modelo' => $request->txtmodelo,
+                'color' => $request->txtcolor,
+                'marca' => $request->txtmarca,
+                'descripcion' => $request->txtdescripcion,
+                'fotografia' => $url,
+                'estatus' => 1
+            ]);
 
 
 
@@ -69,6 +81,8 @@ class PrincipalController extends Controller
                 $productos_venta[] = $producto_precio;
             }
         }
+
+
 
         // Devolver una respuesta al navegador con los productos
         return response()->json(['productos' => $productos_venta]);

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_empleado')->nullable();
             $table->unsignedBigInteger('id_cliente')->nullable();
+            $table->string('metodo_pago')->nullable();
+            $table->dateTime('entrega')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(1);
