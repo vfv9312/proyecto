@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\precios_productos;
 use App\Models\productos;
+use App\Models\ventas;
 use App\Models\ventas_productos;
 use Illuminate\Http\Request;
 
@@ -53,8 +54,9 @@ class PrincipalController extends Controller
     {
         // Recibir los datos enviados desde el navegador
         $datos = $request->all();
-
-
+        $producto_ids = $request->input('producto_id');
+        $cantidades = $request->input('cantidad');
+        dd($datos);
 
         $productos_venta = [];
         // Procesar y buscar los datos en la base de datos
@@ -62,31 +64,27 @@ class PrincipalController extends Controller
             $producto_precio = precios_productos::where('id_producto', $id_Producto)
                 ->where('estatus', 1)
                 ->first();
-            dd($producto_precio->id);
+
+
+            $venta = ventas::create([
+                'id_precio_producto' => $producto_precio->id,
+                'cantidad' => $cantidad,
+                'metodo_pago' => $request->txtmetodo_pago,
+                'estatus' => 2
+            ]);
 
             $producto_venta = ventas_productos::create([
                 'id_precio_producto' => $producto_precio->id,
-                'modelo' => $request->txtmodelo,
-                'color' => $request->txtcolor,
-                'marca' => $request->txtmarca,
-                'descripcion' => $request->txtdescripcion,
-                'fotografia' => $url,
-                'estatus' => 1
+                'id_venta' => $venta->id,
+                'cantidad' => $cantidad,
+                'estatus' => 2
             ]);
-
-
-
-            if ($producto_precio) {
-                // $producto->cantidad = $cantidad; // Agrega la cantidad al objeto del producto
-                $productos_venta[] = $producto_precio;
-            }
         }
-
-
-
         // Devolver una respuesta al navegador con los productos
-        return response()->json(['productos' => $productos_venta]);
+        //return response()->json(['productos' => $productos_venta]);
+        return response()->json(['success' => true]);
     }
+
     public function carrito()
     {
         return view('Principal.carrito');
