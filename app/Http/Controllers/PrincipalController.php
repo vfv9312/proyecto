@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\precios_productos;
 use App\Models\productos;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,6 @@ class PrincipalController extends Controller
      */
     public function create()
     {
-        return view('Principal.carrito');
     }
 
 
@@ -46,6 +46,34 @@ class PrincipalController extends Controller
     {
         //
         return view('Principal.registro');
+    }
+
+    public function guardarProductoVenta(Request $request)
+    {
+        // Recibir los datos enviados desde el navegador
+        $datos = $request->all();
+
+
+
+        $productos_venta = [];
+        // Procesar y buscar los datos en la base de datos
+        foreach ($datos as $id_Producto => $cantidad) {
+            $producto_precio = precios_productos::where('id_producto', $id_Producto)
+                ->where('estatus', 1)
+                ->first();
+
+            if ($producto_precio) {
+                // $producto->cantidad = $cantidad; // Agrega la cantidad al objeto del producto
+                $productos_venta[] = $producto_precio;
+            }
+        }
+
+        // Devolver una respuesta al navegador con los productos
+        return response()->json(['productos' => $productos_venta]);
+    }
+    public function carrito()
+    {
+        return view('Principal.carrito');
     }
 
     /**

@@ -6,9 +6,7 @@ use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiciosController;
-use App\Http\Controllers\SesionesCarritoController;
 use App\Http\Controllers\VentasController;
-use App\Models\servicios;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -49,12 +47,10 @@ Route::middleware('auth')->group(function () {
 
 //Todo el proceso de venta
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']);
+Route::get('carrito', [PrincipalController::class, 'carrito'])->name('inicio.carrito')->middleware(['auth', 'verified']);
 Route::get('registro', [PrincipalController::class, 'registro'])->name('inicio.registro')->middleware(['auth', 'verified']);
-//logica para el carrito de compras
-Route::post('/incrementarContador/{id}', [SesionesCarritoController::class, 'incrementarContador'])->name('incrementarContador');
-Route::get('/carrito', [SesionesCarritoController::class, 'verCarrito'])->name('verCarrito');
-Route::post('/eliminarDelCarrito/{id}', [SesionesCarritoController::class, 'eliminarDelCarrito'])->name('eliminarDelCarrito');
-Route::get('/verCarrito', [SesionesCarritoController::class, 'mostrarCarrito'])->name('mostrarCarrito');
+Route::post('guardarProductoVenta', [PrincipalController::class, 'guardarProductoVenta'])->name('inicio.guardarProductoVenta')->middleware(['auth', 'verified']);
+
 
 
 
@@ -69,9 +65,6 @@ Route::resource('servicios', ServiciosController::class)->middleware(['auth', 'v
 //Lista de las rutas de empleados
 Route::resource('empleados', EmpleadosController::class)->middleware(['auth', 'verified']);
 Route::put('/empleados/{id}/desactivar', [EmpleadosController::class, 'desactivar'])->name('empleados.desactivar')->middleware(['auth', 'verified']);
-
-//Lista de empleados
-//Route::get('/empleados', [EmpleadosController::class, 'index'])->name('empleados.index');
 
 Route::resource('clientes', ClientesController::class)->middleware(['auth', 'verified']);
 //Lista de clientes

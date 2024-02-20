@@ -48,22 +48,6 @@
             <input type="datetime-local" id="fecha_entrega" name="fecha_entrega" class="p-2 border rounded-md">
         </div>
         <div class="flex flex-col">
-            <label for="cantidad_producto">Cantidad de producto</label>
-            <input type="number" id="cantidad_producto" name="cantidad_producto" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
-            <label for="nombre_producto">Nombre del producto</label>
-            <input type="text" id="nombre_producto" name="nombre_producto" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
-            <label for="precio_unitario">Precio unitario</label>
-            <input type="number" step="0.01" id="precio_unitario" name="precio_unitario" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
-            <label for="importe">Importe</label>
-            <input type="number" step="0.01" id="importe" name="importe" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
             <label for="costo_total">Costo total</label>
             <input type="number" step="0.01" id="costo_total" name="costo_total" class="p-2 border rounded-md">
         </div>
@@ -83,6 +67,33 @@
 
 @section('js')
     <script>
-        console.log('Hi!');
+        document.addEventListener('DOMContentLoaded', (event) => {
+            enviarDatosALaravel();
+        });
+
+        function enviarDatosALaravel() {
+            // Crear un objeto para almacenar los datos
+            let datos = {};
+
+            // Iterar sobre los elementos almacenados en sessionStorage
+            for (let i = 0; i < sessionStorage.length; i++) {
+                let clave = sessionStorage.key(i);
+                let valor = sessionStorage.getItem(clave);
+                datos[clave] = valor;
+            }
+
+            // Enviar los datos a Laravel utilizando Ajax
+            fetch('/guardarProductoVenta', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(datos)
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
     </script>
 @stop

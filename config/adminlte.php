@@ -413,12 +413,7 @@ return [
             'icon_color' => 'cyan',
             'route'        => 'productos.index',
         ],
-        [
-            'text'       => 'servicios',
-            'icon' => 'fas fa-headset',
-            'icon_color' => 'cyan',
-            'route'        => 'servicios.index',
-        ],
+
     ],
 
     /*

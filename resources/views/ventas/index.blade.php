@@ -7,82 +7,217 @@
 @stop
 
 @section('content')
-    <p>Aqui venderemos.</p>
 
-    <div class="row">
-        <x-adminlte-input name="iLabel" label="Label" placeholder="placeholder" fgroup-class="col-md-6" disable-feedback />
-    </div>
+    <main class="w-full h-3/4">
+        <!-- mensaje de aviso que se registro el producto-->
+        @if (session('correcto'))
+            <div class=" flex justify-center">
+                <div id="alert-correcto" class="bg-green-500 bg-opacity-50 text-white px-4 py-2 rounded mb-8 w-64 ">
+                    {{ session('correcto') }}
+                </div>
+            </div>
+        @endif
+        @if (session('incorrect'))
+            <div id="alert-incorrect" class="bg-red-500 text-white px-4 py-2 rounded">
+                {{ session('incorrect') }}
+            </div>
+        @endif
+        <!-- boton anadir producto-->
+        <button id="abrirnModalRegisrarProducto"
+            class=" mb-4 bg-gradient-to-r from-green-500 via-green-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-full">
+            Añadir producto
+        </button>
+        <!--Hacemos responsivo el modal-->
+        <!-- Modal -->
+        <div id="modalRegistrarProducto"
+            class="hidden fixed z-10 inset-0 overflow-y-auto
+            aria-labelledby="modal-title" role="dialog"
+            aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Fondo del modal -->
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
-    <form method="POST" action="" class="max-w-xl mx-auto p-6 space-y-6">
-        @csrf
-        <div class="flex flex-col">
-            <label for="nombre_cliente">Nombre del cliente</label>
-            <input type="text" id="nombre_cliente" name="nombre_cliente">
+                <!-- Contenido del modal -->
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <h3 class=" text-center text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            Registrar Producto
+                        </h3>
+
+                        <form method="POST" action="{{ route('ventas.store') }}" enctype="multipart/form-data"
+                            class=" mt-8 flex flex-col items-center">
+                            @csrf
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Nombre comercial</span>
+                                <input name="txtnombre"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Modelo</span>
+                                <input name="txtmodelo"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Color</span>
+                                <input name="txtcolor"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Marca</span>
+                                <input name="txtmarca"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>precio</span>
+                                <input name="txtprecio" type="number"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Descripcion</span>
+                                <input name="txtdescripcion" type="text"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Fotografia</span>
+                                <input name="file" type="file" accept="image/*"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                @error('file')
+                                    <small class=" text-danger">{{ $message }} </small>
+                                @enderror
+                            </label>
+                            <button type="submit" id="enviarmodal"
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                Aceptar
+                            </button>
+
+                        </form>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+
+                        <button type="button"
+                            class="cerrarmodal mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="flex flex-col">
-            <label for="apellidos">Apellidos</label>
-            <input type="text" id="apellidos" name="apellidos">
-        </div>
-        <div class="flex flex-col">
-            <label for="direccion">Dirección</label>
-            <input type="text" id="direccion" name="direccion">
-        </div>
-        <div class="flex flex-col">
-            <label for="telefono">Teléfono</label>
-            <input type="text" id="telefono" name="telefono">
-        </div>
-        <div class="flex flex-col">
-            <label for="nombre_empleado">Nombre del empleado que atiende</label>
-            <input type="text" id="nombre_empleado" name="nombre_empleado">
-        </div>
-        <div class="flex flex-col">
-            <label for="numero_recarga">Número de recarga</label>
-            <input type="text" id="numero_recarga" name="numero_recarga">
-        </div>
-        <div class="flex flex-col">
-            <label for="observaciones">Observaciones</label>
-            <textarea id="observaciones" name="observaciones"></textarea>
-        </div>
-        <div class="flex flex-col">
-            <label for="fecha_recibido">Fecha de producto recibido</label>
-            <input type="datetime-local" id="fecha_recibido" name="fecha_recibido" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
-            <label for="fecha_entrega">Fecha de entrega</label>
-            <input type="datetime-local" id="fecha_entrega" name="fecha_entrega" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
-            <label for="cantidad_producto">Cantidad de producto</label>
-            <input type="number" id="cantidad_producto" name="cantidad_producto" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
-            <label for="nombre_producto">Nombre del producto</label>
-            <input type="text" id="nombre_producto" name="nombre_producto" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
-            <label for="precio_unitario">Precio unitario</label>
-            <input type="number" step="0.01" id="precio_unitario" name="precio_unitario" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
-            <label for="importe">Importe</label>
-            <input type="number" step="0.01" id="importe" name="importe" class="p-2 border rounded-md">
-        </div>
-        <div class="flex flex-col">
-            <label for="costo_total">Costo total</label>
-            <input type="number" step="0.01" id="costo_total" name="costo_total" class="p-2 border rounded-md">
-        </div>
-        <div class="flex justify-center">
-            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">Enviar</button>
-        </div>
-    </form>
+
+        <!--tabla-->
+        <section class="overflow-x-auto">
+            <!--La clase overflow-x-auto hace que el div tenga un desplazamiento horizontal si su contenido es demasiado ancho para caber en la pantalla-->
+            <table class="min-w-full">
+                <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
+                <tr class="text-black uppercase text-xs  font-bold leading-normal">
+                    <td class="py-3 px-6 text-left border-r">Numero Venta</td>
+                    <td class="py-3 px-6 text-left border-r">Cliente</td>
+                    <td class="py-3 px-6 text-left border-r">Empleado</td>
+                    <td class="py-3 px-6 text-left border-r">Metodo de pago</td>
+                    <td class="py-3 px-6 text-left border-r">Fecha de transaccion</td>
+                    <td class="py-3 px-6 text-left border-r">Efectivo</td>
+                </tr>
+                <!--foreach ($productos as $producto)-->
+                <tr class= " border-b border-gray-200 text-sm">
+                    <td class=" px-6 py-4">
+                        dato</td>
+                    <td class="px-6 py-4">
+                        dato
+                    </td>
+                    <td class="px-6 py-4">
+                        dato
+                    </td>
+                    <td class="px-6 py-4">
+                        dato
+                    </td>
+                    <td class="px-6 py-4 flex justify-center items-center">
+                        <img class=" w-20" src="">
+                    </td>
+                    <td class="px-6 py-4">
+                        dato
+                    </td>
+                    <td>
+
+                        <button onclick="location.href=''
+                            class="abrirModalEditar border rounded
+                            px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200
+                            ease-in-out">
+                            <i class="fas fa-edit"></i>
+                        </button>
+
+                    </td>
+                    <td>
+                        <form action="" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <button
+                                class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-trash"></i></button>
+                        </form>
+                    </td>
+
+                </tr>
+                <!-- Aquí deberías mostrar otros datos del producto -->
+                <!--endforeach-->
+            </table>
+            <div class=" mt-3">
+                <!--$productos->links()--> <!-- Esto mostrará los enlaces de paginación -->
+            </div>
+        </section>
+    </main>
+
+
 @stop
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <!-- Tailwind -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 @stop
 
 @section('js')
     <script>
-        console.log('Hi!');
+        //Oculta los elementos de alerta despues de 3 segundos
+        window.setTimeout(function() {
+            var alertCorrecto = document.getElementById('alert-correcto');
+            var alertIncorrect = document.getElementById('alert-incorrect');
+            if (alertCorrecto) alertCorrecto.style.display = 'none';
+            if (alertIncorrect) alertIncorrect.style.display = 'none';
+        }, 3000);
+
+        // Obtén los elementos del DOM
+        const modalEditarRegistro = document.querySelector('#modalEditarRegistro');
+        const modalRegistrarProducto = document.querySelector('#modalRegistrarProducto')
+        const abrirModalEditar = document.querySelectorAll('.abrirModalEditar');
+        const abrirnModalRegisrarProducto = document.querySelector('#abrirnModalRegisrarProducto');
+
+        const cancelarModal = document.querySelector('.cerrarmodal');
+        const cancelarModalEditar = document.querySelector('#cerrarModalEditar');
+
+        // Selecciona todos los botones con la clase '.openModalButton'
+        abrirModalEditar.forEach(button => {
+            button.addEventListener('click', function() {
+                // Muestra el modal
+                modalEditarRegistro.classList.remove('hidden');
+            });
+        });
+        //Abre el modal para registrar un producto
+        abrirnModalRegisrarProducto.addEventListener('click', function() {
+            modalRegistrarProducto.classList.remove('hidden');
+        });
+
+        // Escucha el evento de click en el botón cancelar Modal de registro
+        cancelarModal.addEventListener('click', function() {
+            // Oculta el modal
+            modalRegistrarProducto.classList.add('hidden');
+        });
+
+        // Escucha el evento de click en el botón cancelar Modal de Editar
+        cerrarModalEditar.addEventListener('click', function() {
+
+            // Oculta el modal
+            modalEditarRegistro.classList.add('hidden');
+        });
     </script>
 @stop

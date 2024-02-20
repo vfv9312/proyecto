@@ -98,10 +98,18 @@
             </div>
         </div>
         <!--tabla-->
-        <h1>Listado</h1>
+
         <section class="overflow-x-auto">
-            <!--La clase overflow-x-auto hace que el div tenga un desplazamiento horizontal si su contenido es demasiado ancho para caber en la pantalla-->
             <table class="min-w-full">
+                <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
+                <tr class="text-black uppercase text-xs  font-bold leading-normal">
+                    <td class="py-3 px-6 text-left border-r">Nombre</td>
+                    <td class="py-3 px-6 text-left border-r">Apellido</td>
+                    <td class="py-3 px-6 text-left border-r">Telefono</td>
+                    <td class="py-3 px-6 text-left border-r">Correo electronico</td>
+                    <td class="py-3 px-6 text-left border-r">Direccion</td>
+                </tr>
+
                 <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
 
                 @foreach ($clientes as $cliente)

@@ -80,5 +80,34 @@
 @stop
 
 @section('js')
-    <script></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            enviarDatosALaravel();
+        });
+
+        function enviarDatosALaravel() {
+            // Crear un objeto para almacenar los datos
+            let datos = {};
+
+            // Iterar sobre los elementos almacenados en sessionStorage
+            for (let i = 0; i < sessionStorage.length; i++) {
+                let clave = sessionStorage.key(i);
+                let valor = sessionStorage.getItem(clave);
+                datos[clave] = valor;
+            }
+
+            // Enviar los datos a Laravel utilizando Ajax
+            fetch('/guardarProductoVenta', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(datos)
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
 @stop
