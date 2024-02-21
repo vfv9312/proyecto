@@ -45,10 +45,61 @@ class PrincipalController extends Controller
     public function show(productos $usuarios)
     {
     }
-    public function registro()
+
+    public function registro(Request $request)
     {
-        //
-        return view('Principal.registro');
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+
+        try {
+            $cantidades = $request->input('cantidad');
+            $ventaJson = $request->input('venta');
+            $venta = json_decode($ventaJson);
+            $productos = $request->input('productos');
+            $metodo_pago = $request->input('metodo_pago');
+            $relacion = [];
+
+
+            for ($i = 0; $i < count($productos); $i++) {
+                if ($cantidades[$i] > 0) {
+                    $relacion[$productos[$i]] = $cantidades[$i];
+                }
+            }
+
+            $ventaActualizada = ventas::find($venta->id)->update([
+                'metodo_pago' => $metodo_pago,
+            ]);
+
+
+            foreach ($relacion as $id_Producto => $cantidad) {
+                // Si el valor no es un array, no necesitas decodificarlo
+
+                $BuscarIdPrecios = ventas_productos::where('id_precio_producto', $id_Producto)
+                    ->where('id_venta', $venta->id)
+                    ->where('estatus', 2)
+                    ->first();
+
+
+
+
+                $actualizarCantidad = $BuscarIdPrecios->update([
+                    'cantidad' => $cantidad,
+                ]);
+            }
+
+
+            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+
+        } catch (\Throwable $th) {
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+            return $th->getMessage();
+            $actualizarCantidad = false;
+        }
+        if ($actualizarCantidad  == true) {
+            return view('Principal.registro', ['venta' => $venta]);
+        } else {
+            session()->flash("incorrect", "Error al procesar el carrito de compras");
+            return redirect()->route('productos.index');
+        }
     }
 
     public function carrito(Request $request)
@@ -57,7 +108,7 @@ class PrincipalController extends Controller
 
         try {
             // Recibir los datos enviados desde el navegador
-            $datos = $request->all();
+
             $producto_ids = $request->input('producto_id');
             $cantidades = $request->input('cantidad');
 
@@ -115,7 +166,7 @@ class PrincipalController extends Controller
             return view('Principal.carrito', ['producto_venta' => $productos_ventas, 'producto' => $productos, 'venta' => $venta]);
         } else {
             session()->flash("incorrect", "Error al procesar el carrito de compras");
-            return redirect()->route('productos.index');
+            return redirect()->route('inicio.carrito');
         }
     }
 
