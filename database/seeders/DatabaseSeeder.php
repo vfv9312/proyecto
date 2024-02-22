@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\empleados::factory(10)->create();
         //\App\Models\direcciones_clientes::factory(15)->create();
         \App\Models\usuarios::factory(2)->create();
-        \App\Models\servicios::factory(3)->create();
+        //\App\Models\servicios::factory(3)->create();
         \App\Models\productos::factory(10)->create();
         \App\Models\ventas::factory(15)->create();
         //\App\Models\precios_productos::factory(10)->create();
@@ -37,9 +37,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             direcciones_clientesSeeder::class,
             precios_productosSeeder::class,
-            precios_serviciosSeeder::class,
             ventas_productosSeeder::class,
-            ventas_serviciosSeeder::class
+            serviciosSeeder::class,
         ]);
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

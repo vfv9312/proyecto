@@ -46,7 +46,7 @@
                             alt="producto" />
                         <div
                             class=" absolute top-0 right-0 flex justify-center items-center bg-green-600 w-6 h-6 rounded-full m-2">
-                            <i class="fas fa-plus"></i>
+                            <i class="fas fa-info-circle"></i>
                         </div>
                     </figure>
 

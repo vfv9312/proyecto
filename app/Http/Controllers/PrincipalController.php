@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\clientes;
+use App\Models\empleados;
+use App\Models\personas;
 use App\Models\precios_productos;
 use App\Models\productos;
 use App\Models\ventas;
@@ -78,13 +81,32 @@ class PrincipalController extends Controller
                     ->where('estatus', 2)
                     ->first();
 
-
-
-
                 $actualizarCantidad = $BuscarIdPrecios->update([
                     'cantidad' => $cantidad,
                 ]);
             }
+
+
+
+            $empleados = DB::table('empleados')
+                ->join('personas', 'empleados.id_persona', '=', 'personas.id')
+                ->where('empleados.estatus', 1)
+                ->select('personas.nombre', 'personas.apellido', 'personas.telefono', 'empleados.id', 'empleados.rol_empleado')
+                ->get();
+
+            $clientes = DB::table('clientes')
+                ->join('personas', 'clientes.id_persona', '=', 'personas.id')
+                ->where('clientes.estatus', 1)
+                ->select('personas.nombre', 'personas.apellido', 'personas.telefono', 'clientes.id')
+                ->get();
+
+            $direccionesCliente = DB::table('clientes')
+                ->join('direcciones_clientes', 'clientes.id', '=', 'direcciones_clientes.id_cliente')
+                ->join('direcciones', 'direcciones_clientes.id_direccion', '=', 'direcciones.id')
+                ->where('clientes.estatus', 1)
+                ->orderBy('direcciones.created_at', 'desc')
+                ->select('clientes.id', 'direcciones.direccion')
+                ->get();
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
@@ -95,7 +117,7 @@ class PrincipalController extends Controller
             $actualizarCantidad = false;
         }
         if ($actualizarCantidad  == true) {
-            return view('Principal.registro', ['venta' => $venta]);
+            return view('Principal.registro', ['venta' => $venta, 'empleados' => $empleados, 'clientes' => $clientes, 'direccionesCliente' => $direccionesCliente]);
         } else {
             session()->flash("incorrect", "Error al procesar el carrito de compras");
             return redirect()->route('productos.index');

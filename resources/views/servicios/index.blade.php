@@ -3,7 +3,9 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-    <h1>Servicios</h1>
+    <h5 class=" text-center"> Hola <strong>{{ Auth::user()->name }}</strong> desde aqui podras registrar tus ventas de
+        servicios o productos
+    </h5>
 @stop
 
 @section('content')
@@ -21,15 +23,15 @@
                 {{ session('incorrect') }}
             </div>
         @endif
-        <!-- boton anadir producto-->
-        <button id="abrirnModalRegisrarProducto"
-            class=" mb-4 bg-gradient-to-r from-green-500 via-green-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-full">
-            Añadir producto
+        <!-- boton anadir servicio-->
+        <button id="abrirnModalRegisrarProducto" onclick="window.location='{{ route('servicios.store') }}';"
+            class="mb-4 bg-gradient-to-r from-green-500 via-green-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-full">
+            Añadir servicio
         </button>
         <!-- Modal -->
         <div id="modalRegistrarProducto" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
             role="dialog" aria-modal="true">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Fondo del modal -->
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
@@ -46,20 +48,54 @@
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Nombre de servicio</span>
-                                <input name="txtservicio"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                <span>Tipo de producto</span>
+                                <select name="txtservicio"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                    <option value="">Selecciona un tipo de producto</option>
+                                    <!-- Aquí puedes agregar las opciones que necesites -->
+                                    <option value="Rellenado_tinta_pequeño">Rellenado de tinta</option>
+                                    <option value="otros_servicio">Otros servicios</option>
+                                    <!-- etc. -->
+                                </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Descripcion</span>
+                                <span>Descripcion del producto</span>
                                 <input name="txtdescripcion" type="text"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>precio</span>
-                                <input name="txtprecio" type="number"
+                                <span>Modelo</span>
+                                <input name="txtmodelo" type="text"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Color</span>
+                                <select id="colorSelect" name="txtmodelo" onchange="changeColor()"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                    <option value="">Selecciona un color</option>
+                                    <option value="#FF0000">Rojo</option>
+                                    <option value="#00FF00">Verde</option>
+                                    <option value="#0000FF">Azul</option>
+                                    <!-- Agrega más colores según sea necesario -->
+                                </select>
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Cantidad</span>
+                                <input name="txtmodelo" type="number" min="1" step="1"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Precio unitario</span>
+                                <input name="txtmodelo" type="number" min="1" step="0.01"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-center">
+                                <span>Factura</span>
+                                <input name="txtmodelo" type="checkbox"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+
+
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Aceptar
@@ -167,5 +203,10 @@
             // Oculta el modal
             modalEditarRegistro.classList.add('hidden');
         });
+
+        function changeColor() {
+            var select = document.getElementById('colorSelect');
+            select.style.color = select.value;
+        }
     </script>
 @stop

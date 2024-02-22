@@ -312,9 +312,16 @@ return [
             'can'  => 'manage-blog',
         ],
         [
-            'text'        => 'Principal',
+            'text'        => 'Venta productos',
             'route'         => 'inicio.index',
-            'icon'        => 'fas fa-home',
+            'icon'        => 'fas fa-shopping-cart',
+            'label'       => 0,
+            'label_color' => 'success',
+        ],
+        [
+            'text'        => 'Registro de servicios',
+            'route'         => 'servicios.index',
+            'icon'        => 'fas fa-shopping-bag',
             'label'       => 0,
             'label_color' => 'success',
         ],

@@ -13,11 +13,17 @@ return new class extends Migration
     {
         Schema::create('servicios', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre_de_servicio');
-            $table->text('descripcion');
+            $table->unsignedBigInteger('id_venta')->nullable();
+            $table->string('tipo_de_proyecto')->nullable();
+            $table->text('descripcion')->nullable();
+            $table->string('modelo')->nullable();
+            $table->string('color')->nullable();
+            $table->integer('cantidad')->nullable();
+            $table->decimal('precio_unitario', 8, 2);
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(1);
+            $table->foreign('id_venta')->references('id')->on('ventas');
         });
     }
 

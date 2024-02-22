@@ -18,8 +18,14 @@ class ServiciosFactory extends Factory
     {
         return [
             //
-            'nombre_de_servicio' => $this->faker->bs(),
-            'descripcion' => $this->faker->text(30)
+            'tipo_de_proyecto' => $this->faker->sentence(),
+            'id_venta' => $this->faker->numberBetween(1, 4),
+            'descripcion' => $this->faker->text(30),
+            'modelo' => $this->faker->sentence(),
+            'color' => $this->faker->safeColorName(),
+            'cantidad' => $this->faker->numberBetween(1, 100),
+            'precio_unitario' => $this->faker->randomFloat(2, 1, 20),
+            'estatus' => 1
         ];
     }
 }
