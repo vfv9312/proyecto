@@ -15,10 +15,13 @@ class ServiciosController extends Controller
     public function index()
     {
         //
-        $servicios = servicios::join('precios_servicios', 'servicios.id', '=', 'precios_servicios.id_servicio')
+        $servicios = servicios::join('ventas', 'ventas.id', '=', 'servicios.id_venta')
+            ->join('clientes', 'clientes.id', '=', 'ventas.id_cliente')
+            ->join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->where('servicios.estatus', 1)
-            ->select('servicios.nombre_de_servicio', 'servicios.descripcion', 'precios_servicios.precio')
-            ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
+            ->where('ventas.estatus', 1)
+            ->select('servicios.id_venta', 'servicios.tipo_de_proyecto', 'servicios.descripcion', 'servicios.modelo', 'servicios.color', 'servicios.cantidad', 'servicios.precio_unitario', 'personas.nombre as nombre_cliente', 'personas.apellido as apellido_cliente', 'ventas.created_at as fecha_creacion')
+            ->paginate(5);
 
         return view('servicios.index', compact('servicios'));
     }
@@ -28,6 +31,34 @@ class ServiciosController extends Controller
      */
     public function create(Request $request)
     {
+        $servicios = servicios::join('ventas', 'ventas.id', '=', 'servicios.id_venta')
+            ->join('clientes', 'clientes.id', '=', 'ventas.id_cliente')
+            ->join('personas', 'personas.id', '=', 'clientes.id_persona')
+            ->where('servicios.estatus', 1)
+            ->where('ventas.estatus', 1)
+            ->select('servicios.id_venta', 'servicios.tipo_de_proyecto', 'servicios.descripcion', 'servicios.modelo', 'servicios.color', 'servicios.cantidad', 'servicios.precio_unitario', 'personas.nombre as nombre_cliente', 'personas.apellido as apellido_cliente', 'ventas.created_at as fecha_creacion');
+
+        $empleados = DB::table('empleados')
+            ->join('personas', 'empleados.id_persona', '=', 'personas.id')
+            ->where('empleados.estatus', 1)
+            ->select('personas.nombre', 'personas.apellido', 'personas.telefono', 'empleados.id', 'empleados.rol_empleado')
+            ->get();
+
+        $clientes = DB::table('clientes')
+            ->join('personas', 'clientes.id_persona', '=', 'personas.id')
+            ->where('clientes.estatus', 1)
+            ->select('personas.nombre', 'personas.apellido', 'personas.telefono', 'clientes.id')
+            ->get();
+
+        $direccionesCliente = DB::table('clientes')
+            ->join('direcciones_clientes', 'clientes.id', '=', 'direcciones_clientes.id_cliente')
+            ->join('direcciones', 'direcciones_clientes.id_direccion', '=', 'direcciones.id')
+            ->where('clientes.estatus', 1)
+            ->orderBy('direcciones.created_at', 'desc')
+            ->select('clientes.id', 'direcciones.direccion')
+            ->get();
+
+        return view('servicios.crear', compact('servicios', 'empleados', 'clientes', 'direccionesCliente'));
     }
 
     /**

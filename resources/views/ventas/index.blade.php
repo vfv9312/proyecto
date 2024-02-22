@@ -3,7 +3,7 @@
 @section('title', 'Venta')
 
 @section('content_header')
-    <h1>Venta</h1>
+    <h1>Ventas</h1>
 @stop
 
 @section('content')
@@ -22,11 +22,7 @@
                 {{ session('incorrect') }}
             </div>
         @endif
-        <!-- boton anadir producto-->
-        <button id="abrirnModalRegisrarProducto"
-            class=" mb-4 bg-gradient-to-r from-green-500 via-green-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-full">
-            Añadir producto
-        </button>
+
         <!--Hacemos responsivo el modal-->
         <!-- Modal -->
         <div id="modalRegistrarProducto"
@@ -139,11 +135,11 @@
                     </td>
                     <td>
 
-                        <button onclick="location.href=''
+                        <button onclick="location.href=''"
                             class="abrirModalEditar border rounded
                             px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200
                             ease-in-out">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-eye"></i>
                         </button>
 
                     </td>
@@ -153,7 +149,7 @@
                             @method('PUT')
                             <button
                                 class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                                <i class="fas fa-trash"></i></button>
+                                <i class="fas fa-ban"></i></button>
                         </form>
                     </td>
 
