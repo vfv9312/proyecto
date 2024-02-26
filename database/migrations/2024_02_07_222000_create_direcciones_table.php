@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('direcciones', function (Blueprint $table) {
             $table->id();
-            $table->string('direccion')->nullable();
+            $table->unsignedBigInteger('id_ubicacion')->nullable();
+            $table->string('calle')->nullable();
+            $table->string('num_exterior')->nullable();
+            $table->string('num_interior')->nullable();
             $table->point('cordenadas')->nullable();
             $table->text('referencia')->nullable();
-            $table->tinyInteger('estatus')->default(1);
             $table->softDeletes();
             $table->timestamps();
+            $table->tinyInteger('estatus')->default(1);
+            $table->foreign('id_ubicacion')->references('id')->on('catalago_ubicaciones');
         });
     }
 
