@@ -54,5 +54,5 @@
     </div>
 
     <div class="flex justify-center">
-        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">Enviar</button>
+        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md">Carrito</button>
     </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\precios_servicios;
 use App\Models\servicios;
+use App\Models\ventas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -68,26 +69,30 @@ class ServiciosController extends Controller
     {
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
-            // Insertar en la tabla 'productos'
-            $servicio = servicios::create([
-                'nombre_de_servicio' => $request->txtservicio,
-                'descripcion' => $request->txtdescripcion,
-                'estatus' => 1
+
+            $venta = ventas::create([
+                'estatus' => 2
             ]);
 
-            // Insertar en la tabla 'precios_productos' usando el ID del producto
-            $precioServicio = precios_servicios::create([
-                'id_servicio' => $servicio->id,
-                'precio' => $request->txtprecio,
-                'estatus' => 1
+            // Insertar en la tabla 'servicios'
+            $servicio = servicios::create([
+                'id_venta' => $venta->id,
+                'tipo_de_proyecto' => $request->txttio_producto,
+                'descripcion' => $request->txtdescripcion,
+                'modelo' => $request->txtmodelo,
+                'color' => $request->txtcolor,
+                'cantidad' => $request->txtcantidad,
+                'precio_unitario' => $request->txtprecio_unitario,
+                'estatus' => 2
             ]);
+
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
             return $th->getMessage();
-            $precioServicio = 0;
+            $servicio = false;
         }
-        if ($precioServicio == true) {
+        if ($servicio) {
             session()->flash("correcto", "Producto registrado correctamente");
             return redirect()->route('servicios.index');
         } else {

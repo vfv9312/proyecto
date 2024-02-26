@@ -19,7 +19,7 @@
                          @csrf
                          <label class="text-sm text-gray-500 flex flex-col items-start">
                              <span>Tipo de producto</span>
-                             <select name="txtservicio"
+                             <select name="txttio_producto"
                                  class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                  <option value="">Selecciona un tipo de producto</option>
                                  <!-- Aquí puedes agregar las opciones que necesites -->
@@ -40,7 +40,7 @@
                          </label>
                          <label class="text-sm text-gray-500 flex flex-col items-start">
                              <span>Color</span>
-                             <select id="colorSelect" name="txtmodelo" onchange="changeColor()"
+                             <select id="colorSelect" name="txtcolor" onchange="changeColor()"
                                  class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                  <option value="">Selecciona un color</option>
                                  <option value="#FF0000">Rojo</option>
@@ -51,23 +51,23 @@
                          </label>
                          <label class="text-sm text-gray-500 flex flex-col items-start">
                              <span>Cantidad</span>
-                             <input name="txtmodelo" type="number" min="1" step="1"
+                             <input name="txtcantidad" type="number" min="1" step="1"
                                  class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                          </label>
                          <label class="text-sm text-gray-500 flex flex-col items-start">
                              <span>Precio unitario</span>
-                             <input name="txtmodelo" type="number" min="1" step="0.01"
+                             <input name="txtprecio_unitario" type="number" min="1" step="0.01"
                                  class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                          </label>
                          <label class="text-sm text-gray-500 flex flex-col items-center">
                              <span>Factura</span>
-                             <input name="txtmodelo" type="checkbox"
+                             <input name="txtfactura" type="checkbox"
                                  class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                          </label>
 
 
                          <button type="submit" id="enviarmodal"
-                             class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                             class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                              Agregar servicio
                          </button>
 

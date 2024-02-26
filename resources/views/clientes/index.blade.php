@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Cliente')
 
 @section('content_header')
     <h1>Clientes</h1>
@@ -22,12 +22,12 @@
             </div>
         @endif
         <!-- boton anadir producto-->
-        <button id="abrirnModalRegisrarProducto"
+        <button id="abrirnModalRegisrarCliente"
             class=" mb-4 bg-gradient-to-r from-green-500 via-green-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-full">
             Añadir producto
         </button>
         <!-- Modal -->
-        <div id="modalRegistrarProducto" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
+        <div id="modalRegistrarCliente" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
             role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Fondo del modal -->
@@ -39,50 +39,57 @@
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <h3 class=" text-center text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Registrar Producto
+                            Registrar cliente
                         </h3>
 
-                        <form method="POST" action="{{ route('productos.create') }}"
+                        <form method="POST" action="{{ route('clientes.store') }}"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Nombre comercial</span>
+                                <span>Nombre del cliente</span>
                                 <input name="txtnombre"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Modelo</span>
-                                <input name="txtmodelo"
+                                <span>Apellidos</span>
+                                <input name="txtapellido"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Color</span>
-                                <input name="txtcolor"
+                                <span>Telefono</span>
+                                <input name="txttelefono" pattern="\d{10}"
+                                    title="Por favor ingresa exactamente 10 dígitos del numero telefonico"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Marca</span>
-                                <input name="txtmarca"
+                                <span>Correo electronico</span>
+                                <input type="email" name="txtemail"
+                                    title="Por favor ingresa un correo electronico valido ejemplo example@yahoo.com"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>precio</span>
-                                <input name="txtprecio" type="number"
+                                <span>Dirección</span>
+                                <input name="txtdireccion" type="text"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Referencia</span>
+                                <input name="txtreferencia" type="text"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>fecha de nacimiento</span>
+                                <input name="txtfecha_nacimiento" type="date"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Descripcion</span>
+                                <span>Comentarios</span>
                                 <input name="txtdescripcion" type="text"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Fotografia</span>
-                                <input type="file"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10" />
                             </label>
                             <button type="submit" id="enviarmodal"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                                Aceptar
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                Guardar cliente
                             </button>
 
                         </form>
@@ -104,7 +111,6 @@
                 <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
                 <tr class="text-black uppercase text-xs  font-bold leading-normal">
                     <td class="py-3 px-6 text-left border-r">Nombre</td>
-                    <td class="py-3 px-6 text-left border-r">Apellido</td>
                     <td class="py-3 px-6 text-left border-r">Telefono</td>
                     <td class="py-3 px-6 text-left border-r">Correo electronico</td>
                     <td class="py-3 px-6 text-left border-r">Direccion</td>
@@ -115,10 +121,7 @@
                 @foreach ($clientes as $cliente)
                     <tr class= " border-b border-gray-200 text-sm">
                         <td class=" px-6 py-4">
-                            {{ $cliente->nombre }}</td>
-                        <td class="px-6 py-4">
-                            {{ $cliente->apellido }}
-                        </td>
+                            {{ $cliente->nombre }} {{ $cliente->apellido }}</td>
                         <td class="px-6 py-4">
                             {{ $cliente->telefono }}
                         </td>
@@ -128,11 +131,29 @@
                         </td>
 
                         <td class="px-6 py-4">
-                            {{ $cliente->direccion }}
+                            <select name="direccion" class="focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                @php
+                                    //una bandera
+                                    $direccionEncontrada = false;
+                                @endphp
+                                @foreach ($direcciones as $direccion)
+                                    @if ($cliente->id == $direccion->id)
+                                        <option value="{{ $direccion->id }}">{{ $direccion->direccion }}</option>
+                                        @php
+                                            //si hay datos en direcciones la bandera es true pero si no pasa ningun dato en el for entonces no hay datos
+                                            $direccionEncontrada = true;
+                                        @endphp
+                                    @endif
+                                @endforeach
+                                @if (!$direccionEncontrada)
+                                    <!--si es false entoces imprime No hay registros-->
+                                    <option value="">No hay direcciones de registros</option>
+                                @endif
+                            </select>
                         </td>
 
                         <td>
-                            <button
+                            <button onclick="window.location='{{ route('clientes.edit', $cliente->id) }}'"
                                 class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -163,6 +184,29 @@
 
 @section('js')
     <script>
-        console.log('Hi!');
+        //Oculta los elementos de alerta despues de 3 segundos
+        window.setTimeout(function() {
+            var alertCorrecto = document.getElementById('alert-correcto');
+            var alertIncorrect = document.getElementById('alert-incorrect');
+            if (alertCorrecto) alertCorrecto.style.display = 'none';
+            if (alertIncorrect) alertIncorrect.style.display = 'none';
+        }, 3000);
+
+        // Obtén los elementos del DOM
+        const modalRegistrarEmpleado = document.querySelector('#modalRegistrarCliente')
+        const abrirnModalRegisrarEmpleado = document.querySelector('#abrirnModalRegisrarCliente');
+
+        const cancelarModal = document.querySelector('.cerrarmodal');
+
+        //Abre el modal para registrar un producto
+        abrirnModalRegisrarEmpleado.addEventListener('click', function() {
+            modalRegistrarEmpleado.classList.remove('hidden');
+        });
+
+        // Escucha el evento de click en el botón cancelar Modal de registro
+        cancelarModal.addEventListener('click', function() {
+            // Oculta el modal
+            modalRegistrarEmpleado.classList.add('hidden');
+        });
     </script>
 @stop

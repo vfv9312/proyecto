@@ -57,7 +57,8 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>telefono</span>
-                                <input name="txttelefono"
+                                <input name="txttelefono" pattern="\d{10}"
+                                    title="Por favor ingresa exactamente 10 dígitos del numero telefonico"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -81,8 +82,8 @@
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <button type="submit" id="enviarmodal"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                                Aceptar
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                Guardar empleado
                             </button>
 
                         </form>
@@ -105,19 +106,15 @@
                 <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
                 <tr class=" text-black uppercase text-xs  font-bold leading-normal">
                     <td class="py-3 px-6 text-left border-r">Nombre</td>
-                    <td class="py-3 px-6 text-left border-r">Apellido</td>
                     <td class="py-3 px-6 text-left border-r">Rol</td>
                     <td class="py-3 px-6 text-left border-r">Telefono</td>
-                    <td class="py-3 px-6 text-left border-r">Empleado</td>
+                    <td class="py-3 px-6 text-left border-r">Correo electronico</td>
                     <td class="py-3 px-6 text-left border-r">Imagen</td>
                 </tr>
                 @foreach ($empleados as $empleado)
                     <tr class= " border-b border-gray-200 text-sm">
                         <td class=" px-6 py-4">
-                            {{ $empleado->nombre }}</td>
-                        <td class="px-6 py-4">
-                            {{ $empleado->apellido }}
-                        </td>
+                            {{ $empleado->nombre }} {{ $empleado->apellido }}</td>
                         <td class="px-6 py-4">
                             {{ $empleado->rol_empleado }}
                         </td>

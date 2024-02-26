@@ -61,18 +61,66 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Color</span>
-                                <input name="txtcolor"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                <select name="txtcolor"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                    <option value="">Selecciona un color</option>
+                                    <option value="Negro">Negro</option>
+                                    <option value="Cian">Cian</option>
+                                    <option value="Cian">Cyan Light</option>
+                                    <option value="Magenta">Magenta</option>
+                                    <option value="Magenta">Magenta</option>
+                                    <option value="Amarillo">Magenta Light</option>
+                                    <option value="CMY">CMA</option>
+                                    <!--C: Cyan (cian) , M: Magenta, Y: Yellow (amarillo), -->
+                                    <option value="CMY_Light">CMA Light</option>
+                                    <option value="CMYK">CMAN</option><!--K: Key (negro)-->
+                                </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Marca</span>
-                                <input name="txtmarca"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                <select name="txtmarca"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                    <option value="">Selecciona una marca</option>
+                                    <option value="Brady">Brady</option>
+                                    <option value="Brother">Brother</option>
+                                    <option value="Canon">Canon</option>
+                                    <option value="Citizen">Citizen</option>
+                                    <option value="Dascom">Dascom</option>
+                                    <option value="Dymo">Dymo</option>
+                                    <option value="Epson">Epson</option>
+                                    <option value="Evolis">Evolis</option>
+                                    <option value="Fargo">Fargo</option>
+                                    <option value="Fujitsu">Fujitsu</option>
+                                    <option value="Gestetner">Gestetner</option>
+                                    <option value="Godex">Godex</option>
+                                    <option value="HP">HP</option>
+                                    <option value="Konica Minolta">Konica Minolta</option>
+                                    <option value="Kyocera">Kyocera</option>
+                                    <option value="Lanier">Lanier</option>
+                                    <option value="Lexmark">Lexmark</option>
+                                    <option value="Magicard">Magicard</option>
+                                    <option value="OKI">OKI</option>
+                                    <option value="Olivetti">Olivetti</option>
+                                    <option value="Panasonic">Panasonic</option>
+                                    <option value="Ricoh">Ricoh</option>
+                                    <option value="Samsung">Samsung</option>
+                                    <option value="SATO">SATO</option>
+                                    <option value="Sharp">Sharp</option>
+                                    <option value="Tally">Tally</option>
+                                    <option value="Toshiba">Toshiba</option>
+                                    <option value="TSC">TSC</option>
+                                    <option value="Xerox">Xerox</option>
+                                    <option value="Zebra">Zebra</option>
+                                    <!-- Agrega más marcas según sea necesario -->
+                                    <!-- Agregar el mismo en la vista de edicion -->
+                                    <!--no lo puse en la base de datos por que ya lo querian ya-->
+                                </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>precio</span>
-                                <input name="txtprecio" type="number"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                <input name="txtprecio" type="number" min="1"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                                    required />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Descripcion</span>
@@ -216,6 +264,14 @@
 
             // Oculta el modal
             modalEditarRegistro.classList.add('hidden');
+        });
+
+        document.querySelector('input[name="txtprecio"]').addEventListener('input', function() {
+            if (this.value < 1) {
+                this.setCustomValidity('El precio debe ser mayor que 0');
+            } else {
+                this.setCustomValidity('');
+            }
         });
     </script>
 @stop
