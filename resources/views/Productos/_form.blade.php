@@ -47,3 +47,4 @@
     <a href="{{ route('productos.index') }}" class="text-indigo-600">Volver</a>
     <input type="submit" value="Enviar" class="bg-gray-800 text-white rounded px-4 py-2">
 </div>
+<a href="{{ route('clientes.index') }}" class="text-indigo-600">Volver</a>

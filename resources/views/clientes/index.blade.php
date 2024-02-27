@@ -24,7 +24,7 @@
         <!-- boton anadir producto-->
         <button id="abrirnModalRegisrarCliente"
             class=" mb-4 bg-gradient-to-r from-green-500 via-green-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-full">
-            Añadir producto
+            Añadir cliente
         </button>
         <!-- Modal -->
         <div id="modalRegistrarCliente" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
@@ -60,6 +60,9 @@
                                 <input name="txttelefono" pattern="\d{10}"
                                     title="Por favor ingresa exactamente 10 dígitos del numero telefonico"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                @error('txttelefono')
+                                    <span class="text-red-500">{{ $message }}</span>
+                                @enderror
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Correo electronico</span>
@@ -68,23 +71,39 @@
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Dirección</span>
-                                <input name="txtdireccion" type="text"
+                                <span>RFC</span>
+                                <input name="txtrfc" type="text"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Colonia</span>
+                                <select id="coloniaSelect" name="txtcolonia"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10">
+                                    <option value="">Selecciona la colonia o Barrio</option>
+                                    @foreach ($catalogo_colonias as $municipio)
+                                        <option value="{{ $municipio->id }}">{{ $municipio->localidad }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Calles</span>
+                                <input name="txtcalle" type="text"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Numero exterior</span>
+                                <input name="txtnum_exterior" type="text"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10" />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Numero interior</span>
+                                <input name="txtnum_interior" type="text"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Referencia</span>
                                 <input name="txtreferencia" type="text"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>fecha de nacimiento</span>
-                                <input name="txtfecha_nacimiento" type="date"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Comentarios</span>
-                                <input name="txtdescripcion" type="text"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10" />
                             </label>
                             <button type="submit" id="enviarmodal"
@@ -113,6 +132,7 @@
                     <td class="py-3 px-6 text-left border-r">Nombre</td>
                     <td class="py-3 px-6 text-left border-r">Telefono</td>
                     <td class="py-3 px-6 text-left border-r">Correo electronico</td>
+                    <td class="py-3 px-6 text-left border-r">RFC</td>
                     <td class="py-3 px-6 text-left border-r">Direccion</td>
                 </tr>
 
@@ -129,41 +149,67 @@
                         <td class="px-6 py-4">
                             {{ $cliente->email }}
                         </td>
-
                         <td class="px-6 py-4">
-                            <select name="direccion" class="focus:ring-2 focus:ring-blue-300 focus:outline-none">
-                                @php
-                                    //una bandera
-                                    $direccionEncontrada = false;
-                                @endphp
-                                @foreach ($direcciones as $direccion)
-                                    @if ($cliente->id == $direccion->id)
-                                        <option value="{{ $direccion->id }}">{{ $direccion->direccion }}</option>
-                                        @php
-                                            //si hay datos en direcciones la bandera es true pero si no pasa ningun dato en el for entonces no hay datos
-                                            $direccionEncontrada = true;
-                                        @endphp
+                            {{ $cliente->comentario }}
+                        </td>
+                        <!--Formulario para enviar a editar el select de la direccion-->
+                        <form action="{{ route('clientes.edit', $cliente->id) }}" method="get">
+                            <td class="px-6 py-4">
+                                <select id="direccionSelect" name="direccion"
+                                    class="focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                    @php
+                                        //una bandera
+                                        $direccionEncontrada = false;
+                                    @endphp
+                                    <!--for de direcciones-->
+                                    @foreach ($direcciones as $direccion)
+                                        <!--si id cliente es igual al id de direcciones que es el cliente entra-->
+                                        @if ($cliente->id == $direccion->id)
+                                            <option value="{{ $direccion->id_direccion }}">
+                                                Col.{{ $direccion->localidad }}; {{ $direccion->calle }}
+                                                #{{ $direccion->num_exterior }}</option>
+                                            @php
+                                                //si hay datos en direcciones la bandera es true pero si no pasa ningun dato en el for entonces no hay datos
+                                                $direccionEncontrada = true;
+                                                $valor = $direccion->id_direccion;
+                                            @endphp
+                                        @endif
+                                    @endforeach
+                                    @if (!$direccionEncontrada)
+                                        <!--si es false entoces imprime No hay registros-->
+                                        <option value="">No hay direcciones de registros</option>
                                     @endif
-                                @endforeach
-                                @if (!$direccionEncontrada)
-                                    <!--si es false entoces imprime No hay registros-->
-                                    <option value="">No hay direcciones de registros</option>
-                                @endif
-                            </select>
-                        </td>
-
+                                </select>
+                            </td>
+                            <td>
+                                <!--Edtiamos un cliente-->
+                                <button type="submit"
+                                    class=" border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out"
+                                    title="Editar cliente">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </form>
                         <td>
-                            <button onclick="window.location='{{ route('clientes.edit', $cliente->id) }}'"
-                                class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
-                                <i class="fas fa-edit"></i>
+                            <!--Agregamos mas direcciones a un usuario-->
+                            <button onclick="window.location='{{ route('direcciones.edit', $cliente->id) }}'"
+                                class="border rounded px-6 py-3 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out"
+                                title="Agregar más direcciones">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <i class="fas fa-plus"></i>
                             </button>
-
                         </td>
                         <td>
-                            <button
-                                class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <!--Desactivamos al cliente-->
+                            <form method="POST" action="{{ route('clientes.desactivar', $cliente->id) }}">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit"
+                                    class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out"
+                                    title="Eliminar cliente">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </td>
 
                     </tr>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\DireccionesClientesController;
 use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ProductosController;
@@ -66,8 +67,14 @@ Route::resource('servicios', ServiciosController::class)->middleware(['auth', 'v
 Route::resource('empleados', EmpleadosController::class)->middleware(['auth', 'verified']);
 Route::put('/empleados/{id}/desactivar', [EmpleadosController::class, 'desactivar'])->name('empleados.desactivar')->middleware(['auth', 'verified']);
 
-Route::resource('clientes', ClientesController::class)->middleware(['auth', 'verified']);
 //Lista de clientes
+Route::resource('clientes', ClientesController::class)->middleware(['auth', 'verified']);
+Route::put('/clientes/{id}/desactivar', [ClientesController::class, 'desactivar'])->name('clientes.desactivar')->middleware(['auth', 'verified']);
+
+
+//Lista de direcciones
+Route::resource('direcciones', DireccionesClientesController::class)->middleware(['auth', 'verified']);
+
 //Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
 
 Route::resource('ventas', VentasController::class)->middleware(['auth', 'verified']);

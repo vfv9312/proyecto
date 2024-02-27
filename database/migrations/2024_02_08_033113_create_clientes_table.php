@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_persona');
-            $table->text('comentario');
+            $table->text('comentario')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(1);

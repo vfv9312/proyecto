@@ -1,17 +1,16 @@
 @extends('adminlte::page')
 
-@section('title', 'Editar empleado')
+@section('title', 'Agregar direccion')
 
 @section('content_header')
-    <h1>Editar cliente</h1>
+    <h1>Agregar direccion</h1>
 @stop
 
 @section('content')
     <form class="mt-8 flex flex-col justify-center items-center"
-        action="{{ route('clientes.update', $cliente, $persona, $direcciones, $catalogo_colonias) }}" method="POST"
-        enctype="multipart/form-data">
+        action="{{ route('direcciones.update', $cliente, $catalogo_colonias) }}" method="POST">
         @method('PUT')
-        @include('clientes._form')
+        @include('direcciones._form')
     </form>
 @stop
 
