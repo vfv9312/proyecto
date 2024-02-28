@@ -193,7 +193,7 @@
                         <td>
                             <!--Agregamos mas direcciones a un usuario-->
                             <button onclick="window.location='{{ route('direcciones.edit', $cliente->id) }}'"
-                                class="border rounded px-6 py-3 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out"
+                                class="border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out"
                                 title="Agregar más direcciones">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <i class="fas fa-plus"></i>
@@ -226,6 +226,14 @@
     <link rel="stylesheet" href="/css/admin_custom.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <!-- Incluye jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Incluye Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Incluye Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 @stop
 
 @section('js')
@@ -253,6 +261,10 @@
         cancelarModal.addEventListener('click', function() {
             // Oculta el modal
             modalRegistrarEmpleado.classList.add('hidden');
+        });
+        //con esto buscamos rapido con lo que escribimos en el select lo que necesitamos
+        $(document).ready(function() {
+            $('#coloniaSelect').select2();
         });
     </script>
 @stop

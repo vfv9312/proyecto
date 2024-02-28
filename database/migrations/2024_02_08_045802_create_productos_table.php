@@ -14,15 +14,18 @@ return new class extends Migration
     {
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_marca');
+            $table->unsignedBigInteger('id_tipo');
             $table->string('nombre_comercial');
             $table->string('modelo')->nullable();
             $table->string('color')->nullable();
-            $table->string('marca')->nullable();
             $table->text('descripcion')->nullable();
             $table->string('fotografia')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(1);
+            $table->foreign('id_marca')->references('id')->on('marcas');
+            $table->foreign('id_tipo')->references('id')->on('tipos');
         });
     }
 
