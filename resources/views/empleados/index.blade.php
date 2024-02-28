@@ -29,7 +29,7 @@
         <!-- Modal -->
         <div id="modalRegistrarEmpleado" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
             role="dialog" aria-modal="true">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="flex items-start justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Fondo del modal -->
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
@@ -62,25 +62,27 @@
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Correo Electronico</span>
-                                <input name="txtemail"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Fecha de nacimiento</span>
-                                <input name="txtfecha_nacimiento" type="date"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Rol del empleado</span>
                                 <input name="txtrol" type="text"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Fotografia</span>
-                                <input type="file" name="file" accept="image/*"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
+                            <!---Si el cliente cambia de opinion y quiere agregar datos  quitar comentario-->
+                            <!-- roles : admin,Ventas,Producción, Almacén, Tráfico, Caja | tipos de ordenes : Orden de Servicio (Recepción), Orden de Pedido a Domicilio, Orden de Venta, Orden de Recolección <label class="text-sm text-gray-500 flex flex-col items-start">
+                                                            <span>Correo Electronico</span>
+                                                            <input name="txtemail"
+                                                                class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                                        </label>
+                                                        <label class="text-sm text-gray-500 flex flex-col items-start">
+                                                            <span>Fecha de nacimiento</span>
+                                                            <input name="txtfecha_nacimiento" type="date"
+                                                                class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                                        </label>
+
+                                                        <label class="text-sm text-gray-500 flex flex-col items-start">
+                                                            <span>Fotografia</span>
+                                                            <input type="file" name="file" accept="image/*"
+                                                                class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                                        </label>-->
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Guardar empleado

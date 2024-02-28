@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('empleados', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_persona');
-            $table->unsignedBigInteger('id_rol');
-            $table->text('comentario');
-            $table->string('fotografia')->nullable();
+            $table->string('nombre');
+            $table->tinyInteger('permisos')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(1);
-            $table->foreign('id_persona')->references('id')->on('personas');
-            $table->foreign('id_rol')->references('id')->on('roles');
         });
     }
 
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('empleados');
+        Schema::dropIfExists('roles');
     }
 };
