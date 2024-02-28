@@ -10,37 +10,44 @@
         value="{{ $persona->apellido }}" />
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
-    <span>Rol</span>
-    <input name="txtrol" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $empleado->rol_empleado }}" />
+    <span>Rol empleado</span>
+
+    <select name="txtrol" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+        <option value="{{ $rol->id_rol }}">{{ $rol->nombre }}</option>
+        @foreach ($roles as $rol)
+            <option value="{{ $rol->id }}" {{ $rol->nombre }}>{{ $rol->nombre }}</option>
+        @endforeach
+    </select>
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Telefono</span>
     <input name="txttelefono" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
         value="{{ $persona->telefono }}" />
 </label>
+
+<!--
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Corre electronico</span>
     <input name="txtemail" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $persona->email }}" />
+        value=" $persona->email " />
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Fecha de nacimiento</span>
     <input name="txtfecha_nacimiento" type="date"
         class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $persona->fecha_nacimiento }}" />
+        value=" $persona->fecha_nacimiento " />
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Fotografia</span>
     <input type="file" name="file" accept="image/*"
         class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
     @if ($empleado->fotografia)
-        <img class=" w-52" src="{{ $empleado->fotografia }}" alt="Fotografia del producto" />
-    @endif
+<img class=" w-52" src=" $empleado->fotografia " alt="Fotografia del producto" />
+@endif
     @error('file')
-        <small class=" text-danger">{{ $message }} </small>
-    @enderror
-</label>
+    <small class=" text-danger"> $message  </small>
+@enderror
+</label>-->
 
 <div class="flex justify-between items-center">
     <a href="{{ route('empleados.index') }}" class="text-indigo-600">Volver</a>

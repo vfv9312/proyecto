@@ -63,26 +63,30 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Rol del empleado</span>
-                                <input name="txtrol" type="text"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                <select name="txtrol"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                    @foreach ($roles as $rol)
+                                        <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
+                                    @endforeach
+                                </select>
                             </label>
                             <!---Si el cliente cambia de opinion y quiere agregar datos  quitar comentario-->
-                            <!-- roles : admin,Ventas,Producción, Almacén, Tráfico, Caja | tipos de ordenes : Orden de Servicio (Recepción), Orden de Pedido a Domicilio, Orden de Venta, Orden de Recolección <label class="text-sm text-gray-500 flex flex-col items-start">
-                                                            <span>Correo Electronico</span>
-                                                            <input name="txtemail"
-                                                                class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                                        </label>
-                                                        <label class="text-sm text-gray-500 flex flex-col items-start">
-                                                            <span>Fecha de nacimiento</span>
-                                                            <input name="txtfecha_nacimiento" type="date"
-                                                                class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                                        </label>
+                            <!-- tipos de ordenes : Orden de Servicio (Recepción), Orden de Pedido a Domicilio, Orden de Venta, Orden de Recolección <label class="text-sm text-gray-500 flex flex-col items-start">
+                                                                                                            <span>Correo Electronico</span>
+                                                                                                            <input name="txtemail"
+                                                                                                                class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                                                                                        </label>
+                                                                                                        <label class="text-sm text-gray-500 flex flex-col items-start">
+                                                                                                            <span>Fecha de nacimiento</span>
+                                                                                                            <input name="txtfecha_nacimiento" type="date"
+                                                                                                                class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                                                                                        </label>
 
-                                                        <label class="text-sm text-gray-500 flex flex-col items-start">
-                                                            <span>Fotografia</span>
-                                                            <input type="file" name="file" accept="image/*"
-                                                                class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                                        </label>-->
+                                                                                                        <label class="text-sm text-gray-500 flex flex-col items-start">
+                                                                                                            <span>Fotografia</span>
+                                                                                                            <input type="file" name="file" accept="image/*"
+                                                                                                                class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                                                                                        </label>-->
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Guardar empleado
@@ -110,38 +114,44 @@
                     <td class="py-3 px-6 text-left border-r">Nombre</td>
                     <td class="py-3 px-6 text-left border-r">Rol</td>
                     <td class="py-3 px-6 text-left border-r">Telefono</td>
-                    <td class="py-3 px-6 text-left border-r">Correo electronico</td>
-                    <td class="py-3 px-6 text-left border-r">Imagen</td>
+                    <!--El dueño no quiere correo o imagen-->
+                    <!--
+                                                        <td class="py-3 px-6 text-left border-r">Correo electronico</td>
+                                                        <td class="py-3 px-6 text-left border-r">Imagen</td>-->
                 </tr>
                 @foreach ($empleados as $empleado)
                     <tr class= " border-b border-gray-200 text-sm">
                         <td class=" px-6 py-4">
                             {{ $empleado->nombre }} {{ $empleado->apellido }}</td>
                         <td class="px-6 py-4">
-                            {{ $empleado->rol_empleado }}
+                            {{ $empleado->nombreRol }}
                         </td>
                         <td class="px-6 py-4">
                             {{ $empleado->telefono }}
                         </td>
+                        <input type="hidden" name="miDato" value="{{ $empleado->id_rol }}">
+                        <!--el dueño no queria foto y email, pero si cambia de opinion aqui esta-->
+                        <!--
+                                                                <td class="px-6 py-4">
+                                                                     $empleado->email
+                                                                </td>
+                                                                <td class="px-6 py-4 flex justify-center items-center">
+                                                                    <img class=" w-20" src= $empleado->fotografia >
+                                                                </td>
+                                                            -->
 
-                        <td class="px-6 py-4">
-                            {{ $empleado->email }}
-                        </td>
-                        <td class="px-6 py-4 flex justify-center items-center">
-                            <img class=" w-20" src={{ $empleado->fotografia }}>
-                        </td>
-                        <td>
+                        <td class="flex">
                             <button onclick="location.href='{{ route('empleados.edit', $empleado->id) }}';"
-                                class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
+                                class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out"
+                                title="Editar empleado">
                                 <i class="fas fa-edit"></i>
                             </button>
-                        </td>
-                        <td>
                             <form action="{{ route('empleados.desactivar', $empleado->id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
                                 <button
-                                    class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
+                                    class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out"
+                                    title="Eliminar empleado">
                                     <i class="fas fa-trash"></i></button>
                             </form>
                         </td>

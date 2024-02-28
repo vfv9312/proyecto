@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\empleados;
 use App\Models\personas;
+use App\Models\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -17,13 +18,16 @@ class EmpleadosController extends Controller
     {
         //
         $empleados = empleados::join('personas', 'personas.id', '=', 'empleados.id_persona')
+            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('empleados.estatus', 1)
             ->where('personas.estatus', 1)
-            ->select('empleados.id', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento', 'empleados.rol_empleado', 'empleados.fotografia')
+            ->select('empleados.id', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento', 'empleados.id_rol', 'roles.nombre as nombreRol', 'empleados.fotografia')
             ->orderBy('empleados.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
-        return view('empleados.index', compact('empleados'));
+        $roles = Roles::all();
+
+        return view('empleados.index', compact('empleados', 'roles'));
     }
 
     /**
@@ -70,9 +74,9 @@ class EmpleadosController extends Controller
             // Insertar en la tabla 'empleados' usando el ID de persona
             $empleado = empleados::create([
                 'id_persona' => $persona->id,
-                'rol_empleado' => $request->txtrol,
+                'id_rol' => $request->txtrol,
                 'comentario' => 'ninguno',
-                'fotografia' => $url,
+                'fotografia' => null, //cambiar por $url si ya quiere foto
                 'estatus' => 1
             ]);
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
@@ -106,12 +110,20 @@ class EmpleadosController extends Controller
     public function edit(empleados $empleado)
     {
 
+
         //conseguir al primer empleado que esta con estatus 1 y tengan el mismo id_empleado
         $persona = personas::where('id', $empleado->id_persona)
             ->where('estatus', 1)
             ->first();
+        $rol = Roles::join('empleados', 'empleados.id_rol', '=', 'roles.id')
+            ->where('empleados.estatus', 1)
+            ->where('roles.id', $empleado->id_rol)
+            ->first();
+        $roles = Roles::all();
+
+
         //enviar los dos datos a la vista
-        return view('empleados.edit', compact('empleado', 'persona'));
+        return view('empleados.edit', compact('empleado', 'persona', 'rol', 'roles'));
     }
 
     /**
@@ -119,14 +131,17 @@ class EmpleadosController extends Controller
      */
     public function update(Request $request, empleados $empleado)
     {
+
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
             //Actualizar la tabla empleado
             $empleadoActualizado = $empleado->update([
-                'rol_empleado' => $request->txtrol,
+                'id_rol' => $request->txtrol,
                 'comentario' => 'ninguno',
                 'estatus' => 1,
             ]);
+
+
 
             //para validar que sea una imagen el archivo cargado
             $request->validate([
@@ -144,7 +159,7 @@ class EmpleadosController extends Controller
                 $datosProducto['fotografia'] = $file;
 
                 // Actualizar el producto con la nueva fotografía
-                $empleado->update(['fotografia' => $url]);
+                $empleado->update(['fotografia' => null]); //cambiarlo por $url si quieren cargar una foto
             }
 
             $personasActualizadas = personas::where('id', $empleado->id_persona)

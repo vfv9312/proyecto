@@ -7,8 +7,9 @@
 @stop
 
 @section('content')
-    <form class="mt-8 flex flex-col justify-center items-center" action="{{ route('empleados.update', $empleado, $persona) }}"
-        method="POST" enctype="multipart/form-data">
+    <form class="mt-8 flex flex-col justify-center items-center"
+        action="{{ route('empleados.update', $empleado, $persona, $rol, $roles) }}" method="POST"
+        enctype="multipart/form-data">
         @method('PUT')
         @include('empleados._form')
     </form>
