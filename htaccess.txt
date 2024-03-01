@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+Options +SymLinksIfOwnerMatch
+RewriteEngine On
+
+# Allow Installatron requests
+RewriteCond %{REQUEST_FILENAME} deleteme\.\w+\.php
+RewriteRule ^-$public/index.php[L]
+
+RewriteRule ^((?!public/).*)$ public/$1 [L]
+ RewriteBase/
+
+<FilesMatch "\.(php4|php5|php3|php2|php|phtml)$">
+SetHandler application/x-lsphp82
+</FilesMatch>
+
+
+
+ 
+  
+  
+</IfModule>

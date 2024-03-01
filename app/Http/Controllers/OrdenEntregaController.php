@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\precios_servicios;
 use Illuminate\Http\Request;
 
-class PreciosServiciosController extends Controller
+class OrdenEntregaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -20,7 +18,7 @@ class PreciosServiciosController extends Controller
      */
     public function create()
     {
-        //
+        return view('Principal.ordenEntrega.index');
     }
 
     /**
@@ -34,7 +32,7 @@ class PreciosServiciosController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(precios_servicios $precios_servicios)
+    public function show(string $id)
     {
         //
     }
@@ -42,7 +40,7 @@ class PreciosServiciosController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(precios_servicios $precios_servicios)
+    public function edit(string $id)
     {
         //
     }
@@ -50,7 +48,7 @@ class PreciosServiciosController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, precios_servicios $precios_servicios)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -58,7 +56,7 @@ class PreciosServiciosController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(precios_servicios $precios_servicios)
+    public function destroy(string $id)
     {
         //
     }

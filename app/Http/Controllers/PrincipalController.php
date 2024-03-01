@@ -16,14 +16,15 @@ class PrincipalController extends Controller
 {
     //
     public function index()
-    {
+    {/*
         $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->where('productos.estatus', 1)
             ->where('precios_productos.estatus', 1)
             ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'productos.color', 'productos.marca', 'productos.fotografia', 'precios_productos.precio')
             ->orderBy('productos.updated_at', 'desc')->get();
 
-        return view('Principal.inicio', compact('productos'));
+        return view('Principal.inicio', compact('productos'));*/
+        return view('Principal.inicio');
     }
     /**
      * Show the form for creating a new resource.

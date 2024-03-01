@@ -11,13 +11,37 @@
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Color</span>
-    <input name="txtcolor" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $producto->color }}" />
+    <select name="txtcolor" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+        <option value="{{ $producto->color }}">{{ $producto->color }}</option>
+        <option value="Negro">Negro</option>
+        <option value="Cian">Cian</option>
+        <option value="Cian">Cyan Light</option>
+        <option value="Magenta">Magenta</option>
+        <option value="Magenta">Magenta</option>
+        <option value="Amarillo">Magenta Light</option>
+        <option value="CMY">CMA</option>
+        <!--C: Cyan (cian) , M: Magenta, Y: Yellow (amarillo), -->
+        <option value="CMY_Light">CMA Light</option>
+        <option value="CMYK">CMAN</option><!--K: Key (negro)-->
+    </select>
+</label>
+<label class="text-sm text-gray-500 flex flex-col items-start">
+    <span>Categoria</span>
+    <select name="txttipo" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+        <option value="{{ $datosProducto->idTipo }}">{{ $datosProducto->nombreTipo }}</option>
+        @foreach ($categorias as $tipo)
+            <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
+        @endforeach
+    </select>
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Marca</span>
-    <input name="txtmarca" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $producto->marca }}" />
+    <select name="txtmarca" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+        <option value="{{ $datosProducto->idMarca }}">{{ $datosProducto->nombreMarca }}</option>
+        @foreach ($marcas as $marca)
+            <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
+        @endforeach
+    </select>
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>precio</span>
@@ -45,6 +69,5 @@
 
 <div class="flex justify-between items-center">
     <a href="{{ route('productos.index') }}" class="text-indigo-600">Volver</a>
-    <input type="submit" value="Enviar" class="bg-gray-800 text-white rounded px-4 py-2">
+    <input type="submit" value="Guardar cambios" class="bg-green-500 text-white rounded px-4 py-2">
 </div>
-<a href="{{ route('clientes.index') }}" class="text-indigo-600">Volver</a>

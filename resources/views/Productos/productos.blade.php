@@ -77,43 +77,23 @@
                                 </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Categoria</span>
+                                <select name="txttipo"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                    <option value="">Selecciona una una categoria</option>
+                                    @foreach ($categorias as $tipo)
+                                        <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Marca</span>
                                 <select name="txtmarca"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona una marca</option>
-                                    <option value="Brady">Brady</option>
-                                    <option value="Brother">Brother</option>
-                                    <option value="Canon">Canon</option>
-                                    <option value="Citizen">Citizen</option>
-                                    <option value="Dascom">Dascom</option>
-                                    <option value="Dymo">Dymo</option>
-                                    <option value="Epson">Epson</option>
-                                    <option value="Evolis">Evolis</option>
-                                    <option value="Fargo">Fargo</option>
-                                    <option value="Fujitsu">Fujitsu</option>
-                                    <option value="Gestetner">Gestetner</option>
-                                    <option value="Godex">Godex</option>
-                                    <option value="HP">HP</option>
-                                    <option value="Konica Minolta">Konica Minolta</option>
-                                    <option value="Kyocera">Kyocera</option>
-                                    <option value="Lanier">Lanier</option>
-                                    <option value="Lexmark">Lexmark</option>
-                                    <option value="Magicard">Magicard</option>
-                                    <option value="OKI">OKI</option>
-                                    <option value="Olivetti">Olivetti</option>
-                                    <option value="Panasonic">Panasonic</option>
-                                    <option value="Ricoh">Ricoh</option>
-                                    <option value="Samsung">Samsung</option>
-                                    <option value="SATO">SATO</option>
-                                    <option value="Sharp">Sharp</option>
-                                    <option value="Tally">Tally</option>
-                                    <option value="Toshiba">Toshiba</option>
-                                    <option value="TSC">TSC</option>
-                                    <option value="Xerox">Xerox</option>
-                                    <option value="Zebra">Zebra</option>
-                                    <!-- Agrega más marcas según sea necesario -->
-                                    <!-- Agregar el mismo en la vista de edicion -->
-                                    <!--no lo puse en la base de datos por que ya lo querian ya-->
+                                    @foreach ($marcas as $marca)
+                                        <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
+                                    @endforeach
                                 </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -163,6 +143,7 @@
                     <td class="py-3 px-6 text-left border-r">Modelo</td>
                     <td class="py-3 px-6 text-left border-r">Color</td>
                     <td class="py-3 px-6 text-left border-r">Marca</td>
+                    <td class="py-3 px-6 text-left border-r">Categoria</td>
                     <td class="py-3 px-6 text-left border-r">Imagen</td>
                     <td class="py-3 px-6 text-left border-r">Precio</td>
                 </tr>
@@ -177,13 +158,16 @@
                             {{ $producto->color }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ $producto->marca }}
+                            {{ $producto->nombreMarca }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->nombreTipo }}
                         </td>
                         <td class="px-6 py-4 flex justify-center items-center">
                             <img class=" w-20" src={{ $producto->fotografia }}>
                         </td>
                         <td class="px-6 py-4">
-                            {{ $producto->precio }}
+                            ${{ $producto->precio }}
                         </td>
                         <td>
 

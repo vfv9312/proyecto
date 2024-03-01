@@ -312,19 +312,20 @@ return [
             'can'  => 'manage-blog',
         ],
         [
-            'text'        => 'Venta productos',
+            'text'        => 'Inicio',
             'route'         => 'inicio.index',
-            'icon'        => 'fas fa-shopping-cart',
+            'icon'        => 'fas fa-home',
             'label'       => 0,
             'label_color' => 'success',
         ],
         [
-            'text'        => 'Registro de servicios',
+            'text'        => 'Orden de recoleccion',
             'route'         => 'servicios.index',
-            'icon'        => 'fas fa-shopping-bag',
+            'icon'        => 'fas fa-motorcycle',
             'label'       => 0,
             'label_color' => 'success',
         ],
+
         ['header' => 'Menu'],
         [
             'text' => 'Cuenta',

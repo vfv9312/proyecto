@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Marcas;
 use App\Models\precios_productos;
 use App\Models\productos;
+use App\Models\Tipo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -23,13 +25,19 @@ class ProductosController extends Controller
         WHERE p.estatus = 1;');*/
 
         $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
+            ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->where('productos.estatus', 1)
             ->where('precios_productos.estatus', 1)
-            ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'productos.color', 'productos.marca', 'productos.fotografia', 'precios_productos.precio')
+            ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'productos.color', 'marcas.nombre as nombreMarca', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'productos.fotografia', 'precios_productos.precio')
             ->orderBy('productos.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
-        return view('Productos.productos', compact('productos'));
+        $marcas = Marcas::all();
+        $categorias = Tipo::all();
+
+
+        return view('Productos.productos', compact('productos', 'marcas', 'categorias'));
     }
 
     /**
@@ -71,7 +79,8 @@ class ProductosController extends Controller
                 'nombre_comercial' => $request->txtnombre,
                 'modelo' => $request->txtmodelo,
                 'color' => $request->txtcolor,
-                'marca' => $request->txtmarca,
+                'id_tipo' => $request->txttipo,
+                'id_marca' => $request->txtmarca,
                 'descripcion' => $request->txtdescripcion,
                 'fotografia' => $url,
                 'estatus' => 1
@@ -118,8 +127,17 @@ class ProductosController extends Controller
         $precioProducto = precios_productos::where('id_producto', $producto->id)
             ->where('estatus', 1)
             ->first();
+        $datosProducto = productos::join('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->where('productos.estatus', 1)
+            ->where('productos.id', $producto->id)
+            ->select('marcas.id as idMarca', 'marcas.nombre as nombreMarca', 'tipos.id as idTipo', 'tipos.nombre as nombreTipo')
+            ->first();
+
+        $marcas = Marcas::all();
+        $categorias = Tipo::all();
         //enviar los dos datos a la vista
-        return view('Productos.edit', compact('producto', 'precioProducto'));
+        return view('Productos.edit', compact('producto', 'precioProducto', 'marcas', 'categorias', 'datosProducto'));
     }
 
     /**
@@ -134,7 +152,8 @@ class ProductosController extends Controller
                 'nombre_comercial' => $request->txtnombre,
                 'modelo' => $request->txtmodelo,
                 'color' => $request->txtcolor,
-                'marca' => $request->txtmarca,
+                'id_marca' => $request->txtmarca,
+                'id_tipo' => $request->txttipo,
                 'descripcion' => $request->txtdescripcion,
                 'estatus' => 1
             ]);

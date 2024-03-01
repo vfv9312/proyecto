@@ -193,7 +193,7 @@
                         <td>
                             <!--Agregamos mas direcciones a un usuario-->
                             <button onclick="window.location='{{ route('direcciones.edit', $cliente->id) }}'"
-                                class="border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out"
+                                class="border rounded px-4 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out"
                                 title="Agregar más direcciones">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <i class="fas fa-plus"></i>
