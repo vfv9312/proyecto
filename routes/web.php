@@ -4,6 +4,7 @@ use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\DireccionesClientesController;
 use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\OrdenEntregaController;
+use App\Http\Controllers\ordenServicioController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProfileController;
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function () {
 //Todo el proceso de venta
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']);
 Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['auth', 'verified']);
+Route::resource('orden_servicio', ordenServicioController::class)->middleware(['auth', 'verified']);
 Route::post('carrito', [PrincipalController::class, 'carrito'])->name('inicio.carrito')->middleware(['auth', 'verified']);
 Route::post('registro', [PrincipalController::class, 'registro'])->name('inicio.registro')->middleware(['auth', 'verified']);
 Route::post('guardarProductoVenta', [PrincipalController::class, 'guardarProductoVenta'])->name('inicio.guardarProductoVenta')->middleware(['auth', 'verified']);

@@ -34,7 +34,7 @@ class ClientesController extends Controller
             ->orderBy('clientes.updated_at', 'desc')
             ->get();
         //enviamos todas las colonias
-        $catalogo_colonias = Catalago_ubicaciones::all();
+        $catalogo_colonias = Catalago_ubicaciones::orderBy('localidad')->get();
 
         //vemos la vista index de clientes y le pasamos dos variables que son nuestas consultas
         return view('clientes.index', compact('clientes', 'direcciones', 'catalogo_colonias'));

@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Catalago_ubicaciones;
 use App\Models\clientes;
-use App\Models\direcciones;
 use App\Models\empleados;
 use Illuminate\Http\Request;
 
-class OrdenEntregaController extends Controller
+class ordenServicioController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -62,7 +61,7 @@ class OrdenEntregaController extends Controller
         $ListaColonias = Catalago_ubicaciones::orderBy('localidad')->get();
 
 
-        return view('Principal.ordenEntrega.index', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias'));
+        return view('Principal.ordenServicio.index', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias'));
     }
 
     /**

@@ -52,7 +52,7 @@ class DireccionesClientesController extends Controller
     public function edit(clientes $direccione)
     {
         $cliente = $direccione;
-        $catalogo_colonias = Catalago_ubicaciones::all();
+        $catalogo_colonias = Catalago_ubicaciones::orderBy('localidad')->get();
         //enviar los dos datos a la vista
         return view('direcciones.edit', compact('cliente', 'catalogo_colonias'));
     }

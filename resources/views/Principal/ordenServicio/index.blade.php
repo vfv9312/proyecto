@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Orden de entrega')
+@section('title', 'Orden de servicio')
 
 @section('content_header')
     <h1>Datos de cliente</h1>
