@@ -61,7 +61,7 @@ class ordenServicioController extends Controller
         $ListaColonias = Catalago_ubicaciones::orderBy('localidad')->get();
 
 
-        return view('Principal.ordenServicio.index', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias'));
+        return view('Principal.ordenServicio.datos_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias'));
     }
 
     /**

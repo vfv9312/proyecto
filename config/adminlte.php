@@ -293,8 +293,10 @@ return [
         // Navbar items:
         [
             'type'         => 'navbar-search',
-            'text'         => 'search',
+            'text'         => 'Buscador',
             'topnav_right' => true,
+            'id' => 'miBuscador'
+
         ],
         [
             'type'         => 'fullscreen-widget',
