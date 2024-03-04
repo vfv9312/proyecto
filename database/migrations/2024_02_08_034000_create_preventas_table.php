@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_direccion')->nullable();
             $table->string('metodo_pago')->nullable();
             $table->boolean('factura')->nullable();
+            $table->decimal('costo_total', 8, 2)->nullable();
             $table->text('comentario')->nullable();
             $table->timestamps();
             $table->softDeletes();

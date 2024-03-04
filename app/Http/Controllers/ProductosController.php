@@ -6,9 +6,11 @@ use App\Models\Marcas;
 use App\Models\precios_productos;
 use App\Models\productos;
 use App\Models\Tipo;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductosController extends Controller
 {
@@ -63,14 +65,29 @@ class ProductosController extends Controller
             if ($request->hasFile('file')) {
                 //esto guardamos nuetra imagen en storage/app/public/imagenProducto
                 //no olvidar ejecutar el comando php artisan storage:link para crear un acceso directo
-                $file = $request->file('file')->store('public/imagenProductos');
+                // $file = $request->file('file')->store('public/imagenProductos');
+
+                // Obtén el ID del usuario
+                $userId = auth()->id();
+
+                // Obtén la fecha y hora actual
+                $now = Carbon::now()->format('YmdHis');
+
+                // Genera un hash único
+                $uniqueHash = Str::random(10);
+
+                // Combina todo para generar un nombre de archivo único
+                $fileName = "{$userId}_{$now}_{$uniqueHash}.webp";
+
+                $request->file('file')->move(public_path('imagenProductos'), $fileName);
+                $url = asset('imagenProductos/' . $fileName);
                 /**
                  * Genera la URL para un archivo almacenado en el almacenamiento.
                  *
                  * @param string $file La ruta del archivo.
                  * @return string La URL del archivo.
                  */
-                $url = Storage::url($file);
+                // $url = Storage::url($file);
                 // Ahora puedes usar $filename para guardar el nombre del archivo en tu base de datos
             }
 

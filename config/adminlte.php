@@ -322,7 +322,7 @@ return [
         ],
         [
             'text'        => 'Orden de recoleccion',
-            'route'         => 'servicios.index',
+            'route'         => 'orden_recoleccion.index',
             'icon'        => 'fas fa-motorcycle',
             'label'       => 0,
             'label_color' => 'success',

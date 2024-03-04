@@ -8,6 +8,7 @@ use App\Models\direcciones;
 use App\Models\direcciones_clientes;
 use App\Models\empleados;
 use App\Models\Marcas;
+use App\Models\Orden_recoleccion;
 use App\Models\personas;
 use App\Models\precios_productos;
 use App\Models\Preventa;
@@ -15,6 +16,7 @@ use App\Models\productos;
 use App\Models\Tipo;
 use App\Models\ventas;
 use App\Models\ventas_productos;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -209,8 +211,16 @@ class OrdenEntregaController extends Controller
             $Preventa->estatus = 3;
             // Guardar el modelo
             $Preventa->save();
+
+            $venta_producto = ventas_productos::where('id_preventa', $Preventa->id)->get();
+            foreach ($venta_producto as $producto) {
+                $producto->estatus = 3;
+                $producto->save();
+            }
+
             // si id_direccion tiene datos entonces entra
-            if ($clienteSeleccionado != null) {
+            if (!is_null($clienteSeleccionado) && is_numeric($clienteSeleccionado)) {
+
                 //si preventa esxite que si entonces entra
                 if ($Preventa) {
                     //Actualizar los campos
@@ -239,7 +249,7 @@ class OrdenEntregaController extends Controller
                         $Preventa->save();
                     }
                 }
-            } else {
+            } else if (is_null($clienteSeleccionado)) {
 
                 $clientePersona = personas::create([
                     'nombre' => $request->input('txtnombreCliente'),
@@ -249,11 +259,18 @@ class OrdenEntregaController extends Controller
                     'estatus' => 1,
                     // ...otros campos aquí...
                 ]);
+
+
                 $clienteNuevo = clientes::create([
                     'id_persona' => $clientePersona->id,
                     'comentario' => $request->input('txtrfc'),
                     'estatus' => 1,
                 ]);
+
+                $Preventa->id_cliente = $clienteNuevo->id;
+                $Preventa->id_empleado = $request->input('txtempleado');
+                // Guardar el modelo
+                $Preventa->save();
 
                 if ($request->input('nuevacolonia') && $request->input('nuevacalle')) {
 
@@ -278,6 +295,42 @@ class OrdenEntregaController extends Controller
                 }
             }
 
+            $Ordenderecoleccion = Orden_recoleccion::create([
+                'id_preventa' => $Preventa->id,
+                'estatus' => 2
+
+            ]);
+
+            //consultas para motrar los datos
+            $listaCliente = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
+                ->where('clientes.estatus', 1)
+                ->where('clientes.id', $Preventa->id_cliente)
+                ->orWhere('clientes.id', $clienteSeleccionado)
+                ->select(
+                    'personas.nombre as nombre_cliente',
+                    'personas.apellido',
+                    'personas.telefono as telefono_cliente',
+                    'personas.email',
+                    'clientes.comentario',
+                    'clientes.id as id_cliente',
+                )
+                ->orderBy('clientes.updated_at', 'desc')
+                ->first();
+
+            $listaEmpleado = empleados::join('roles', 'roles.id', '=', 'empleados.id_rol')
+                ->join('personas', 'personas.id', '=', 'empleados.id_persona')
+                ->where('empleados.estatus', 1)
+                ->where('empleados.id', $request->input('txtempleado'))
+                ->select('empleados.id', 'roles.nombre as nombre_rol', 'personas.nombre as nombre_empleado', 'personas.apellido')
+                ->first();
+
+            $datosPreventa = Preventa::join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+                ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+                ->where('preventas.id', $id)
+                ->select('preventas.metodo_pago', 'preventas.factura', 'preventas.comentario', 'catalago_ubicaciones.localidad', 'catalago_ubicaciones.estado', 'catalago_ubicaciones.municipio', 'direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia')
+                ->first();
+
+
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
 
         } catch (\Throwable $th) {
@@ -285,11 +338,22 @@ class OrdenEntregaController extends Controller
             return $th->getMessage();
         }
         if (true) {
-            return view('Principal.ordenEntrega.orden_Completa');
+            return view('Principal.ordenEntrega.orden_Completa', compact('Ordenderecoleccion', 'Preventa', 'listaCliente', 'listaEmpleado', 'datosPreventa'));
         } else {
             session()->flash("incorrect", "Error al procesar el carrito de compras");
             return redirect()->route('orden_entrega.create ');
         }
+    }
+
+    public function generarPdf()
+    {
+        $pdf = PDF::loadView('Principal.ordenEntrega.pdf');
+
+        // Establece el tamaño del papel a 80mm de ancho y 200mm de largo
+        $pdf->setPaper([0, 0, 226.77, 699.93], 'portrait'); // 80mm x 200mm en puntos
+
+        // Renderiza el documento PDF y lo envía al navegador
+        return $pdf->stream();
     }
 
     /**

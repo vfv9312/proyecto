@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Orden_recoleccion extends Model
 {
     use HasFactory;
+    protected $table = "orden_recoleccions";
+    protected $guarded = [
+        'id'
+    ];
 }

@@ -12,7 +12,7 @@ class OrdenRecoleccionController extends Controller
      */
     public function index()
     {
-        //
+        return view('Orden_recoleccion.index');
     }
 
     /**

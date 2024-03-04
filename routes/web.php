@@ -4,14 +4,18 @@ use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\DireccionesClientesController;
 use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\OrdenEntregaController;
+use App\Http\Controllers\OrdenRecoleccionController;
 use App\Http\Controllers\ordenServicioController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiciosController;
 use App\Http\Controllers\VentasController;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use PhpParser\Node\Stmt\Return_;
 
 use function Laravel\Prompts\select;
 
@@ -38,8 +42,7 @@ Route::get('/menu', function () {
 
 
 Route::get('/dashboard', function () {
-    $datos = DB::select('SELECT * FROM canacotu_tuxtla.productos;');
-    return view('dashboard')->with("datos", $datos);
+    return view('Principal.inicio');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -51,10 +54,14 @@ Route::middleware('auth')->group(function () {
 //Todo el proceso de venta
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']);
 Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['auth', 'verified']);
+//generar pdf
+Route::get('orden_entrega_pdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');
 Route::post('registro', [PrincipalController::class, 'registro'])->name('inicio.registro')->middleware(['auth', 'verified']);
+Route::resource('orden_recoleccion', OrdenRecoleccionController::class)->middleware(['auth', 'verified']);
+
+
+//checar si sirve
 Route::resource('orden_servicio', ordenServicioController::class)->middleware(['auth', 'verified']);
-
-
 Route::post('guardarProductoVenta', [PrincipalController::class, 'guardarProductoVenta'])->name('inicio.guardarProductoVenta')->middleware(['auth', 'verified']);
 
 
