@@ -13,15 +13,12 @@ return new class extends Migration
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_empleado')->nullable();
-            $table->unsignedBigInteger('id_cliente')->nullable();
-            $table->string('metodo_pago')->nullable();
-            $table->dateTime('entrega')->nullable();
+            $table->unsignedBigInteger('id_recoleccion')->nullable();
+            $table->text('comentario')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(1);
-            $table->foreign('id_cliente')->references('id')->on('clientes');
-            $table->foreign('id_empleado')->references('id')->on('empleados');
+            $table->foreign('id_recoleccion')->references('id')->on('orden_recoleccions');
         });
     }
 

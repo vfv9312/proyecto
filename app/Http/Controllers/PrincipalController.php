@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Catalago_ubicaciones;
 use App\Models\clientes;
 use App\Models\empleados;
 use App\Models\personas;
 use App\Models\precios_productos;
+use App\Models\Preventa;
 use App\Models\productos;
 use App\Models\ventas;
 use App\Models\ventas_productos;
@@ -61,24 +63,26 @@ class PrincipalController extends Controller
             $productos = $request->input('productos');
             $metodo_pago = $request->input('metodo_pago');
             $relacion = [];
+            $factura = $request->input('factura');
 
 
+            //En resumen, este código está creando un nuevo array ($relacion) que mapea productos a cantidades, pero solo para aquellos productos cuya cantidad es mayor que 0.
             for ($i = 0; $i < count($productos); $i++) {
                 if ($cantidades[$i] > 0) {
                     $relacion[$productos[$i]] = $cantidades[$i];
                 }
             }
 
-            $ventaActualizada = ventas::find($venta->id)->update([
+            $ventaActualizada = Preventa::find($venta->id)->update([
                 'metodo_pago' => $metodo_pago,
+                'factura' => $factura,
             ]);
-
 
             foreach ($relacion as $id_Producto => $cantidad) {
                 // Si el valor no es un array, no necesitas decodificarlo
 
                 $BuscarIdPrecios = ventas_productos::where('id_precio_producto', $id_Producto)
-                    ->where('id_venta', $venta->id)
+                    ->where('id_preventa', $venta->id)
                     ->where('estatus', 2)
                     ->first();
 
@@ -88,28 +92,44 @@ class PrincipalController extends Controller
             }
 
 
-
-            $empleados = DB::table('empleados')
-                ->join('personas', 'empleados.id_persona', '=', 'personas.id')
+            $listaEmpleados = empleados::join('roles', 'roles.id', '=', 'empleados.id_rol')
+                ->join('personas', 'personas.id', '=', 'empleados.id_persona')
                 ->where('empleados.estatus', 1)
-                ->select('personas.nombre', 'personas.apellido', 'personas.telefono', 'empleados.id', 'empleados.rol_empleado')
+                ->select('empleados.id', 'roles.nombre as nombre_rol', 'personas.nombre as nombre_empleado', 'personas.apellido')
                 ->get();
 
-            $clientes = DB::table('clientes')
-                ->join('personas', 'clientes.id_persona', '=', 'personas.id')
+            $listaClientes = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
                 ->where('clientes.estatus', 1)
-                ->select('personas.nombre', 'personas.apellido', 'personas.telefono', 'clientes.id')
+                ->select(
+                    'personas.nombre as nombre_cliente',
+                    'personas.apellido',
+                    'personas.telefono as telefono_cliente',
+                    'personas.email',
+                    'clientes.comentario',
+                    'clientes.id as id_cliente',
+                )
+                ->orderBy('clientes.updated_at', 'desc')
                 ->get();
 
-            $direccionesCliente = DB::table('clientes')
-                ->join('direcciones_clientes', 'clientes.id', '=', 'direcciones_clientes.id_cliente')
-                ->join('direcciones', 'direcciones_clientes.id_direccion', '=', 'direcciones.id')
+            $listaDirecciones = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
+                ->join('direcciones_clientes', 'direcciones_clientes.id_cliente', '=', 'clientes.id')
+                ->join('direcciones', 'direcciones.id', '=', 'direcciones_clientes.id_direccion')
+                ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
                 ->where('clientes.estatus', 1)
-                ->orderBy('direcciones.created_at', 'desc')
-                ->select('clientes.id', 'direcciones.direccion')
+                ->select(
+                    'catalago_ubicaciones.localidad',
+                    'direcciones.calle',
+                    'direcciones.num_exterior',
+                    'direcciones.num_interior',
+                    'direcciones.referencia',
+                    'clientes.id as id_cliente',
+                    'catalago_ubicaciones.id as id_ubicaciones',
+                    'direcciones_clientes.id'
+                )
+                ->orderBy('clientes.updated_at', 'desc')
                 ->get();
 
-
+            $ListaColonias = Catalago_ubicaciones::orderBy('localidad')->get();
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
 
         } catch (\Throwable $th) {
@@ -118,10 +138,10 @@ class PrincipalController extends Controller
             $actualizarCantidad = false;
         }
         if ($actualizarCantidad  == true) {
-            return view('Principal.registro', ['venta' => $venta, 'empleados' => $empleados, 'clientes' => $clientes, 'direccionesCliente' => $direccionesCliente]);
+            return view('Principal.ordenEntrega.registrar_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'venta'));
         } else {
             session()->flash("incorrect", "Error al procesar el carrito de compras");
-            return redirect()->route('productos.index');
+            return redirect()->route('orden_entrega.create ');
         }
     }
 

@@ -5,11 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Catalago_ubicaciones;
 use App\Models\clientes;
 use App\Models\direcciones;
+use App\Models\direcciones_clientes;
 use App\Models\empleados;
 use App\Models\Marcas;
+use App\Models\personas;
+use App\Models\precios_productos;
+use App\Models\Preventa;
 use App\Models\productos;
 use App\Models\Tipo;
+use App\Models\ventas;
+use App\Models\ventas_productos;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrdenEntregaController extends Controller
 {
@@ -102,7 +109,70 @@ class OrdenEntregaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+
+        try {
+            // Recibir los datos enviados desde el navegador
+
+            $producto_ids = $request->input('producto_id');
+            $cantidades = $request->input('cantidad');
+
+            $relacion = [];
+
+            for ($i = 0; $i < count($producto_ids); $i++) {
+                if ($cantidades[$i] > 0) {
+                    $relacion[$producto_ids[$i]] = $cantidades[$i];
+                }
+            }
+
+            $preventa = Preventa::create([
+                'estatus' => 2
+            ]);
+
+            $productos_ventas = [];
+            $productos = [];
+
+            // Procesar y buscar los datos en la base de datos
+            foreach ($relacion as $id_Producto => $cantidad) {
+
+                $producto_precio = precios_productos::where('id_producto', $id_Producto)
+                    ->where('estatus', 1)
+                    ->first();
+
+                $producto = Productos::where('id', $id_Producto)->first();
+
+
+
+                $producto_venta = ventas_productos::create([
+                    'id_precio_producto' => $producto_precio->id,
+                    'id_preventa' => $preventa->id,
+                    'cantidad' => $cantidad,
+                    'estatus' => 2
+                ]);
+                $productos_ventas[] = [
+                    'producto' => $producto_venta,
+                    'precio' => $producto_precio->precio,
+                ];
+
+                $productos[] = $producto;
+            }
+            // Devolver una respuesta al navegador con los productos
+            //return response()->json(['productos' => $productos_venta]);
+
+
+            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+
+        } catch (\Throwable $th) {
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+            return $th->getMessage();
+            $producto_venta = false;
+        }
+        if ($producto_venta == true) {
+            return view('Principal.ordenEntrega.carrito', ['producto_venta' => $productos_ventas, 'producto' => $productos, 'venta' => $preventa]);
+        } else {
+            session()->flash("incorrect", "Error al procesar el carrito de compras");
+            return redirect()->route('inicio.carrito');
+        }
     }
 
     /**
@@ -116,7 +186,7 @@ class OrdenEntregaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id, Request $request)
     {
         //
     }
@@ -126,7 +196,100 @@ class OrdenEntregaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+
+        try {
+            $clienteSeleccionado = $request->input('cliente');
+            $id_direcciones = $request->input('id_direccion');
+            //  dd($request);
+
+
+            //buco la preventa con el id
+            $Preventa = Preventa::find($id);
+            $Preventa->estatus = 3;
+            // Guardar el modelo
+            $Preventa->save();
+            // si id_direccion tiene datos entonces entra
+            if ($clienteSeleccionado != null) {
+                //si preventa esxite que si entonces entra
+                if ($Preventa) {
+                    //Actualizar los campos
+                    $Preventa->id_cliente = $clienteSeleccionado;
+                    $Preventa->id_empleado = $request->input('txtempleado');
+
+                    // Guardar el modelo
+                    $Preventa->save();
+
+                    //si el id_direccion existe eligieron una direccion del usuario encontes entra
+                    if ($id_direcciones) {
+                        $Preventa->id_direccion = $id_direcciones;
+                        // Guardar el modelo
+                        $Preventa->save();
+                    } else {
+                        $nuevaDireccion = direcciones::create([
+                            'id_ubicacion' => $request->input('nuevacolonia'),
+                            'calle' => $request->input('nuevacalle'),
+                            'num_exterior' => $request->input('nuevonum_exterior'),
+                            'num_interior' => $request->input('nuevonum_interior'),
+                            'referencia' => $request->input('nuevareferencia'),
+                        ]);
+
+                        $Preventa->id_direccion = $nuevaDireccion->id;
+                        // Guardar el modelo
+                        $Preventa->save();
+                    }
+                }
+            } else {
+
+                $clientePersona = personas::create([
+                    'nombre' => $request->input('txtnombreCliente'),
+                    'apellido' => $request->input('txtapellidoCliente'),
+                    'telefono' => $request->input('txttelefono'),
+                    'email' => $request->input('txtemail'),
+                    'estatus' => 1,
+                    // ...otros campos aquí...
+                ]);
+                $clienteNuevo = clientes::create([
+                    'id_persona' => $clientePersona->id,
+                    'comentario' => $request->input('txtrfc'),
+                    'estatus' => 1,
+                ]);
+
+                if ($request->input('nuevacolonia') && $request->input('nuevacalle')) {
+
+                    $nuevaDireccion = direcciones::create([
+                        'id_ubicacion' => $request->input('nuevacolonia'),
+                        'calle' => $request->input('nuevacalle'),
+                        'num_exterior' => $request->input('nuevonum_exterior'),
+                        'num_interior' => $request->input('nuevonum_interior'),
+                        'referencia' => $request->input('nuevareferencia'),
+                    ]);
+
+                    $direccionNuevaCliente = direcciones_clientes::create([
+                        'id_direccion' => $nuevaDireccion->id,
+                        'id_cliente' => $clienteNuevo->id,
+                        'estatus' => 1
+
+                    ]);
+
+                    $Preventa->id_direccion = $nuevaDireccion->id;
+                    // Guardar el modelo
+                    $Preventa->save();
+                }
+            }
+
+            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+
+        } catch (\Throwable $th) {
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+            return $th->getMessage();
+        }
+        if (true) {
+            return view('Principal.ordenEntrega.orden_Completa');
+        } else {
+            session()->flash("incorrect", "Error al procesar el carrito de compras");
+            return redirect()->route('orden_entrega.create ');
+        }
     }
 
     /**

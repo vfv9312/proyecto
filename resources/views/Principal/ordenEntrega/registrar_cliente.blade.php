@@ -7,10 +7,11 @@
 @stop
 
 @section('content')
-    <form class="mt-8 flex flex-col justify-center " action="{{ route('productos.store') }}" method="POST"
+    <form class="mt-8 flex flex-col justify-center "
+        action="{{ route('orden_entrega.update', ['orden_entrega' => $venta->id]) }}" method="POST"
         enctype="multipart/form-data">
         @csrf
-
+        @method('PUT')
         @include('Principal.ordenEntrega._form_orden')
 
     </form>

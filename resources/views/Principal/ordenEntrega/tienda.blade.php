@@ -22,13 +22,11 @@
     @endif
     @include('Principal.ordenEntrega._filtro_articulo')
 
-    <form action="{{ route('inicio.carrito') }}" method="POST">
+    <form action="{{ route('orden_entrega.store') }}" method="POST">
         @csrf
         <header class=" flex justify-between p-3">
-            <a href="{{ route('orden_entrega.index') }}"
-                class="bg-green-500 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded transition duration-500 ease-in-out">
-                Productos
-            </a> <button type="submit" id="compras" class="fa fa-shopping-bag fa-2x text-red-500 cursor-pointer"><span
+            <h1>Productos</h1> <button type="submit" id="compras"
+                class="fa fa-shopping-bag fa-2x text-red-500 cursor-pointer"><span
                     class="incrementar ml-2 text-sm text-green-500">0</span></button>
         </header>
         @include('Principal.ordenEntrega._articulos')
@@ -106,40 +104,5 @@
                 });
             });
         });
-
-
-
-
-        /*
-        function incrementarProducto(id_Producto) {
-            // Verificar si el id_Producto ya existe en sessionStorage
-            if (sessionStorage.getItem(id_Producto)) {
-                // Si existe, obtener el valor, incrementarlo en 1 y guardarlo de nuevo
-                let incrementar = parseInt(sessionStorage.getItem(id_Producto));
-                incrementar++;
-                sessionStorage.setItem(id_Producto, incrementar);
-            } else {
-                // Si no existe, inicializarlo con 1
-                sessionStorage.setItem(id_Producto, 1);
-            }
-            // Actualizar el contenido del span
-            span.textContent = obtenerTotal();
-        }
-
-        // Obtener el elemento span
-        let span = document.querySelector('.incrementar');
-
-        function obtenerTotal() {
-            let total = 0;
-            for (let i = 0; i < sessionStorage.length; i++) {
-                let clave = sessionStorage.key(i);
-                let valor = parseInt(sessionStorage.getItem(clave));
-                total += valor;
-            }
-            return total;
-        }
-        let valorIndividual = document.querySelector('.cantidadIndividual');
-        // Inicializar el contenido del span
-        span.textContent = obtenerTotal();*/
     </script>
 @stop

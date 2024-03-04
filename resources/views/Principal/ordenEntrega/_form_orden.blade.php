@@ -37,14 +37,14 @@
             <label>Nombre</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="nombreCliente" name="nombreCliente" placeholder="Nombre del cliente">
+                id="nombreCliente" name="txtnombreCliente" placeholder="Nombre del cliente">
         </div>
 
         <div class="flex flex-col w-full md:w-1/2">
             <label>Apellido</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="apellidoCliente" name="apellidoCliente" placeholder="Apellidos del cliente">
+                id="apellidoCliente" name="txtapellidoCliente" placeholder="Apellidos del cliente">
         </div>
 
     </div>
@@ -56,21 +56,21 @@
             <label>Telefono</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="telefono" name="telefono" placeholder="1234 Main St">
+                id="telefono" name="txttelefono" placeholder="Numero de telefono">
         </div>
 
         <div class="flex flex-col w-full md:w-1/2">
             <label>RFC</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="rfc" name="rfc" placeholder="RFC">
+                id="rfc" name="txtrfc" placeholder="RFC">
         </div>
 
         <div class="flex flex-col w-full md:w-1/2">
             <label>Correo electronico</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email" name="email" placeholder="ecotoner@example.com">
+                id="email" name="txtemail" placeholder="ecotoner@example.com">
         </div>
 
     </div>
@@ -81,7 +81,7 @@
         <label class="mr-4">Direcciones registradas</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="inputDirecciones" name="txtdireccion">
+            id="inputDirecciones" name="id_direccion">
         </select>
     </div>
 </section>
@@ -100,7 +100,7 @@
             <label class="mr-4">Colonia</label>
             <select
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                name="txtcolonia">
+                name="nuevacolonia">
                 <option value="null">Seleccione una colonia</option>
                 @foreach ($ListaColonias as $colonia)
                     <option value="{{ $colonia->id }}">{{ $colonia->localidad }}</option>
@@ -112,7 +112,7 @@
             <label class="mr-4">Calles</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="calle" name="calles" placeholder="C. 2 Oriente y Av. 3 Sur">
+                id="calle" name="nuevacalle" placeholder="C. 2 Oriente y Av. 3 Sur">
         </div>
 
     </div>
@@ -121,14 +121,14 @@
             <label class="mr-4">Numero Interior</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="num_interior" name="num_interior" placeholder="200">
+                id="num_interior" name="nuevonum_interior" placeholder="b15">
         </div>
 
         <div class="flex flex-col w-full md:w-1/2">
             <label class="mr-4">Numero Exterior</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="num_exterior" name="num_exterior" placeholder="A2">
+                id="num_exterior" name="nuevonum_exterior" placeholder="1000">
         </div>
     </div>
 
@@ -138,7 +138,7 @@
             <label>Referencia</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="referencia" name="referencia" placeholder="Referencia">
+                id="referencia" name="nuevareferencia" placeholder="Referencia">
         </div>
     </div>
 

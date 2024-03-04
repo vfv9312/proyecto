@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ventas_productos', function (Blueprint $table) {
+        Schema::create('orden_recoleccions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_precio_producto');
             $table->unsignedBigInteger('id_preventa')->nullable();
-            $table->integer('cantidad');
-            $table->text('descipcion')->nullable();
-            $table->timestamps();
+            $table->dateTime('Fecha_recoleccion')->nullable();
+            $table->dateTime('Fecha_entrega')->nullable();
+            $table->text('comentario')->nullable();
             $table->softDeletes();
-            $table->tinyInteger('estatus')->default(1);
-            $table->foreign('id_precio_producto')->references('id')->on('precios_productos');
+            $table->tinyInteger('estatus')->default(2);
+            $table->timestamps();
             $table->foreign('id_preventa')->references('id')->on('preventas');
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ventas_productos');
+        Schema::dropIfExists('orden_recoleccions');
     }
 };
