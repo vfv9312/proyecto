@@ -43,11 +43,11 @@
                                 </th>
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Costo total
+                                    Factura
                                 </th>
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Cambio
+                                    Costo total
                                 </th>
                             </tr>
                         </thead>
@@ -76,8 +76,22 @@
                                     {{ $listaEmpleado->nombre_rol }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-
+                                    {{ $datosPreventa->fecha }}
                                 </td>
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                    {{ $datosPreventa->factura == 1 ? 'Sí' : 'No' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                    @php
+                                        $total = 0;
+                                        foreach ($listaProductos as $producto) {
+                                            $total += $producto->precio * $producto->cantidad;
+                                        }
+                                    @endphp
+                                    ${{ $total }}
+                                    <input type="hidden" name="total" value="{{ $total }}">
+                                </td>
+
                                 <!-- Repite el bloque anterior para los demás campos -->
                             </tr>
                         </tbody>

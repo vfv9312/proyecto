@@ -327,8 +327,15 @@ class OrdenEntregaController extends Controller
             $datosPreventa = Preventa::join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
                 ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
                 ->where('preventas.id', $id)
-                ->select('preventas.metodo_pago', 'preventas.factura', 'preventas.comentario', 'catalago_ubicaciones.localidad', 'catalago_ubicaciones.estado', 'catalago_ubicaciones.municipio', 'direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia')
+                ->select('preventas.updated_at as fecha', 'preventas.metodo_pago', 'preventas.factura', 'preventas.comentario', 'catalago_ubicaciones.localidad', 'catalago_ubicaciones.estado', 'catalago_ubicaciones.municipio', 'direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia')
                 ->first();
+
+            $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+                ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+                ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                ->where('preventas.id', $id)
+                ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
+                ->get();
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
@@ -338,16 +345,28 @@ class OrdenEntregaController extends Controller
             return $th->getMessage();
         }
         if (true) {
-            return view('Principal.ordenEntrega.orden_Completa', compact('Ordenderecoleccion', 'Preventa', 'listaCliente', 'listaEmpleado', 'datosPreventa'));
+            return view('Principal.ordenEntrega.orden_Completa', compact('Ordenderecoleccion', 'Preventa', 'listaCliente', 'listaEmpleado', 'datosPreventa', 'listaProductos'));
         } else {
             session()->flash("incorrect", "Error al procesar el carrito de compras");
             return redirect()->route('orden_entrega.create ');
         }
     }
 
-    public function generarPdf()
+    public function generarPdf(Request $request)
     {
-        $pdf = PDF::loadView('Principal.ordenEntrega.pdf');
+        $total = $request->input('total');
+        $listaCliente = $request->input('listaCliente');
+        $datosPreventa = $request->input('datosPreventa');
+        $listaEmpleado = $request->input('listaEmpleado');
+        $listaProductos = $request->input('listaProductos');
+
+        $pdf = PDF::loadView('Principal.ordenEntrega.pdf', compact(
+            'total',
+            'listaCliente',
+            'datosPreventa',
+            'listaEmpleado',
+            'listaProductos'
+        ));
 
         // Establece el tamaño del papel a 80mm de ancho y 200mm de largo
         $pdf->setPaper([0, 0, 226.77, 699.93], 'portrait'); // 80mm x 200mm en puntos

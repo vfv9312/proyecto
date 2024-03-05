@@ -32,15 +32,15 @@
                     <div class="flex items-center">
                         <input type="hidden" name="productos[]"
                             value={{ $venta_producto['producto']->id_precio_producto }}>
-                        <input name="cantidad[]" type="number" id="cantidad{{ $loop->index }}"
-                            class="cantidad form-input w-20 mr-4" value="{{ $venta_producto['producto']->cantidad }}">
+                        <input name="cantidad[]" type="number" class="cantidad form-input w-20 mr-4"
+                            value="{{ $venta_producto['producto']->cantidad }}">
                         <button type="button" class="text-red-600 hover:underline"
                             onclick="eliminarProducto(this.parentNode.parentNode, {{ $loop->index }})">Eliminar</button>
                         <!-- Input invisible para almacenar el valor 0 cuando el producto se elimina -->
                         <input name="eliminacion[]" type="hidden" id="inputProducto{{ $loop->index }}" value="2">
                     </div>
 
-                    <p id="valorProducto" class="valorProducto text-lg font-semibold">
+                    <p id="valorProducto" id="cantidad{{ $loop->index }}" class="valorProducto text-lg font-semibold">
                     </p>
                 </div>
             @endforeach
@@ -86,14 +86,6 @@
 
 @section('js')
     <script>
-        function eliminarProducto(divProducto, index) {
-            // Oculta el div del producto
-            divProducto.style.display = 'none';
-            // Cambia el valor del input oculto y del input de cantidad a 0
-            document.getElementById('cantidad' + index).value = 0;
-            document.getElementById('inputProducto' + index).value = 0;
-            updateTotal();
-        }
         window.addEventListener('DOMContentLoaded', (event) => {
             var cantidades = document.querySelectorAll('.cantidad');
             var resultados = document.querySelectorAll('.valorProducto');
@@ -123,6 +115,46 @@
                 });
             });
             updateTotal();
+
+        });
+
+        function eliminarProducto(elemento, index) {
+            // Obtener el input de cantidad correspondiente al producto eliminado
+            var inputCantidad = elemento.querySelector('input[name="cantidad[]"]');
+            // Establecer su valor a 0
+            inputCantidad.value = 0;
+
+            // Obtener el párrafo con id "valorProducto" correspondiente al producto eliminado
+            var valorProducto = elemento.querySelector('#valorProducto');
+            // Establecer su texto a 0
+            valorProducto.textContent = '0';
+
+            // Marcar el input de eliminación como 1 para indicar que se ha eliminado
+            var inputEliminacion = elemento.querySelector('input[name="eliminacion[]"]');
+            inputEliminacion.value = 1;
+            // Ocultar el elemento (opcional)
+            elemento.style.display = 'none';
+
+            // Actualizar el total
+            updateTotal();
+        }
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Buscar todos los inputs de eliminación
+            var inputsEliminacion = document.querySelectorAll('input[name="eliminacion[]"]');
+            inputsEliminacion.forEach(function(input, index) {
+                // Si el valor del input de eliminación es 1
+                if (input.value == '1') {
+                    // Buscar el input de cantidad correspondiente y establecer su valor a 0
+                    var inputCantidad = document.querySelector('input[name="cantidad[]"]:nth-child(' + (
+                        index + 1) + ')');
+                    inputCantidad.value = 0;
+
+                    // Actualizar el resultado
+                    var resultado = document.querySelector('#valorProducto');
+                    resultado.textContent = '0';
+                }
+            });
         });
     </script>
 @stop

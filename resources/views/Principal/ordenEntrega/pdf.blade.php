@@ -59,24 +59,35 @@
         </div>
         <div class="body">
             <div class="item">
-                <p>Producto: HP 664</p>
-                <p>Cantidad: 1</p>
-                <p>Precio: $20.00</p>
-
-                <p> Costo total : $20.00</p>
+                @php
+                    $productos = json_decode($listaProductos, true);
+                @endphp
+                @foreach ($productos as $producto)
+                    <p>Producto: {{ $producto['nombre_comercial'] }}</p>
+                    <p>Cantidad: {{ $producto['cantidad'] }}</p>
+                    <p style="margin-bottom: 10px;">Precio: ${{ $producto['precio'] }}</p>
+                @endforeach
+                <p style="margin-top: 10px;"> Costo total : ${{ $total }}</p>
             </div>
             <!-- Agrega más items aquí -->
         </div>
         <div class="cliente">
             <h5> Datos del cliente </h5>
-            <p>Vladimir Farrera Vera</p>
-            <p>Col.Jardines de Tuxtla; Blvd. Belisario Dominguez #400</p>
-            <p>Referencia: Cerca de la rotonda</p>
-            <p>Factura : No</p>
+            @php
+                $Cliente = json_decode($listaCliente);
+                $Preventa = json_decode($datosPreventa);
+                $Empleado = json_decode($listaEmpleado);
+            @endphp
+            <p>{{ $Cliente->nombre_cliente }} {{ $Cliente->apellido }}</p>
+            <p>{{ $Cliente->telefono_cliente }}</p>
+            <p>Col.{{ $Preventa->localidad }}; {{ $Preventa->calle }} #{{ $Preventa->num_exterior }} -
+                interior # {{ $Preventa->num_interior }}</p>
+            <p>Referencia: {{ $Preventa->referencia }}</p>
+            <p>Factura : {{ $Preventa->factura == 1 ? 'Sí' : 'No' }}</p>
         </div>
         <div class="footer">
             <p>Le atendio:</p>
-            <p>Andrea Serrano</p>
+            <p>{{ $Empleado->nombre_empleado }} {{ $Empleado->apellido }}</p>
             <p>Gracias por su compra!</p>
         </div>
     </div>

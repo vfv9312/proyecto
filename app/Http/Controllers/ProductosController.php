@@ -77,7 +77,7 @@ class ProductosController extends Controller
                 $uniqueHash = Str::random(10);
 
                 // Combina todo para generar un nombre de archivo único
-                $fileName = "{$userId}_{$now}_{$uniqueHash}.webp";
+                $fileName = "producto_{$userId}_{$now}_{$uniqueHash}.webp";
 
                 $request->file('file')->move(public_path('imagenProductos'), $fileName);
                 $url = asset('imagenProductos/' . $fileName);
@@ -184,15 +184,27 @@ class ProductosController extends Controller
             // Verificar si se ha cargado una nueva fotografía
             if ($request->hasFile('file')) {
                 // Guardar la nueva fotografía y obtener su nombre
-                $file = $request->file('file')->store('public/imagenProductos');
-
-                $url = Storage::url($file);
-
+                // $file = $request->file('file')->store('public/imagenProductos');
+                // $url = Storage::url($file);
                 // Agregar el nombre de la nueva fotografía a los datos del producto
-                $datosProducto['fotografia'] = $file;
-
+                //  $datosProducto['fotografia'] = $file;
                 // Actualizar el producto con la nueva fotografía
-                $producto->update(['fotografia' => $url]);
+                // $producto->update(['fotografia' => $url]);
+
+                // Obtén el ID del usuario
+                $userId = auth()->id();
+
+                // Obtén la fecha y hora actual
+                $now = Carbon::now()->format('YmdHis');
+
+                // Genera un hash único
+                $uniqueHash = Str::random(10);
+
+                // Combina todo para generar un nombre de archivo único
+                $fileName = "producto_{$userId}_{$now}_{$uniqueHash}.webp";
+
+                $request->file('file')->move(public_path('imagenProductos'), $fileName);
+                $producto->update(['fotografia' =>  asset('imagenProductos/' . $fileName)]);
             }
 
 
