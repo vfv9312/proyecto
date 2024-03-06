@@ -7,11 +7,11 @@
 @stop
 
 @section('content')
-    <form class="mt-8 flex flex-col justify-center " action="{{ route('productos.store') }}" method="POST"
+    <form class="mt-8 flex flex-col justify-center " action="{{ route('orden_servicio.store') }}" method="POST"
         enctype="multipart/form-data">
         @csrf
 
-        @include('Principal.ordenEntrega._form_orden')
+        @include('Principal.ordenServicio._form_cliente')
 
     </form>
 @stop

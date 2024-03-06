@@ -58,6 +58,8 @@ Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['au
 Route::post('orden_entrega_pdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');
 Route::post('registro', [PrincipalController::class, 'registro'])->name('inicio.registro')->middleware(['auth', 'verified']);
 Route::resource('orden_recoleccion', OrdenRecoleccionController::class)->middleware(['auth', 'verified']);
+Route::post('orden_servicio_pdf', [ordenServicioController::class, 'generarPdf'])->name('generarpdf.ordenservicio');
+
 
 
 //checar si sirve

@@ -143,8 +143,6 @@ class OrdenEntregaController extends Controller
 
                 $producto = Productos::where('id', $id_Producto)->first();
 
-
-
                 $producto_venta = ventas_productos::create([
                     'id_precio_producto' => $producto_precio->id,
                     'id_preventa' => $preventa->id,
@@ -249,7 +247,7 @@ class OrdenEntregaController extends Controller
                         $Preventa->save();
                     }
                 }
-            } else if (is_null($clienteSeleccionado)) {
+            } else {
 
                 $clientePersona = personas::create([
                     'nombre' => $request->input('txtnombreCliente'),
