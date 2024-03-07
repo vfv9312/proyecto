@@ -11,11 +11,34 @@
                     class=" absolute top-0 right-0 flex justify-center items-center bg-green-600 w-6 h-6 rounded-full m-2">
                     <i class="fas fa-info-circle"></i>
                 </div>
+
             </figure>
 
             <p class=" flex flex-col">
-                <span class=" text-sm font-light truncate">{{ $producto->nombre_comercial }}</span>
-                <span class=" text-lg font-bold truncate">$ {{ $producto->precio }}</span>
+            <div class="flex justify-between items-center">
+                <span class="text-sm font-light truncate mr-2">{{ $producto->nombre_comercial }}</span>
+                <div>
+                    @if ($producto->idColor == 1)
+                        <div style="height:25px;width:25px;background-color:black;border-radius:50%;"></div>
+                    @elseif ($producto->idColor == 2)
+                        <div style="height:25px;width:25px;background-color:yellow;border-radius:50%;"></div>
+                    @elseif ($producto->idColor == 3)
+                        <div style="height:25px;width:25px;background-color:cyan;border-radius:50%;"></div>
+                    @elseif ($producto->idColor == 4)
+                        <div style="height:25px;width:25px;background-color:magenta;border-radius:50%;"></div>
+                    @elseif ($producto->idColor == 5)
+                        <div
+                            style="background: linear-gradient(to right, cyan 33%, magenta 33%, magenta 66%, yellow 66%); border-radius: 50%; width: 50px; height: 50px;">
+                        </div>
+                    @elseif ($producto->idColor == 6)
+                        <div
+                            style="background: linear-gradient(to right, cyan 25%, magenta 25%, magenta 50%, yellow 50%, yellow 75%, black 75%); border-radius: 50%; width: 50px; height: 50px;">
+                        </div>
+                    @endif
+                </div>
+            </div>
+            </span>
+            <span class=" text-lg font-bold truncate">$ {{ $producto->precio }}</span>
             </p>
             <p class="flex justify-between">
                 <span>Cantidad</span>

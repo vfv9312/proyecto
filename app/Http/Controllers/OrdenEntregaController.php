@@ -34,6 +34,8 @@ class OrdenEntregaController extends Controller
         $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
             ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->join('colors', 'colors.id', '=', 'productos.id_color')
+            ->join('modos', 'modos.id', '=', 'productos.id_modo')
             ->where('productos.estatus', 1)
             ->where('precios_productos.estatus', 1)
             // ->where('marcas.id', 'LIKE', "%{$marca}%")
@@ -43,7 +45,10 @@ class OrdenEntregaController extends Controller
                 'productos.nombre_comercial',
                 'tipos.nombre as nombre_tipo',
                 'productos.modelo',
-                'productos.color',
+                'colors.id as idColor',
+                'colors.nombre as nombre_color',
+                'modos.id as modo_id',
+                'modos.nombre as nombre_modo',
                 'marcas.nombre as nombre_marca',
                 'productos.fotografia',
                 'precios_productos.precio',
