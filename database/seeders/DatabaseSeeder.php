@@ -36,7 +36,9 @@ class DatabaseSeeder extends Seeder
             Catalago_ubicacionesSeeder::class,
             MarcaSeeder::class,
             TipoSeeder::class,
-            RolesSeeder::class
+            RolesSeeder::class,
+            ColorSeeder::class,
+            ModoSeeder::class
             //  direcciones_clientesSeeder::class,
             //  precios_productosSeeder::class,
             //  ventas_productosSeeder::class,

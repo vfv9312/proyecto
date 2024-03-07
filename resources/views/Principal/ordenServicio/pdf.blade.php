@@ -59,17 +59,27 @@
         </div>
         <div class="body">
             <div class="item">
+                <p> Orden de recoleccion</p>
+                @foreach ($productos as $produc)
+                    Producto a recolectar : {{ $produc->nombre_comercial }}
+                @endforeach
 
-                <p style="margin-top: 10px;"> Costo total : $</p>
+                <p style="margin-top: 10px;"> Costo total : ${{ $precio }}</p>
             </div>
             <!-- Agrega más items aquí -->
         </div>
         <div class="cliente">
             <h5> Datos del cliente </h5>
-
+            <p> {{ $nombre_cliente }}</p>
+            <p>Tel: {{ $telefono }}</p>
+            <p>RFC : {{ $rfc }}</p>
+            <p>{{ $email }}</p>
+            <p>{{ $direccion }}</p>
         </div>
         <div class="footer">
-
+            <p> Le atendio :</p>
+            <p> {{ $atencion }} </p>
+            <p> {{ $fecha }} </p>
         </div>
     </div>
 </body>

@@ -44,12 +44,7 @@
             @endforeach
         </select>
     </div>
-    <div class="flex flex-col w-full md:w-1/2 ">
-        <label for="precio">Costo aproximado:</label>
-        <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            type="number" step="0.01" id="precio" name="txtprecio">
-    </div>
+
 </div>
 
 <div class=" flex flex-col">

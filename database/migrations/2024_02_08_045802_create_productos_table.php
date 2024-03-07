@@ -14,11 +14,12 @@ return new class extends Migration
     {
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_marca');
-            $table->unsignedBigInteger('id_tipo');
+            $table->unsignedBigInteger('id_marca')->nullable();
+            $table->unsignedBigInteger('id_tipo')->nullable();
+            $table->unsignedBigInteger('id_color')->nullable();
+            $table->unsignedBigInteger('id_modo')->nullable();
             $table->string('nombre_comercial');
             $table->string('modelo')->nullable();
-            $table->string('color')->nullable();
             $table->text('descripcion')->nullable();
             $table->string('fotografia')->nullable();
             $table->timestamps();
@@ -26,6 +27,8 @@ return new class extends Migration
             $table->tinyInteger('estatus')->default(1);
             $table->foreign('id_marca')->references('id')->on('marcas');
             $table->foreign('id_tipo')->references('id')->on('tipos');
+            $table->foreign('id_color')->references('id')->on('colors');
+            $table->foreign('id_modo')->references('id')->on('modos');
         });
     }
 

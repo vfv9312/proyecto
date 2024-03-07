@@ -3,10 +3,23 @@
 @section('title', 'Datos de la recoleccion')
 
 @section('content_header')
-
+    <!-- mensaje de aviso que se registro el producto-->
+    @if (session('correcto'))
+        <div class=" flex justify-center">
+            <div id="alert-correcto" class="bg-green-500 bg-opacity-50 text-white px-4 py-2 rounded mb-8 w-64 ">
+                {{ session('correcto') }}
+            </div>
+        </div>
+    @endif
+    @if (session('incorrect'))
+        <div id="alert-incorrect" class="bg-red-500 text-white px-4 py-2 rounded">
+            {{ session('incorrect') }}
+        </div>
+    @endif
 @stop
 
 @section('content')
+
     <h1 class=" text-2xl">Registro de los productos a recolectar</h1>
     <form class=" mt-16 flex flex-col justify-center" action="{{ route('orden_servicio.edit', $Preventa->id) }}"
         method="GET">
@@ -39,6 +52,12 @@
 
 @section('js')
     <script>
-        console.log('Hi!');
+        //Oculta los elementos de alerta despues de 3 segundos
+        window.setTimeout(function() {
+            var alertCorrecto = document.getElementById('alert-correcto');
+            var alertIncorrect = document.getElementById('alert-incorrect');
+            if (alertCorrecto) alertCorrecto.style.display = 'none';
+            if (alertIncorrect) alertIncorrect.style.display = 'none';
+        }, 3000);
     </script>
 @stop

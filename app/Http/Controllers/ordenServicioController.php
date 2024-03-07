@@ -86,6 +86,9 @@ class ordenServicioController extends Controller
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
+
+
+
             $clienteSeleccionado = $request->input('cliente');
             $id_direcciones = $request->input('id_direccion');
             //  dd($request);
@@ -118,10 +121,10 @@ class ordenServicioController extends Controller
                     } else {
                         $nuevaDireccion = direcciones::create([
                             'id_ubicacion' => $request->input('nuevacolonia'),
-                            'calle' => $request->input('nuevacalle'),
+                            'calle' => strtolower($request->input('nuevacalle')),
                             'num_exterior' => $request->input('nuevonum_exterior'),
                             'num_interior' => $request->input('nuevonum_interior'),
-                            'referencia' => $request->input('nuevareferencia'),
+                            'referencia' => ucfirst(strtolower($request->input('nuevareferencia'))),
                         ]);
                         //guardamos el id de la nueva direccion en preventa
                         $Preventa->id_direccion = $nuevaDireccion->id;
@@ -132,17 +135,17 @@ class ordenServicioController extends Controller
             } else {
                 //si no hay cliente seleccionado entonces crearemos uno
                 $clientePersona = personas::create([
-                    'nombre' => $request->input('txtnombreCliente'),
-                    'apellido' => $request->input('txtapellidoCliente'),
+                    'nombre' => ucwords(strtolower($request->input('txtnombreCliente'))),
+                    'apellido' => ucwords(strtolower($request->input('txtapellidoCliente'))),
                     'telefono' => $request->input('txttelefono'),
-                    'email' => $request->input('txtemail'),
+                    'email' => strtolower($request->input('txtemail')),
                     'estatus' => 1,
                 ]);
 
                 //crearemos un cliente
                 $clienteNuevo = clientes::create([
                     'id_persona' => $clientePersona->id,
-                    'comentario' => $request->input('txtrfc'),
+                    'comentario' => strtoupper($request->input('txtrfc')),
                     'estatus' => 1,
                 ]);
                 //Preventa le asignamos el clienta nuevo
@@ -155,7 +158,7 @@ class ordenServicioController extends Controller
                     //creamos una nueva direccion
                     $nuevaDireccion = direcciones::create([
                         'id_ubicacion' => $request->input('nuevacolonia'),
-                        'calle' => $request->input('nuevacalle'),
+                        'calle' => strtolower($request->input('nuevacalle')),
                         'num_exterior' => $request->input('nuevonum_exterior'),
                         'num_interior' => $request->input('nuevonum_interior'),
                         'referencia' => $request->input('nuevareferencia'),
@@ -182,7 +185,7 @@ class ordenServicioController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            return $th->getMessage();
+            //return $th->getMessage();
         }
 
         return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias'));
@@ -212,7 +215,6 @@ class ordenServicioController extends Controller
             $color = $request->input('txtcolor');
             $tipo = $request->input('txttipo');
             $marca = $request->input('txtmarca');
-            $precio = $request->input('txtprecio');
             $descripcion = $request->input('txtdescripcion');
 
             // Insertar en la tabla 'productos'
@@ -235,7 +237,6 @@ class ordenServicioController extends Controller
             $preventa_servicios = Servicios_preventas::create([
                 'id_preventa' => $idPreventa,
                 'id_producto_recepcion' => $catalago->id,
-                'costo_total' => $precio,
                 'estatus' => 2,
             ]);
 
@@ -248,6 +249,7 @@ class ordenServicioController extends Controller
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
             return $th->getMessage();
         }
+
         return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias'));
 
         //
@@ -291,19 +293,46 @@ class ordenServicioController extends Controller
                 ->select('direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia', 'catalago_ubicaciones.localidad')
                 ->first();
 
+            $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
+                ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'productos.id')
+                ->where('productos.estatus', 2)
+                ->where('servicios_preventas.id_preventa', $id)
+                ->select('productos.nombre_comercial')
+                ->get();
+
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
             return $th->getMessage();
         }
 
-        return view('Principal.ordenServicio.orden_completada', compact('direccion', 'preventa', 'empleado', 'cliente'));
+        return view('Principal.ordenServicio.orden_completada', compact('id', 'productos', 'direccion', 'preventa', 'empleado', 'cliente'));
     }
 
     public function generarPdf(Request $request)
     {
+        $datos = $request->all();
+        $id = $request->input('id');
+        $nombre_cliente = $request->input('txtnombre_cliente');
+        $atencion = $request->input('txtatencion');
+        $direccion = $request->input('txtdireccion');
+        $telefono = $request->input('txttelefono');
+        $rfc = $request->input('txtrfc');
+        $email = $request->input('txtemail');
+        $fecha = $request->input('txtfecha');
+        $precio = $request->input('txtprecio');
 
-        $pdf = PDF::loadView('Principal.ordenServicio.pdf');
+        $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
+            ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'productos.id')
+            ->where('productos.estatus', 2)
+            ->where('servicios_preventas.id_preventa', $id)
+            ->select('productos.nombre_comercial')
+            ->get();
+
+
+
+
+        $pdf = PDF::loadView('Principal.ordenServicio.pdf', compact('productos', 'telefono', 'nombre_cliente', 'atencion', 'direccion', 'rfc', 'email', 'fecha', 'precio'));
 
         // Establece el tamaño del papel a 80mm de ancho y 200mm de largo
         $pdf->setPaper([0, 0, 226.77, 699.93], 'portrait'); // 80mm x 200mm en puntos

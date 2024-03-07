@@ -85,6 +85,7 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
+
             // Obtener el span y todos los inputs con la clase "suma"
             var spanIncrementar = document.querySelector('.incrementar');
             var inputsSuma = document.querySelectorAll('.suma');
@@ -103,6 +104,7 @@
                     spanIncrementar.textContent = sumaTotal;
                 });
             });
+
         });
     </script>
 @stop

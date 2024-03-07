@@ -17,8 +17,10 @@
         <label class="mr-4">Atención</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="inputAtencion" name="txtempleado">
-            <option value="null">Seleccione un empleado</option>
+            id="inputAtencion" name="txtempleado" required
+            oninvalid="this.setCustomValidity('Por favor, selecciona un empleado.')"
+            oninput="this.setCustomValidity('')">
+            <option value="">Seleccione un empleado</option>
             @foreach ($listaEmpleados as $empleado)
                 <option value="{{ $empleado->id }}">{{ $empleado->nombre_empleado }} {{ $empleado->apellido }}-
                     {{ $empleado->nombre_rol }}</option>
@@ -37,14 +39,14 @@
             <label>Nombre</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="nombreCliente" name="txtnombreCliente" placeholder="Nombre del cliente">
+                id="nombreCliente" name="txtnombreCliente" placeholder="Nombre del cliente" required>
         </div>
 
         <div class="flex flex-col w-full md:w-1/2">
             <label>Apellido</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="apellidoCliente" name="txtapellidoCliente" placeholder="Apellidos del cliente">
+                id="apellidoCliente" name="txtapellidoCliente" placeholder="Apellidos del cliente" required>
         </div>
 
     </div>
@@ -56,10 +58,12 @@
             <label>Telefono</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="telefono" name="txttelefono" placeholder="Numero de telefono">
+                id="telefono" name="txttelefono" placeholder="Numero de telefono" pattern="\d{10}"
+                title="Por favor, ingresa exactamente 10 dígitos.">
         </div>
 
-        <div class="flex flex-col w-full md:w-1/2">
+        <div class="flex flex-col
+                w-full md:w-1/2">
             <label>RFC</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -68,8 +72,9 @@
 
         <div class="flex flex-col w-full md:w-1/2">
             <label>Correo electronico</label>
-            <input type="text"
-                class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            <input type="email"
+                class="w-full px-3 py-2 border rounded shadow appearance-none
+                text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="email" name="txtemail" placeholder="ecotoner@example.com">
         </div>
 

@@ -20,7 +20,9 @@
             <p class="flex justify-between">
                 <span>Cantidad</span>
                 <input type="hidden" name="producto_id[]" value="{{ $producto->id }}">
-                <input type="number" class="suma form-input w-20 mr-4" name="cantidad[]" value="0">
+                <input type="number" class="suma form-input w-20 " name="cantidad[]" value="0">
+                <i class="fas fa-minus"></i>
+                <i class="fas fa-plus ml-0"></i>
             </p>
 
         </div>
