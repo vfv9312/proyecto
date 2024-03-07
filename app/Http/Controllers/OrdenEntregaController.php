@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Catalago_ubicaciones;
 use App\Models\clientes;
+use App\Models\Color;
 use App\Models\direcciones;
 use App\Models\direcciones_clientes;
 use App\Models\empleados;
 use App\Models\Marcas;
+use App\Models\Modo;
 use App\Models\Orden_recoleccion;
 use App\Models\personas;
 use App\Models\precios_productos;
@@ -59,8 +61,10 @@ class OrdenEntregaController extends Controller
 
         $marcas = Marcas::orderBy('nombre')->get();
         $tipos = Tipo::orderBy('nombre')->get();
+        $modos = Modo::orderBy('nombre')->get();
+        $colores = Color::all();
 
-        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos'));
+        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores'));
     }
 
     /**
@@ -120,7 +124,6 @@ class OrdenEntregaController extends Controller
 
         try {
             // Recibir los datos enviados desde el navegador
-
             $producto_ids = $request->input('producto_id');
             $cantidades = $request->input('cantidad');
 

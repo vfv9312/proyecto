@@ -20,15 +20,20 @@
             {{ session('incorrect') }}
         </div>
     @endif
-    @include('Principal.ordenEntrega._filtro_articulo')
+
+    @include('Principal.ordenEntrega._modal')
 
     <form action="{{ route('orden_entrega.store') }}" method="POST">
         @csrf
         <header class=" flex justify-between p-3">
-            <h1>Productos</h1> <button type="submit" id="compras"
-                class="fa fa-shopping-bag fa-2x text-red-500 cursor-pointer"><span
-                    class="incrementar ml-2 text-sm text-green-500">0</span></button>
+            <button id="toggle-filters" type="button"
+                class="mt-4 mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                <i class="fas fa-filter"></i> Añadir Filtros
+            </button>
+            <button type="submit" id="compras" class="fa fa-shopping-bag fa-2x text-red-500 cursor-pointer"><span
+                    class="incrementar ml-2 text-sm text-green-500"></span></button>
         </header>
+        @include('Principal.ordenEntrega._filtro_articulo')
         @include('Principal.ordenEntrega._articulos')
 
     </form>
@@ -48,20 +53,26 @@
     <script>
         //BUSCA POR LOS DATOS DE SELECT
         $(document).ready(function() {
-            $('#marca, #tipo').on('change', function() { // Cambiar a #marca y #tipo
+            $('#color ,#modo ,#marca, #tipo').on('change', function() { // Cambiar a #marca y #tipo
                 console.log('Cambio detectado');
 
                 var marcaFiltro = $('#marca').val(); // Cambiar a #marca
                 var tipoFiltro = $('#tipo').val(); // Cambiar a #tipo
+                var modoFiltro = $('#modo').val(); // Cambiar a #tipo
+                var colorFiltro = $('#color').val(); // Cambiar a #tipo
 
                 console.log(marcaFiltro);
 
                 $('.producto').each(function() {
                     var marca = $(this).data('marca');
                     var tipo = $(this).data('tipo');
+                    var modo = $(this).data('modo');
+                    var color = $(this).data('color');
 
-                    if ((marcaFiltro === "" || marcaFiltro == marca) && (tipoFiltro === "" ||
-                            tipoFiltro == tipo)) {
+                    if ((marcaFiltro === "" || marcaFiltro == marca) &&
+                        (tipoFiltro === "" || tipoFiltro == tipo) &&
+                        (colorFiltro === "" || colorFiltro == color) &&
+                        (modoFiltro === "" || modoFiltro == modo)) {
                         $(this).show();
                     } else {
                         $(this).hide();
@@ -84,27 +95,52 @@
             });
         });
 
+        //mostrar y ocultar los filtros
+        document.getElementById('toggle-filters').addEventListener('click', function() {
+            var filtersSection = document.getElementById('filters-section');
+            if (filtersSection.style.display === "none") {
+                filtersSection.style.display = "block";
+            } else {
+                filtersSection.style.display = "none";
+            }
+        });
         document.addEventListener('DOMContentLoaded', function() {
-
-            // Obtener el span y todos los inputs con la clase "suma"
-            var spanIncrementar = document.querySelector('.incrementar');
+            // Obtener el span para la suma total de compras y todos los inputs con la clase "suma"
+            var spanTotalCompras = document.getElementById('totalCompras');
             var inputsSuma = document.querySelectorAll('.suma');
 
-            // Agregar evento de escucha a todos los inputs
+            // Función para calcular la suma total de todos los inputs
+            function calcularTotalCompras() {
+                var sumaTotal = 0;
+                inputsSuma.forEach(function(input) {
+                    sumaTotal += parseInt(input.value) ||
+                        0; // Asegurarse de que el valor sea un número válido
+                });
+                return sumaTotal;
+            }
+
+            // Agregar evento de escucha a todos los inputs para actualizar la suma total
             inputsSuma.forEach(function(input) {
                 input.addEventListener('input', function() {
-                    // Calcular la suma total de todos los inputs
-                    var sumaTotal = 0;
-                    inputsSuma.forEach(function(input) {
-                        sumaTotal += parseInt(input.value) ||
-                            0; // Asegurarse de que el valor sea un número válido
-                    });
-
                     // Actualizar el contenido del span con la suma total
-                    spanIncrementar.textContent = sumaTotal;
+                    spanTotalCompras.textContent = calcularTotalCompras();
                 });
             });
 
         });
+
+        function incrementar(button) {
+            var input = button.parentNode.querySelector('.suma');
+            var currentValue = parseInt(input.value);
+            input.value = currentValue + 1;
+        }
+
+        function decrementar(button) {
+            var input = button.parentNode.querySelector('.suma');
+            var currentValue = parseInt(input.value);
+            if (currentValue > 0) {
+                input.value = currentValue - 1;
+            }
+        }
     </script>
 @stop

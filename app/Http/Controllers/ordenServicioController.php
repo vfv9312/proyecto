@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Catalago_recepcion;
 use App\Models\Catalago_ubicaciones;
 use App\Models\clientes;
+use App\Models\Color;
 use App\Models\direcciones;
 use App\Models\direcciones_clientes;
 use App\Models\empleados;
@@ -66,6 +67,7 @@ class ordenServicioController extends Controller
             ->get();
 
         $ListaColonias = Catalago_ubicaciones::orderBy('localidad')->get();
+
 
 
         return view('Principal.ordenServicio.datos_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias'));
@@ -177,8 +179,9 @@ class ordenServicioController extends Controller
                 }
             }
 
-            $marcas = Marcas::all();
-            $categorias = Tipo::all();
+            $marcas = Marcas::orderBy('nombre')->get();
+            $categorias = Tipo::orderBy('nombre')->get();
+            $colores = Color::all();
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
@@ -187,8 +190,7 @@ class ordenServicioController extends Controller
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
             //return $th->getMessage();
         }
-
-        return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias'));
+        return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias', 'colores'));
     }
 
     /**
@@ -221,7 +223,7 @@ class ordenServicioController extends Controller
             $producto = productos::create([
                 'nombre_comercial' => $nombre_comercial,
                 'modelo' => $request->txtmodelo,
-                'color' => $color,
+                'id_color' => $color,
                 'id_tipo' => $tipo,
                 'id_marca' => $marca,
                 'descripcion' => $descripcion,
@@ -240,8 +242,9 @@ class ordenServicioController extends Controller
                 'estatus' => 2,
             ]);
 
-            $marcas = Marcas::all();
-            $categorias = Tipo::all();
+            $marcas = Marcas::orderBy('nombre')->get();
+            $categorias = Tipo::orderBy('nombre')->get();
+            $colores = Color::all();
 
 
             $Preventa = Preventa::find($id);
@@ -250,7 +253,7 @@ class ordenServicioController extends Controller
             return $th->getMessage();
         }
 
-        return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias'));
+        return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias', 'colores'));
 
         //
     }

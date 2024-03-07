@@ -163,16 +163,16 @@
                                 <div style="height:25px;width:25px;background-color:yellow;border-radius:50%;">
                                 </div>
                             @elseif ($producto->idColor == 3)
-                                <div style="height:25px;width:25px;background-color:cyan;border-radius:50%;"></div>
+                                <div style="height:33px;width:33px;background-color:cyan;border-radius:50%;"></div>
                             @elseif ($producto->idColor == 4)
-                                <div style="height:25px;width:25px;background-color:magenta;border-radius:50%;"></div>
+                                <div style="height:33px;width:33px;background-color:magenta;border-radius:50%;"></div>
                             @elseif ($producto->idColor == 5)
                                 <div
-                                    style="background: linear-gradient(to right, cyan 33%, magenta 33%, magenta 66%, yellow 66%); border-radius: 50%; width: 50px; height: 50px;">
+                                    style="background: linear-gradient(to right, cyan 33%, magenta 33%, magenta 66%, yellow 66%); border-radius: 50%; width: 33px; height: 33px;">
                                 </div>
                             @elseif ($producto->idColor == 6)
                                 <div
-                                    style="background: linear-gradient(to right, cyan 25%, magenta 25%, magenta 50%, yellow 50%, yellow 75%, black 75%); border-radius: 50%; width: 50px; height: 50px;">
+                                    style="background: linear-gradient(to right, cyan 25%, magenta 25%, magenta 50%, yellow 50%, yellow 75%, black 75%); border-radius: 50%; width: 33px; height: 33px;">
                                 </div>
                             @endif
                         </td>

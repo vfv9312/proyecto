@@ -9,24 +9,17 @@
         <label for="color">Color:</label>
         <select name="txtcolor"
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            <option value="">Selecciona un color</option>
-            <option value="Negro">Negro</option>
-            <option value="Cian">Cian</option>
-            <option value="Cian">Cyan Light</option>
-            <option value="Magenta">Magenta</option>
-            <option value="Magenta">Magenta</option>
-            <option value="Amarillo">Magenta Light</option>
-            <option value="CMY">CMA</option>
-            <!--C: Cyan (cian) , M: Magenta, Y: Yellow (amarillo), -->
-            <option value="CMY_Light">CMA Light</option>
-            <option value="CMYK">CMAN</option><!--K: Key (negro)-->
+            <option value="">Selecciona una color</option>
+            @foreach ($colores as $color)
+                <option value="{{ $color->id }}">{{ $color->nombre }}</option>
+            @endforeach
         </select>
     </div>
     <div class="flex flex-col w-full md:w-1/2 ">
         <label for="tipo">Categoria:</label>
         <select name="txttipo"
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            <option value="">Selecciona una una categoria</option>
+            <option value="">Selecciona una categoria</option>
             @foreach ($categorias as $tipo)
                 <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
             @endforeach
