@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Color;
 use App\Models\Marcas;
+use App\Models\Modo;
 use App\Models\precios_productos;
 use App\Models\productos;
 use App\Models\Tipo;
@@ -29,17 +31,21 @@ class ProductosController extends Controller
         $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
             ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->join('modos', 'modos.id', '=', 'productos.id_modo')
+            ->join('colors', 'colors.id', '=', 'productos.id_color')
             ->where('productos.estatus', 1)
             ->where('precios_productos.estatus', 1)
-            ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'productos.color', 'marcas.nombre as nombreMarca', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'productos.fotografia', 'precios_productos.precio')
+            ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'productos.fotografia', 'precios_productos.precio')
             ->orderBy('productos.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
-        $marcas = Marcas::all();
-        $categorias = Tipo::all();
+        $marcas = Marcas::orderBy('nombre')->get();
+        $categorias = Tipo::orderBy('nombre')->get();
+        $modos = Modo::orderBy('nombre')->get();
+        $colores = Color::all();
 
 
-        return view('Productos.productos', compact('productos', 'marcas', 'categorias'));
+        return view('Productos.productos', compact('productos', 'marcas', 'categorias', 'modos', 'colores'));
     }
 
     /**
@@ -95,8 +101,9 @@ class ProductosController extends Controller
             $producto = productos::create([
                 'nombre_comercial' => $request->txtnombre,
                 'modelo' => $request->txtmodelo,
-                'color' => $request->txtcolor,
+                'id_color' => $request->txtcolor,
                 'id_tipo' => $request->txttipo,
+                'id_modo' => $request->txtmodo,
                 'id_marca' => $request->txtmarca,
                 'descripcion' => $request->txtdescripcion,
                 'fotografia' => $url,
@@ -146,15 +153,20 @@ class ProductosController extends Controller
             ->first();
         $datosProducto = productos::join('marcas', 'marcas.id', '=', 'productos.id_marca')
             ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->join('modos', 'modos.id', '=', 'productos.id_modo')
+            ->join('colors', 'colors.id', '=', 'productos.id_color')
             ->where('productos.estatus', 1)
             ->where('productos.id', $producto->id)
-            ->select('marcas.id as idMarca', 'marcas.nombre as nombreMarca', 'tipos.id as idTipo', 'tipos.nombre as nombreTipo')
+            ->select('marcas.id as idMarca', 'marcas.nombre as nombreMarca', 'tipos.id as idTipo', 'tipos.nombre as nombreTipo', 'modos.id as idModo', 'modos.nombre as nombreModo', 'colors.id as idColor', 'colors.nombre as nombreColor')
             ->first();
 
-        $marcas = Marcas::all();
-        $categorias = Tipo::all();
+        $marcas = Marcas::orderBy('nombre')->get();
+        $categorias = Tipo::orderBy('nombre')->get();
+        $modos = Modo::orderBy('nombre')->get();
+        $colores = Color::all();
+
         //enviar los dos datos a la vista
-        return view('Productos.edit', compact('producto', 'precioProducto', 'marcas', 'categorias', 'datosProducto'));
+        return view('Productos.edit', compact('producto', 'precioProducto', 'marcas', 'categorias', 'datosProducto', 'colores', 'modos'));
     }
 
     /**
@@ -168,9 +180,10 @@ class ProductosController extends Controller
             $productoActualizado = $producto->update([
                 'nombre_comercial' => $request->txtnombre,
                 'modelo' => $request->txtmodelo,
-                'color' => $request->txtcolor,
+                'id_color' => $request->txtcolor,
                 'id_marca' => $request->txtmarca,
                 'id_tipo' => $request->txttipo,
+                'id_modo' => $request->txtmodo,
                 'descripcion' => $request->txtdescripcion,
                 'estatus' => 1
             ]);

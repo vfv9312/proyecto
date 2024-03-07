@@ -12,18 +12,22 @@
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Color</span>
     <select name="txtcolor" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
-        <option value="{{ $producto->color }}">{{ $producto->color }}</option>
-        <option value="Negro">Negro</option>
-        <option value="Cian">Cian</option>
-        <option value="Cian">Cyan Light</option>
-        <option value="Magenta">Magenta</option>
-        <option value="Magenta">Magenta</option>
-        <option value="Amarillo">Magenta Light</option>
-        <option value="CMY">CMA</option>
-        <!--C: Cyan (cian) , M: Magenta, Y: Yellow (amarillo), -->
-        <option value="CMY_Light">CMA Light</option>
-        <option value="CMYK">CMAN</option><!--K: Key (negro)-->
+        <option value="{{ $datosProducto->idColor }}">{{ $datosProducto->nombreColor }}</option>
+        @foreach ($colores as $color)
+            <option value="{{ $color->id }}">{{ $color->nombre }}</option>
+        @endforeach
     </select>
+
+</label>
+<label class="text-sm text-gray-500 flex flex-col items-start">
+    <span>Tipo</span>
+    <select name="txtmodo" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+        <option value="{{ $datosProducto->idModo }}">{{ $datosProducto->nombreModo }}</option>
+        @foreach ($modos as $modo)
+            <option value="{{ $modo->id }}">{{ $modo->nombre }}</option>
+        @endforeach
+    </select>
+
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Categoria</span>

@@ -29,10 +29,8 @@
         </button>
         <!--Hacemos responsivo el modal-->
         <!-- Modal -->
-        <div id="modalRegistrarProducto"
-            class="hidden fixed z-10 inset-0 overflow-y-auto
-                aria-labelledby="modal-title" role="dialog"
-            aria-modal="true">
+        <div id="modalRegistrarProducto" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
+            role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Fondo del modal -->
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -64,16 +62,9 @@
                                 <select name="txtcolor"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona un color</option>
-                                    <option value="Negro">Negro</option>
-                                    <option value="Cian">Cian</option>
-                                    <option value="Cian">Cyan Light</option>
-                                    <option value="Magenta">Magenta</option>
-                                    <option value="Magenta">Magenta</option>
-                                    <option value="Amarillo">Magenta Light</option>
-                                    <option value="CMY">CMA</option>
-                                    <!--C: Cyan (cian) , M: Magenta, Y: Yellow (amarillo), -->
-                                    <option value="CMY_Light">CMA Light</option>
-                                    <option value="CMYK">CMAN</option><!--K: Key (negro)-->
+                                    @foreach ($colores as $color)
+                                        <option value="{{ $color->id }}">{{ $color->nombre }}</option>
+                                    @endforeach
                                 </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -83,6 +74,16 @@
                                     <option value="">Selecciona una una categoria</option>
                                     @foreach ($categorias as $tipo)
                                         <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Tipo</span>
+                                <select name="txtmodo"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                    <option value="">Selecciona un tipo</option>
+                                    @foreach ($modos as $modo)
+                                        <option value="{{ $modo->id }}">{{ $modo->nombre }}</option>
                                     @endforeach
                                 </select>
                             </label>
@@ -144,6 +145,7 @@
                     <td class="py-3 px-6 text-left border-r">Color</td>
                     <td class="py-3 px-6 text-left border-r">Marca</td>
                     <td class="py-3 px-6 text-left border-r">Categoria</td>
+                    <td class="py-3 px-6 text-left border-r">Tipo </td>
                     <td class="py-3 px-6 text-left border-r">Imagen</td>
                     <td class="py-3 px-6 text-left border-r">Precio</td>
                 </tr>
@@ -155,13 +157,33 @@
                             {{ $producto->modelo }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ $producto->color }}
+                            @if ($producto->idColor == 1)
+                                <div style="height:25px;width:25px;background-color:black;border-radius:50%;"></div>
+                            @elseif ($producto->idColor == 2)
+                                <div style="height:25px;width:25px;background-color:yellow;border-radius:50%;">
+                                </div>
+                            @elseif ($producto->idColor == 3)
+                                <div style="height:25px;width:25px;background-color:cyan;border-radius:50%;"></div>
+                            @elseif ($producto->idColor == 4)
+                                <div style="height:25px;width:25px;background-color:magenta;border-radius:50%;"></div>
+                            @elseif ($producto->idColor == 5)
+                                <div
+                                    style="background: linear-gradient(to right, cyan 33%, magenta 33%, magenta 66%, yellow 66%); border-radius: 50%; width: 50px; height: 50px;">
+                                </div>
+                            @elseif ($producto->idColor == 6)
+                                <div
+                                    style="background: linear-gradient(to right, cyan 25%, magenta 25%, magenta 50%, yellow 50%, yellow 75%, black 75%); border-radius: 50%; width: 50px; height: 50px;">
+                                </div>
+                            @endif
                         </td>
                         <td class="px-6 py-4">
                             {{ $producto->nombreMarca }}
                         </td>
                         <td class="px-6 py-4">
                             {{ $producto->nombreTipo }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->nombreModo }}
                         </td>
                         <td class="px-6 py-4 flex justify-center items-center">
                             <img class=" w-20" src={{ $producto->fotografia }}>

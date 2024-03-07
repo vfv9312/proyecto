@@ -8,7 +8,7 @@
 
 @section('content')
     <form class="mt-8 flex flex-col justify-center items-center"
-        action="{{ route('productos.update', $producto, $precioProducto, $marcas, $categorias, $datosProducto) }}"
+        action="{{ route('productos.update', $producto, $precioProducto, $marcas, $categorias, $datosProducto, $modos, $colores) }}"
         method="POST" enctype="multipart/form-data">
         @method('PUT')
         @include('Productos._form')

@@ -18,9 +18,7 @@ class ColorSeeder extends Seeder
             "Amarillo",
             "Cian",
             "Magenta",
-            "Cian Ligth",
-            "Magenta Ligth",
-            "CMA Ligth",
+            "CMA",
             "CMAN"
         ];
 
