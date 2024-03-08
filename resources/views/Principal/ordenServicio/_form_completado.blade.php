@@ -1,4 +1,4 @@
-<div class="flex flex-wrap -mx-3 mt-16">
+<div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
     <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Nombre del Cliente
@@ -20,7 +20,7 @@
 </div>
 
 
-<div class="w-full md:w-full px-3 mb-6 md:mb-0 md:mt-10">
+<div class="w-full md:w-full px-3 mb-6 md:mb-0 md:mt-10 whitespace-no-wrap border-b border-gray-200">
     <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
         Dirección a entregar
     </label>
@@ -30,7 +30,7 @@
         value="Col.{{ $direccion->localidad }}; {{ $direccion->calle }} #{{ $direccion->num_exterior }} - numero interio {{ $direccion->num_interior }} - Referencia {{ $direccion->referencia }}"
         readonly>
 </div>
-<div class="flex flex-wrap -mx-3 mt-16">
+<div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Telefono del cliente
@@ -57,7 +57,7 @@
     </div>
 
 </div>
-<div class="flex flex-wrap -mx-3 mt-16">
+<div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
     <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Fecha del pedido

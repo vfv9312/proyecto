@@ -209,39 +209,85 @@ class OrdenEntregaController extends Controller
         try {
             $clienteSeleccionado = $request->input('cliente');
             $id_direcciones = $request->input('id_direccion');
-            //  dd($request);
-
-
             //buco la preventa con el id
             $Preventa = Preventa::find($id);
-            $Preventa->estatus = 3;
-            // Guardar el modelo
-            $Preventa->save();
 
-            $venta_producto = ventas_productos::where('id_preventa', $Preventa->id)->get();
-            foreach ($venta_producto as $producto) {
-                $producto->estatus = 3;
-                $producto->save();
-            }
+            //busco si ya existe una orden de recoleccion
+            $buscarrecoleccion = Orden_recoleccion::where('id_preventa', $Preventa->id)
+                ->first();
+            //si ya hay una orden de recoleccion con el id de preventa no haga nada pero si no hay nada entonces crea uno
+            if ($buscarrecoleccion) {
+            } else {
 
-            // si id_direccion tiene datos entonces entra
-            if (!is_null($clienteSeleccionado) && is_numeric($clienteSeleccionado)) {
 
-                //si preventa esxite que si entonces entra
-                if ($Preventa) {
-                    //Actualizar los campos
-                    $Preventa->id_cliente = $clienteSeleccionado;
+                $Preventa->estatus = 3;
+                // Guardar el modelo
+                $Preventa->save();
+
+
+
+                $venta_producto = ventas_productos::where('id_preventa', $Preventa->id)->get();
+                foreach ($venta_producto as $producto) {
+                    $producto->estatus = 3;
+                    $producto->save();
+                }
+
+                // si id_direccion tiene datos entonces entra
+                if (!is_null($clienteSeleccionado) && is_numeric($clienteSeleccionado)) {
+
+                    //si preventa esxite que si entonces entra
+                    if ($Preventa) {
+                        //Actualizar los campos
+                        $Preventa->id_cliente = $clienteSeleccionado;
+                        $Preventa->id_empleado = $request->input('txtempleado');
+
+                        // Guardar el modelo
+                        $Preventa->save();
+
+                        //si el id_direccion existe eligieron una direccion del usuario encontes entra
+                        if ($id_direcciones) {
+                            $Preventa->id_direccion = $id_direcciones;
+                            // Guardar el modelo
+                            $Preventa->save();
+                        } else {
+                            $nuevaDireccion = direcciones::create([
+                                'id_ubicacion' => $request->input('nuevacolonia'),
+                                'calle' => $request->input('nuevacalle'),
+                                'num_exterior' => $request->input('nuevonum_exterior'),
+                                'num_interior' => $request->input('nuevonum_interior'),
+                                'referencia' => $request->input('nuevareferencia'),
+                            ]);
+
+                            $Preventa->id_direccion = $nuevaDireccion->id;
+                            // Guardar el modelo
+                            $Preventa->save();
+                        }
+                    }
+                } else {
+
+                    $clientePersona = personas::create([
+                        'nombre' => $request->input('txtnombreCliente'),
+                        'apellido' => $request->input('txtapellidoCliente'),
+                        'telefono' => $request->input('txttelefono'),
+                        'email' => $request->input('txtemail'),
+                        'estatus' => 1,
+                        // ...otros campos aquí...
+                    ]);
+
+
+                    $clienteNuevo = clientes::create([
+                        'id_persona' => $clientePersona->id,
+                        'comentario' => $request->input('txtrfc'),
+                        'estatus' => 1,
+                    ]);
+
+                    $Preventa->id_cliente = $clienteNuevo->id;
                     $Preventa->id_empleado = $request->input('txtempleado');
-
                     // Guardar el modelo
                     $Preventa->save();
 
-                    //si el id_direccion existe eligieron una direccion del usuario encontes entra
-                    if ($id_direcciones) {
-                        $Preventa->id_direccion = $id_direcciones;
-                        // Guardar el modelo
-                        $Preventa->save();
-                    } else {
+                    if ($request->input('nuevacolonia') && $request->input('nuevacalle')) {
+
                         $nuevaDireccion = direcciones::create([
                             'id_ubicacion' => $request->input('nuevacolonia'),
                             'calle' => $request->input('nuevacalle'),
@@ -250,62 +296,26 @@ class OrdenEntregaController extends Controller
                             'referencia' => $request->input('nuevareferencia'),
                         ]);
 
+                        $direccionNuevaCliente = direcciones_clientes::create([
+                            'id_direccion' => $nuevaDireccion->id,
+                            'id_cliente' => $clienteNuevo->id,
+                            'estatus' => 1
+
+                        ]);
+
                         $Preventa->id_direccion = $nuevaDireccion->id;
                         // Guardar el modelo
                         $Preventa->save();
                     }
                 }
-            } else {
 
-                $clientePersona = personas::create([
-                    'nombre' => $request->input('txtnombreCliente'),
-                    'apellido' => $request->input('txtapellidoCliente'),
-                    'telefono' => $request->input('txttelefono'),
-                    'email' => $request->input('txtemail'),
-                    'estatus' => 1,
-                    // ...otros campos aquí...
+                $Ordenderecoleccion = Orden_recoleccion::create([
+                    'id_preventa' => $Preventa->id,
+                    'estatus' => 2
+
                 ]);
-
-
-                $clienteNuevo = clientes::create([
-                    'id_persona' => $clientePersona->id,
-                    'comentario' => $request->input('txtrfc'),
-                    'estatus' => 1,
-                ]);
-
-                $Preventa->id_cliente = $clienteNuevo->id;
-                $Preventa->id_empleado = $request->input('txtempleado');
-                // Guardar el modelo
-                $Preventa->save();
-
-                if ($request->input('nuevacolonia') && $request->input('nuevacalle')) {
-
-                    $nuevaDireccion = direcciones::create([
-                        'id_ubicacion' => $request->input('nuevacolonia'),
-                        'calle' => $request->input('nuevacalle'),
-                        'num_exterior' => $request->input('nuevonum_exterior'),
-                        'num_interior' => $request->input('nuevonum_interior'),
-                        'referencia' => $request->input('nuevareferencia'),
-                    ]);
-
-                    $direccionNuevaCliente = direcciones_clientes::create([
-                        'id_direccion' => $nuevaDireccion->id,
-                        'id_cliente' => $clienteNuevo->id,
-                        'estatus' => 1
-
-                    ]);
-
-                    $Preventa->id_direccion = $nuevaDireccion->id;
-                    // Guardar el modelo
-                    $Preventa->save();
-                }
             }
 
-            $Ordenderecoleccion = Orden_recoleccion::create([
-                'id_preventa' => $Preventa->id,
-                'estatus' => 2
-
-            ]);
 
             //consultas para motrar los datos
             $listaCliente = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
@@ -351,7 +361,7 @@ class OrdenEntregaController extends Controller
             return $th->getMessage();
         }
         if (true) {
-            return view('Principal.ordenEntrega.orden_Completa', compact('Ordenderecoleccion', 'Preventa', 'listaCliente', 'listaEmpleado', 'datosPreventa', 'listaProductos'));
+            return view('Principal.ordenEntrega.orden_completa', compact('Preventa', 'listaCliente', 'listaEmpleado', 'datosPreventa', 'listaProductos'));
         } else {
             session()->flash("incorrect", "Error al procesar el carrito de compras");
             return redirect()->route('orden_entrega.create ');

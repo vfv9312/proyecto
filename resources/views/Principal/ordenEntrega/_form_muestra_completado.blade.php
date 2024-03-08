@@ -1,103 +1,97 @@
-<div class="container mx-auto px-4 sm:px-8 md:px-16 lg:px-24">
-    <div class="py-8">
-        <div>
-            <h2 class="text-2xl font-semibold leading-tight">Detalles de orden de Entrega</h2>
-        </div>
+<div class="flex flex-wrap -mx-3 mt-16 px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Nombre del Cliente
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="nombre_cliente" type="text" name="txtnombre_cliente"
+            value=" {{ $listaCliente->nombre_cliente }} {{ $listaCliente->apellido }}" readonly>
+    </div>
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Atendido por
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="atencion" type="text" name="txtatencion"
+            value="{{ $listaEmpleado->nombre_empleado }} {{ $listaEmpleado->apellido }} -
+            {{ $listaEmpleado->nombre_rol }}"
+            readonly>
+    </div>
+</div>
+<div class="flex flex-wrap -mx-3 mt-5 px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Telefono
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="nombre_cliente" type="text" name="txtnombre_cliente" value=" {{ $listaCliente->telefono_cliente }}"
+            readonly>
+    </div>
+    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            RFC
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="atencion" type="text" name="txtatencion" value=" {{ $listaCliente->comentario }}" readonly>
+    </div>
+    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Correo electronico
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="atencion" type="text" name="txtatencion" value="{{ $listaCliente->email }}" readonly>
+    </div>
+</div>
+<div class="flex flex-wrap -mx-3 mt-5 px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Direccion
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="nombre_cliente" type="text" name="txtnombre_cliente"
+            value="{{ $datosPreventa->municipio }}, {{ $datosPreventa->estado }};
+            Col.{{ $datosPreventa->localidad }}; {{ $datosPreventa->calle }}
+            #{{ $datosPreventa->num_exterior }} / numero interior
+            {{ $datosPreventa->num_interior == null ? 'S/N' : $datosPreventa->num_interior }}"
+            readonly>
+    </div>
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Fecha del pedido
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="atencion" type="text" name="txtatencion" value="{{ $datosPreventa->fecha }}" readonly>
+    </div>
+</div>
 
-        <div class="py-2">
-            <div
-                class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
-                <div class="overflow-auto">
-                    <table class="min-w-full">
-                        <thead class="block sm:table-header-group">
-                            <tr
-                                class="flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0">
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Nombre del cliente
-                                </th>
-
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Teléfono celular
-                                </th>
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Correo electrónico
-                                </th>
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    RFC
-                                </th>
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Dirección de entrega
-                                </th>
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Persona que atendió
-                                </th>
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Fecha de creacion del pedido
-                                </th>
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Factura
-                                </th>
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Costo total
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="block sm:table-row-group">
-                            <tr class="flex flex-col flex-no wrap sm:table-row mb-2 sm:mb-0">
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    {{ $listaCliente->nombre_cliente }} {{ $listaCliente->apellido }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    {{ $listaCliente->telefono_cliente }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    {{ $listaCliente->email }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    {{ $listaCliente->comentario }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    {{ $datosPreventa->municipio }}, {{ $datosPreventa->estado }};
-                                    Col.{{ $datosPreventa->localidad }}; {{ $datosPreventa->calle }}
-                                    #{{ $datosPreventa->num_exterior }} / numero interior
-                                    {{ $datosPreventa->num_interior }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    {{ $listaEmpleado->nombre_empleado }} {{ $listaEmpleado->apellido }}-
-                                    {{ $listaEmpleado->nombre_rol }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    {{ $datosPreventa->fecha }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    {{ $datosPreventa->factura == 1 ? 'Sí' : 'No' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    @php
-                                        $total = 0;
-                                        foreach ($listaProductos as $producto) {
-                                            $total += $producto->precio * $producto->cantidad;
-                                        }
-                                    @endphp
-                                    ${{ $total }}
-                                    <input type="hidden" name="total" value="{{ $total }}">
-                                </td>
-
-                                <!-- Repite el bloque anterior para los demás campos -->
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<div class="flex flex-wrap -mx-3 mt-5 px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Factura
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="nombre_cliente" type="text" name="txtnombre_cliente"
+            value="{{ $datosPreventa->factura == 1 ? 'Sí' : 'No' }}" readonly>
+    </div>
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Costo total
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="atencion" type="text" name="txtatencion"
+            value="@php $total = 0;
+            foreach ($listaProductos as $producto) {
+                $total += $producto->precio * $producto->cantidad;} @endphp ${{ $total }}"
+            readonly>
+        <input type="hidden" name="total" value="{{ $total }}">
     </div>
 </div>

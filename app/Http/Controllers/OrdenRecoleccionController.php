@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Orden_recoleccion;
+use App\Models\Preventa;
 use Illuminate\Http\Request;
 
 class OrdenRecoleccionController extends Controller
@@ -12,7 +13,27 @@ class OrdenRecoleccionController extends Controller
      */
     public function index()
     {
-        return view('Orden_recoleccion.index');
+        $preventas = Preventa::join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('personas', 'personas.id', '=', 'clientes.id_persona')
+            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_cliente')
+            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
+            ->where('preventas.estatus', 2)
+            ->orWhere('preventas.estatus', 3)
+            ->select(
+                'preventas.estatus',
+                'personas.nombre as nombreCliente',
+                'personas.apellido as apellidoCliente',
+                'personas.telefono',
+                'clientes.comentario as rfc',
+                'catalago_ubicaciones.localidad',
+                'direcciones.calle',
+                'direcciones.num_exterior',
+                'direcciones.num_interior',
+                'direcciones.referencia'
+            )
+            ->get();
+        return view('Principal.ordenRecoleccion.recolecciones', compact('preventas'));
     }
 
     /**

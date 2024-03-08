@@ -3,10 +3,12 @@
 @section('title', 'Inicio')
 
 @section('content_header')
-    <h5 class=" text-center"> Hola <strong>{{ Auth::user()->name }}</strong> desde aqui podras registrar tus ordenes de venta
+    <h5 class=" text-center"> Hola <strong>{{ Auth::user()->name }}</strong> desde aqui podras registrar tus ordenes de
+        venta
         y ordenes de
         servicios
     </h5>
+
 @stop
 
 @section('content')

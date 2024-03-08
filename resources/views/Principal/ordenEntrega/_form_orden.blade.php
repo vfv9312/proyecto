@@ -17,7 +17,7 @@
         <label class="mr-4">Atención</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="inputAtencion" name="txtempleado">
+            id="inputAtencion" name="txtempleado" required>
             <option value="null">Seleccione un empleado</option>
             @foreach ($listaEmpleados as $empleado)
                 <option value="{{ $empleado->id }}">{{ $empleado->nombre_empleado }} {{ $empleado->apellido }}-
@@ -56,7 +56,8 @@
             <label>Telefono</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="telefono" name="txttelefono" placeholder="Numero de telefono">
+                id="telefono" name="txttelefono" placeholder="Numero de telefono" pattern="\d{10}" required
+                title="Por favor ingrese exactamente 10 dígitos">
         </div>
 
         <div class="flex flex-col w-full md:w-1/2">
@@ -68,7 +69,7 @@
 
         <div class="flex flex-col w-full md:w-1/2">
             <label>Correo electronico</label>
-            <input type="text"
+            <input type="email"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="email" name="txtemail" placeholder="ecotoner@example.com">
         </div>
