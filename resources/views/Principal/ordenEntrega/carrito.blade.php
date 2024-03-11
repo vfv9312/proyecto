@@ -68,8 +68,9 @@
                 <input type="checkbox" name="factura" value="1">
             </div>
             <div class="mt-6">
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-500">Registrar
-                    cliente</button>
+                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Siguiente <i class="fas fa-arrow-right"></i>
+                </button>
 
             </div>
         </div>
@@ -82,6 +83,9 @@
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
 @stop
 
 @section('js')

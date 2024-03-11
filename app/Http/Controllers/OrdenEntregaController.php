@@ -45,7 +45,7 @@ class OrdenEntregaController extends Controller
             ->select(
                 'productos.id',
                 'productos.nombre_comercial',
-                'tipos.nombre as nombre_tipo',
+                'tipos.nombre as nombre_categoria',
                 'productos.modelo',
                 'colors.id as idColor',
                 'colors.nombre as nombre_color',

@@ -214,6 +214,7 @@
                 @endforeach
             </table>
             <div class=" mt-3">
+                <p>Total de resultados: {{ $productos->total() }}</p> <!--mostrar total de resultados-->
                 {{ $productos->links() }} <!-- Esto mostrará los enlaces de paginación -->
             </div>
         </section>

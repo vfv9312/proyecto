@@ -170,6 +170,9 @@ class OrdenRecoleccionController extends Controller
         // Recuperar el ID de la orden de recolección
         $ordenRecoleccion = $orden_recoleccion;
         $estatus = $request->miSelect;
+        $preventa = Preventa::where('id', $ordenRecoleccion->id_preventa)
+            ->whereIn('estatus', [2, 3, 4])
+            ->first();
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
@@ -188,10 +191,16 @@ class OrdenRecoleccionController extends Controller
                     // Agrega aquí cualquier otro campo que desees actualizar
                 ]);
             } else if ($estatus == 1) {
+                //actualizamos orden de recoleccion
                 $ordenRecoleccion->update([
                     'estatus' => $estatus,
                     // Agrega aquí cualquier otro campo que desees actualizar
                 ]);
+                //actualizamos preventa
+                $preventa->update([
+                    'estatus' => 1
+                ]);
+                //actualizamos ventas
                 $ventaConcluida = ventas::create([
                     'id_recoleccion' => $ordenRecoleccion->id,
                 ]);

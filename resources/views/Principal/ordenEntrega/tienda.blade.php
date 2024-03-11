@@ -31,7 +31,7 @@
                 <i class="fas fa-filter"></i> Añadir Filtros
             </button>
             <button type="submit" id="compras" class="fa fa-shopping-bag fa-2x text-red-500 cursor-pointer"><span
-                    class="incrementar ml-2 text-sm text-green-500"></span></button>
+                    id="totalSpan" class="incrementar ml-2 text-sm text-green-500">0</span></button>
         </header>
         @include('Principal.ordenEntrega._filtro_articulo')
         @include('Principal.ordenEntrega._articulos')
@@ -40,7 +40,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome para los iconos-->
@@ -61,7 +60,7 @@
                 var modoFiltro = $('#modo').val(); // Cambiar a #tipo
                 var colorFiltro = $('#color').val(); // Cambiar a #tipo
 
-                console.log(marcaFiltro);
+
 
                 $('.producto').each(function() {
                     var marca = $(this).data('marca');
@@ -104,6 +103,7 @@
                 filtersSection.style.display = "none";
             }
         });
+        /*
         document.addEventListener('DOMContentLoaded', function() {
             // Obtener el span para la suma total de compras y todos los inputs con la clase "suma"
             var spanTotalCompras = document.getElementById('totalCompras');
@@ -127,12 +127,26 @@
                 });
             });
 
-        });
+        });*/
+
+        function actualizarTotal() {
+
+            var inputs = document.querySelectorAll('.suma');
+            let totalSpan = document.querySelector('#totalSpan');
+            var total = 0;
+            console.log(inputs);
+            inputs.forEach(function(input) {
+                total += parseInt(input.value);
+            });
+            totalSpan.textContent = total;
+        }
+
 
         function incrementar(button) {
             var input = button.parentNode.querySelector('.suma');
             var currentValue = parseInt(input.value);
             input.value = currentValue + 1;
+            actualizarTotal();
         }
 
         function decrementar(button) {
@@ -140,6 +154,7 @@
             var currentValue = parseInt(input.value);
             if (currentValue > 0) {
                 input.value = currentValue - 1;
+                actualizarTotal();
             }
         }
     </script>

@@ -321,7 +321,7 @@ return [
             'label_color' => 'success',
         ],
         [
-            'text'        => 'Orden de recoleccion',
+            'text'        => 'Recolección y entrega',
             'route'         => 'orden_recoleccion.index',
             'icon'        => 'fas fa-motorcycle',
             'label'       => 0,

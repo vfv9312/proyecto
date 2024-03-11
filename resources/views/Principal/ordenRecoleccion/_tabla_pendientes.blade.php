@@ -79,5 +79,6 @@
         @endforeach
 
     </table>
+    <p>Total de resultados: {{ $preventas->total() }}</p>
     {{ $preventas->links() }} <!-- Esto mostrará los enlaces de paginación -->
 </section>

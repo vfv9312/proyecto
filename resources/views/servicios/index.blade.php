@@ -79,6 +79,8 @@
                 @endforeach
             </table>
             <div class=" mt-3">
+                <p>Total de resultados: {{ $servicios->total() }}</p>
+
                 {{ $servicios->links() }} <!-- Esto mostrará los enlaces de paginación -->
             </div>
     </main>
@@ -94,47 +96,47 @@
 @section('js')
     <script>
         /*
-                            //Oculta los elementos de alerta despues de 3 segundos
-                            window.setTimeout(function() {
-                                var alertCorrecto = document.getElementById('alert-correcto');
-                                var alertIncorrect = document.getElementById('alert-incorrect');
-                                if (alertCorrecto) alertCorrecto.style.display = 'none';
-                                if (alertIncorrect) alertIncorrect.style.display = 'none';
-                            }, 3000);
+                                //Oculta los elementos de alerta despues de 3 segundos
+                                window.setTimeout(function() {
+                                    var alertCorrecto = document.getElementById('alert-correcto');
+                                    var alertIncorrect = document.getElementById('alert-incorrect');
+                                    if (alertCorrecto) alertCorrecto.style.display = 'none';
+                                    if (alertIncorrect) alertIncorrect.style.display = 'none';
+                                }, 3000);
 
-                            // Obtén los elementos del DOM
-                            const modalEditarRegistro = document.querySelector('#modalEditarRegistro');
-                            const modalRegistrarProducto = document.querySelector('#modalRegistrarProducto')
-                            const abrirModalEditar = document.querySelectorAll('.abrirModalEditar');
-                            const abrirnModalRegisrarProducto = document.querySelector('#abrirnModalRegisrarProducto');
+                                // Obtén los elementos del DOM
+                                const modalEditarRegistro = document.querySelector('#modalEditarRegistro');
+                                const modalRegistrarProducto = document.querySelector('#modalRegistrarProducto')
+                                const abrirModalEditar = document.querySelectorAll('.abrirModalEditar');
+                                const abrirnModalRegisrarProducto = document.querySelector('#abrirnModalRegisrarProducto');
 
-                            const cancelarModal = document.querySelector('.cerrarmodal');
-                            const cancelarModalEditar = document.querySelector('#cerrarModalEditar');
+                                const cancelarModal = document.querySelector('.cerrarmodal');
+                                const cancelarModalEditar = document.querySelector('#cerrarModalEditar');
 
-                            // Selecciona todos los botones con la clase '.openModalButton'
-                            abrirModalEditar.forEach(button => {
-                                button.addEventListener('click', function() {
-                                    // Muestra el modal
-                                    modalEditarRegistro.classList.remove('hidden');
+                                // Selecciona todos los botones con la clase '.openModalButton'
+                                abrirModalEditar.forEach(button => {
+                                    button.addEventListener('click', function() {
+                                        // Muestra el modal
+                                        modalEditarRegistro.classList.remove('hidden');
+                                    });
                                 });
-                            });
-                            //Abre el modal para registrar un producto
-                            abrirnModalRegisrarProducto.addEventListener('click', function() {
-                                modalRegistrarProducto.classList.remove('hidden');
-                            });
+                                //Abre el modal para registrar un producto
+                                abrirnModalRegisrarProducto.addEventListener('click', function() {
+                                    modalRegistrarProducto.classList.remove('hidden');
+                                });
 
-                            // Escucha el evento de click en el botón cancelar Modal de registro
-                            cancelarModal.addEventListener('click', function() {
-                                // Oculta el modal
-                                modalRegistrarProducto.classList.add('hidden');
-                            });
+                                // Escucha el evento de click en el botón cancelar Modal de registro
+                                cancelarModal.addEventListener('click', function() {
+                                    // Oculta el modal
+                                    modalRegistrarProducto.classList.add('hidden');
+                                });
 
-                            // Escucha el evento de click en el botón cancelar Modal de Editar
-                            cerrarModalEditar.addEventListener('click', function() {
+                                // Escucha el evento de click en el botón cancelar Modal de Editar
+                                cerrarModalEditar.addEventListener('click', function() {
 
-                                // Oculta el modal
-                                modalEditarRegistro.classList.add('hidden');
-                            });*/
+                                    // Oculta el modal
+                                    modalEditarRegistro.classList.add('hidden');
+                                });*/
 
         function changeColor() {
             var select = document.getElementById('colorSelect');

@@ -123,6 +123,6 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
     </div>
     <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 flex items-center mt-8">
         <i class="fas fa-sync-alt mr-2"></i>
-        Eliminar
+        Actualizar
     </button>
 </div>
