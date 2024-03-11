@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('Fecha_entrega')->nullable();
             $table->text('comentario')->nullable();
             $table->softDeletes();
-            $table->tinyInteger('estatus')->default(2);
+            $table->tinyInteger('estatus')->default(5); //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
             $table->timestamps();
             $table->foreign('id_preventa')->references('id')->on('preventas');
         });

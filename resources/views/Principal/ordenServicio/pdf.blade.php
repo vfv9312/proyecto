@@ -61,7 +61,7 @@
             <div class="item">
                 <p> Orden de recoleccion</p>
                 @foreach ($productos as $produc)
-                    Producto a recolectar : {{ $produc->nombre_comercial }}
+                    Producto a recolectar : {{ $produc->nombre_comercial }} -{{ $produc->descripcion }}
                 @endforeach
 
                 <p style="margin-top: 10px;"> Costo total : ${{ $precio }}</p>

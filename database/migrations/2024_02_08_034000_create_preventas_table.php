@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('comentario')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->tinyInteger('estatus')->default(2);
+            $table->tinyInteger('estatus')->default(2); //3 entrega, 4 servicios, 2 inconcluso, 0 eliminado
             $table->foreign('id_cliente')->references('id')->on('clientes');
             $table->foreign('id_direccion')->references('id')->on('direcciones');
             $table->foreign('id_empleado')->references('id')->on('empleados');

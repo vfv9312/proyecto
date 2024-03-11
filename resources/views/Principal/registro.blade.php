@@ -82,6 +82,11 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome para los iconos-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 @stop
 
 @section('js')
@@ -110,5 +115,10 @@
                 document.getElementById('empleadoId').value = empleado.id; // Establecer el valor del campo oculto
             }
         }
+
+        $(document).ready(function() {
+            $('#clientes').select2();
+            $('#clientes').select2();
+        });
     </script>
 @stop

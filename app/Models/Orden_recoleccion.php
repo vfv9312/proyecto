@@ -12,4 +12,13 @@ class Orden_recoleccion extends Model
     protected $guarded = [
         'id'
     ];
+    /**
+     * Get the user that owns the Orden_recoleccion
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function preventa()
+    {
+        return $this->belongsTo(Preventa::class, 'id_preventa', 'id');
+    }
 }

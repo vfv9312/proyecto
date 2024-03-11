@@ -105,7 +105,7 @@
             <label class="mr-4">Colonia</label>
             <select
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                name="nuevacolonia">
+                id="txtcolonia" name="nuevacolonia">
                 <option value="null">Seleccione una colonia</option>
                 @foreach ($ListaColonias as $colonia)
                     <option value="{{ $colonia->id }}">{{ $colonia->localidad }}</option>

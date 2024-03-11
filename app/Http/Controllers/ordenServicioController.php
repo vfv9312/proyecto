@@ -90,10 +90,11 @@ class ordenServicioController extends Controller
         try {
 
 
-
+            //clienteSeleccionado es el id del cliente seleccionado si elegi uno ya registrado
             $clienteSeleccionado = $request->input('cliente');
+            //id_direcciones es el id de la direccion seleccionada del cliente
             $id_direcciones = $request->input('id_direccion');
-            //  dd($request);
+
 
             //creamos una preventa con estatus a 3
             $Preventa = Preventa::create([
@@ -115,18 +116,24 @@ class ordenServicioController extends Controller
                     // Guardar el modelo
                     $Preventa->save();
 
-                    //si el id_direccion existe eligieron una direccion del usuario encontes entra
+                    //si el id_direccion existe eligieron una direccion del usuario entonces entra
                     if (!is_null($id_direcciones) && is_numeric($clienteSeleccionado)) {
                         $Preventa->id_direccion = $id_direcciones;
                         // Guardar el modelo
                         $Preventa->save();
                     } else {
+                        //si no selecciono direccion creamos una nueva direccion con los datos de agregar direccion
                         $nuevaDireccion = direcciones::create([
                             'id_ubicacion' => $request->input('nuevacolonia'),
                             'calle' => strtolower($request->input('nuevacalle')),
                             'num_exterior' => $request->input('nuevonum_exterior'),
                             'num_interior' => $request->input('nuevonum_interior'),
                             'referencia' => ucfirst(strtolower($request->input('nuevareferencia'))),
+                        ]);
+                        $ligarDireccionCliente = direcciones_clientes::create([
+                            'id_direccion' => $nuevaDireccion->id,
+                            'id_cliente' => $clienteSeleccionado,
+                            'estatus' => 1
                         ]);
                         //guardamos el id de la nueva direccion en preventa
                         $Preventa->id_direccion = $nuevaDireccion->id;
@@ -266,8 +273,22 @@ class ordenServicioController extends Controller
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
-
             $preventa = Preventa::find($id);
+            $preventa->update([
+                'estatus' => 4 //3 entrega y 4 servicios
+            ]);
+            //buscar si hay una recoleccion con el id de preventa que tenemos
+            $buscarrecoleccion = Orden_recoleccion::where('id_preventa', $preventa->id)->first();
+            //si lo encuentra no cres nada pero si no lo encuentra crea una recoleccion
+            if ($buscarrecoleccion) {
+            } else {
+                $recoleccion = Orden_recoleccion::create([
+                    'id_preventa' => $preventa->id,
+                    'estatus' => 4, //4por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
+                ]);
+            }
+
+
             $empleado = empleados::join('roles', 'roles.id', '=', 'empleados.id_rol')
                 ->join('personas', 'personas.id', '=', 'empleados.id_persona')
                 ->join('preventas', 'preventas.id_empleado', '=', 'empleados.id')
@@ -291,16 +312,19 @@ class ordenServicioController extends Controller
             $direccion = direcciones::join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
                 ->join('preventas', 'preventas.id_direccion', '=', 'direcciones.id')
                 ->where('direcciones.estatus', 1)
-                ->where('preventas.estatus', 2)
+                ->where('preventas.estatus', 4)
                 ->where('preventas.id', $id)
-                ->select('direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia', 'catalago_ubicaciones.localidad')
+                ->select('direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia', 'catalago_ubicaciones.localidad as colonia')
                 ->first();
 
             $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
-                ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'productos.id')
-                ->where('productos.estatus', 2)
-                ->where('servicios_preventas.id_preventa', $id)
-                ->select('productos.nombre_comercial')
+                ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+                ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+                ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+                ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+                ->where('preventas.id', $id)
+                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
                 ->get();
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
@@ -326,10 +350,13 @@ class ordenServicioController extends Controller
         $precio = $request->input('txtprecio');
 
         $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
-            ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'productos.id')
-            ->where('productos.estatus', 2)
-            ->where('servicios_preventas.id_preventa', $id)
-            ->select('productos.nombre_comercial')
+            ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+            ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+            ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+            ->where('preventas.id', $id)
+            ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
             ->get();
 
 

@@ -257,6 +257,11 @@ class OrdenEntregaController extends Controller
                                 'num_interior' => $request->input('nuevonum_interior'),
                                 'referencia' => $request->input('nuevareferencia'),
                             ]);
+                            $ligarDireccionCliente = direcciones_clientes::create([
+                                'id_direccion' => $nuevaDireccion->id,
+                                'id_cliente' => $clienteSeleccionado,
+                                'estatus' => 1
+                            ]);
 
                             $Preventa->id_direccion = $nuevaDireccion->id;
                             // Guardar el modelo
@@ -311,7 +316,7 @@ class OrdenEntregaController extends Controller
 
                 $Ordenderecoleccion = Orden_recoleccion::create([
                     'id_preventa' => $Preventa->id,
-                    'estatus' => 2
+                    'estatus' => 2 //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
 
                 ]);
             }

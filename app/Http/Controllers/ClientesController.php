@@ -16,11 +16,18 @@ class ClientesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $busqueda = $request->query('adminlteSearch');
+
         //Consulta para mostras los datos de las personas y paginar de 5 en 5
         $clientes = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->where('clientes.estatus', 1)
+            ->where(function ($query) use ($busqueda) {
+                $query->where('personas.telefono', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('personas.nombre', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('personas.apellido', 'LIKE', "%{$busqueda}%");
+            })
             ->select('clientes.id', 'clientes.comentario', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento')
             ->orderBy('clientes.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
@@ -29,8 +36,8 @@ class ClientesController extends Controller
         $direcciones = direcciones::join('direcciones_clientes', 'direcciones_clientes.id_direccion', '=', 'direcciones.id')
             ->join('clientes', 'clientes.id', '=', 'direcciones_clientes.id_cliente')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->select('clientes.id', 'direcciones.id as id_direccion', 'catalago_ubicaciones.municipio', 'catalago_ubicaciones.localidad', 'direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia')
             ->where('clientes.estatus', 1)
+            ->select('clientes.id', 'direcciones.id as id_direccion', 'catalago_ubicaciones.municipio', 'catalago_ubicaciones.localidad', 'direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia')
             ->orderBy('clientes.updated_at', 'desc')
             ->get();
         //enviamos todas las colonias

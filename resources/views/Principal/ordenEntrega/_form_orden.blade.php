@@ -17,8 +17,10 @@
         <label class="mr-4">Atención</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="inputAtencion" name="txtempleado" required>
-            <option value="null">Seleccione un empleado</option>
+            id="inputAtencion" name="txtempleado" required
+            oninvalid="this.setCustomValidity('Por favor, selecciona un empleado.')"
+            oninput="this.setCustomValidity('')">
+            <option value="">Seleccione un empleado</option>
             @foreach ($listaEmpleados as $empleado)
                 <option value="{{ $empleado->id }}">{{ $empleado->nombre_empleado }} {{ $empleado->apellido }}-
                     {{ $empleado->nombre_rol }}</option>
@@ -101,7 +103,7 @@
             <label class="mr-4">Colonia</label>
             <select
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                name="nuevacolonia">
+                id="txtcolonia" name="nuevacolonia">
                 <option value="null">Seleccione una colonia</option>
                 @foreach ($ListaColonias as $colonia)
                     <option value="{{ $colonia->id }}">{{ $colonia->localidad }}</option>
