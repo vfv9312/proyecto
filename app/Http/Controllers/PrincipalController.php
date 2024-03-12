@@ -64,6 +64,7 @@ class PrincipalController extends Controller
             $metodo_pago = $request->input('metodo_pago');
             $relacion = [];
             $factura = $request->input('factura');
+            $pagoEfectivo = $request->input('cantidad_efectivo');
 
 
             //En resumen, este código está creando un nuevo array ($relacion) que mapea productos a cantidades, pero solo para aquellos productos cuya cantidad es mayor que 0.
@@ -75,8 +76,10 @@ class PrincipalController extends Controller
 
             $ventaActualizada = Preventa::find($venta->id)->update([
                 'metodo_pago' => $metodo_pago,
+                'pago_efectivo' => $pagoEfectivo,
                 'factura' => $factura,
             ]);
+            $datosVenta = Preventa::find($venta->id);
 
             foreach ($relacion as $id_Producto => $cantidad) {
                 // Si el valor no es un array, no necesitas decodificarlo
@@ -138,7 +141,7 @@ class PrincipalController extends Controller
             $actualizarCantidad = false;
         }
         if ($actualizarCantidad  == true) {
-            return view('Principal.ordenEntrega.registrar_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'venta'));
+            return view('Principal.ordenEntrega.registrar_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'venta', 'datosVenta'));
         } else {
             session()->flash("incorrect", "Error al procesar el carrito de compras");
             return redirect()->route('orden_entrega.create ');

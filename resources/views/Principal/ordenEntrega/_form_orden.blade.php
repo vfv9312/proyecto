@@ -61,14 +61,21 @@
                 id="telefono" name="txttelefono" placeholder="Numero de telefono" pattern="\d{10}" required
                 title="Por favor ingrese exactamente 10 dígitos">
         </div>
-
-        <div class="flex flex-col w-full md:w-1/2">
-            <label>RFC</label>
-            <input type="text"
-                class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="rfc" name="txtrfc" placeholder="RFC">
-        </div>
-
+        @if ($datosVenta->factura == null)
+            <div class="flex flex-col w-full md:w-1/2">
+                <label>RFC</label>
+                <input type="text"
+                    class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="rfc" name="txtrfc" placeholder="RFC" oninput="validarRFCOpcional(this)">
+            </div>
+        @else
+            <div class="flex flex-col w-full md:w-1/2">
+                <label>RFC</label>
+                <input type="text"
+                    class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="rfc" name="txtrfc" placeholder="RFC" oninput="validarRFC(this)" required>
+            </div>
+        @endif
         <div class="flex flex-col w-full md:w-1/2">
             <label>Correo electronico</label>
             <input type="email"
@@ -106,7 +113,7 @@
                 id="txtcolonia" name="nuevacolonia">
                 <option value="null">Seleccione una colonia</option>
                 @foreach ($ListaColonias as $colonia)
-                    <option value="{{ $colonia->id }}">{{ $colonia->localidad }}</option>
+                    <option value="{{ $colonia->id }}">{{ $colonia->localidad }} - cp {{ $colonia->cp }}</option>
                 @endforeach
             </select>
         </div>

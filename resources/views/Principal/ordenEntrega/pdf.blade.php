@@ -60,34 +60,36 @@
         <div class="body">
             <div class="item">
                 @php
-                    $productos = json_decode($listaProductos, true);
+                    $total = 0;
                 @endphp
-                @foreach ($productos as $producto)
-                    <p>Producto: {{ $producto['nombre_comercial'] }}</p>
-                    <p>Cantidad: {{ $producto['cantidad'] }}</p>
-                    <p style="margin-bottom: 10px;">Precio: ${{ $producto['precio'] }}</p>
+                @foreach ($listaProductos as $producto)
+                    <p>Producto: {{ $producto->nombre_comercial }}</p>
+                    <p>Cantidad: {{ $producto->cantidad }}</p>
+                    <p style="margin-bottom: 10px;">Precio: ${{ $producto->precio }}</p>
+                    @php
+                        $total += $producto->precio * $producto->cantidad;
+                    @endphp
                 @endforeach
                 <p style="margin-top: 10px;"> Costo total : ${{ $total }}</p>
+                {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . ($ordenRecoleccion->pagoEfectivo - $total) : '' }}
             </div>
             <!-- Agrega más items aquí -->
         </div>
         <div class="cliente">
             <h5> Datos del cliente </h5>
-            @php
-                $Cliente = json_decode($listaCliente);
-                $Preventa = json_decode($datosPreventa);
-                $Empleado = json_decode($listaEmpleado);
-            @endphp
-            <p>{{ $Cliente->nombre_cliente }} {{ $Cliente->apellido }}</p>
-            <p>{{ $Cliente->telefono_cliente }}</p>
-            <p>Col.{{ $Preventa->localidad }}; {{ $Preventa->calle }} #{{ $Preventa->num_exterior }} -
-                interior # {{ $Preventa->num_interior }}</p>
-            <p>Referencia: {{ $Preventa->referencia }}</p>
-            <p>Factura : {{ $Preventa->factura == 1 ? 'Sí' : 'No' }}</p>
+            <p>{{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
+            <p>{{ $ordenRecoleccion->telefonoCliente }}</p>
+            <p>Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
+                #{{ $ordenRecoleccion->num_exterior }}
+                {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}</p>
+            <p>Referencia: {{ $ordenRecoleccion->referencia }}</p>
+            <p>Factura : {{ $ordenRecoleccion->factura == 1 ? 'SI' : 'NO' }}</p>
         </div>
         <div class="footer">
+            <span>Ticket compra:{{ $ordenRecoleccion->idRecoleccion }}</span>
             <p>Le atendio:</p>
-            <p>{{ $Empleado->nombre_empleado }} {{ $Empleado->apellido }}</p>
+            <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
+            <p>Fecha : {{ $ordenRecoleccion->fechaCreacion }}</p>
             <p>Gracias por su compra!</p>
         </div>
     </div>

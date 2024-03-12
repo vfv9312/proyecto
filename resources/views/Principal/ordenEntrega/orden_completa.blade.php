@@ -3,24 +3,37 @@
 @section('title', 'Orden de recoleccion')
 
 @section('content_header')
-    <h1>Orden de recoleccion</h1>
+    <h1>Orden de Entrega</h1>
 @stop
 
 @section('content')
     <p>Listo puede descargar el ticket de entrega o puede descargarlo despues en el apartade se ordenes de recoleccion</p>
-    <form method="POST" action="{{ route('generarpdf.ordenentrega') }}">
-        @csrf
-        @include('Principal.ordenEntrega._form_muestra_completado')
-        <input type="hidden" name="listaCliente" value="{{ $listaCliente }}">
-        <input type="hidden" name="datosPreventa" value="{{ $datosPreventa }}">
-        <input type="hidden" name="listaEmpleado" value="{{ $listaEmpleado }}">
-        <input type="hidden" name="listaProductos" value="{{ $listaProductos }}">
-        <button type="submit"
+
+    @include('Principal.ordenEntrega._form_muestra_completado')
+
+
+    <div class="mt-6 flex justify-center">
+        <button type="button"
+            onclick="window.location.href='{{ route('generarpdf.ordenentrega', ['id' => $buscarrecoleccion->id]) }}'"
             class="inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
             <i class="fas fa-file-pdf"></i>
             Ver PDF
         </button>
-    </form>
+        <button type="button"
+            onclick="window.location.href='{{ route('orden_entrega.show', ['orden_entrega' => $buscarrecoleccion->id]) }}'"
+            class="mr-8 ml-8 inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+            <i class="fas fa-eye"></i>
+            Vista previa
+        </button>
+
+
+        <button type="button"
+            class="inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+            <i class="fas fa-envelope"></i>
+            Enviar por correo
+        </button>
+    </div>
+
 @stop
 
 @section('css')

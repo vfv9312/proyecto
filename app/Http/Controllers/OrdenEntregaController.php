@@ -186,9 +186,50 @@ class OrdenEntregaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $orden_recoleccion)
     {
-        //
+        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
+            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
+            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
+            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
+            ->where('orden_recoleccions.id', $orden_recoleccion)
+            ->select(
+                'orden_recoleccions.id as idRecoleccion',
+                'orden_recoleccions.created_at as fechaCreacion',
+                'preventas.metodo_pago as metodoPago',
+                'preventas.id as idPreventa',
+                'preventas.factura',
+                'preventas.pago_efectivo as pagoEfectivo',
+                'direcciones.calle',
+                'direcciones.num_exterior',
+                'direcciones.num_interior',
+                'direcciones.referencia',
+                'catalago_ubicaciones.cp',
+                'catalago_ubicaciones.localidad',
+                'clientes.comentario as rfc',
+                'personaClientes.nombre as nombreCliente',
+                'personaClientes.apellido as apellidoCliente',
+                'personaClientes.telefono as telefonoCliente',
+                'personaClientes.email as correo',
+                'personaEmpleado.nombre as nombreEmpleado',
+                'personaEmpleado.apellido as apellidoEmpleado',
+                'personaEmpleado.telefono as telefonoEmpleado',
+            )
+            ->first();
+
+
+        $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+            ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+            ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+            ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
+            ->get();
+
+        return view('Principal.ordenEntrega.vista_previa', compact('ordenRecoleccion', 'listaProductos'));
     }
 
     /**
@@ -348,7 +389,7 @@ class OrdenEntregaController extends Controller
             $datosPreventa = Preventa::join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
                 ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
                 ->where('preventas.id', $id)
-                ->select('preventas.updated_at as fecha', 'preventas.metodo_pago', 'preventas.factura', 'preventas.comentario', 'catalago_ubicaciones.localidad', 'catalago_ubicaciones.estado', 'catalago_ubicaciones.municipio', 'direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia')
+                ->select('preventas.updated_at as fecha', 'preventas.pago_efectivo', 'preventas.metodo_pago', 'preventas.factura', 'preventas.comentario', 'catalago_ubicaciones.localidad', 'catalago_ubicaciones.estado', 'catalago_ubicaciones.municipio', 'direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia')
                 ->first();
 
             $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
@@ -366,26 +407,57 @@ class OrdenEntregaController extends Controller
             return $th->getMessage();
         }
         if (true) {
-            return view('Principal.ordenEntrega.orden_completa', compact('Preventa', 'listaCliente', 'listaEmpleado', 'datosPreventa', 'listaProductos'));
+            return view('Principal.ordenEntrega.orden_completa', compact('buscarrecoleccion', 'listaCliente', 'listaEmpleado', 'datosPreventa', 'listaProductos'));
         } else {
             session()->flash("incorrect", "Error al procesar el carrito de compras");
             return redirect()->route('orden_entrega.create ');
         }
     }
 
-    public function generarPdf(Request $request)
+    public function generarPdf(string $id)
     {
-        $total = $request->input('total');
-        $listaCliente = $request->input('listaCliente');
-        $datosPreventa = $request->input('datosPreventa');
-        $listaEmpleado = $request->input('listaEmpleado');
-        $listaProductos = $request->input('listaProductos');
+        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
+            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
+            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
+            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
+            ->where('orden_recoleccions.id', $id)
+            ->select(
+                'orden_recoleccions.id as idRecoleccion',
+                'orden_recoleccions.created_at as fechaCreacion',
+                'preventas.metodo_pago as metodoPago',
+                'preventas.id as idPreventa',
+                'preventas.factura',
+                'preventas.pago_efectivo as pagoEfectivo',
+                'direcciones.calle',
+                'direcciones.num_exterior',
+                'direcciones.num_interior',
+                'direcciones.referencia',
+                'catalago_ubicaciones.cp',
+                'catalago_ubicaciones.localidad',
+                'clientes.comentario as rfc',
+                'personaClientes.nombre as nombreCliente',
+                'personaClientes.apellido as apellidoCliente',
+                'personaClientes.telefono as telefonoCliente',
+                'personaClientes.email as correo',
+                'personaEmpleado.nombre as nombreEmpleado',
+                'personaEmpleado.apellido as apellidoEmpleado',
+            )
+            ->first();
+
+
+        $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+            ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+            ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+            ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
+            ->get();
 
         $pdf = PDF::loadView('Principal.ordenEntrega.pdf', compact(
-            'total',
-            'listaCliente',
-            'datosPreventa',
-            'listaEmpleado',
+            'ordenRecoleccion',
             'listaProductos'
         ));
 

@@ -50,22 +50,29 @@
                 <h2 id="total" class="text-xl font-semibold">Total:</h2>
                 <p class=" total text-xl font-semibold"></p>
             </div>
+            <p class=" flex justify-end cambio"> </p>
             <div style="display: flex; justify-content:center;">
 
-                <select name="metodo_pago" id="metodo_pago">
+                <select name="metodo_pago" id="metodo_pago" required>
                     <option value="">Seleccione un método de pago</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Cheque">Cheque</option>
                     <option value="Transferencia_Bancaria">Transferencia bancaria</option>
                     <option value="Tarjeta_Credito">Tarjeta credito</option>
-
-
                     <!-- Agrega más opciones según sea necesario -->
                 </select>
+
+            </div>
+            <div class=" flex justify-center mt-6 w-full">
+                <input type="number" id="cantidad_efectivo" name="cantidad_efectivo" class="hidden w-1/3"
+                    placeholder="Ingrese la cantidad con la que va a pagar">
             </div>
             <div>
                 <label class="mr-4">Factura</label>
-                <input type="checkbox" name="factura" value="1">
+                <input type="checkbox" id="factura" name="factura" value="1">
+                <p id="warning" class="hidden text-red-500">Si desea factura deberá ingresar su RFC en la siguiente
+                    vista.
+                </p>
             </div>
             <div class="mt-6">
                 <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
@@ -90,6 +97,7 @@
 
 @section('js')
     <script>
+        //ESTE SIRVE PARA QUE PARA QUE CUANDO LE AUMENTEMOS O DISMINUYAMOS CANTIDAD SE SUMARA
         window.addEventListener('DOMContentLoaded', (event) => {
             var cantidades = document.querySelectorAll('.cantidad');
             var resultados = document.querySelectorAll('.valorProducto');
@@ -115,14 +123,19 @@
 
                 cantidad.addEventListener('input', function() {
                     resultado.textContent = this.value * precio;
+                    console.log(totalElement);
                     updateTotal();
                 });
             });
             updateTotal();
 
         });
-
+        //ESTO SIRVE CUANDO ELIMINO UN PRODUCTO LO OCULTA Y LE PONE VALORES 0 A CANTIDAD Y LA MULTIPLICACION Y AL FINAL RECALCULA LA SUMA DEL TOTAL
         function eliminarProducto(elemento, index) {
+            var cantidades = document.querySelectorAll('.cantidad');
+            var resultados = document.querySelectorAll('.valorProducto');
+            var totalElement = document.querySelector('.total');
+
             // Obtener el input de cantidad correspondiente al producto eliminado
             var inputCantidad = elemento.querySelector('input[name="cantidad[]"]');
             // Establecer su valor a 0
@@ -139,26 +152,46 @@
             // Ocultar el elemento (opcional)
             elemento.style.display = 'none';
 
-            // Actualizar el total
-            updateTotal();
-        }
-
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // Buscar todos los inputs de eliminación
-            var inputsEliminacion = document.querySelectorAll('input[name="eliminacion[]"]');
-            inputsEliminacion.forEach(function(input, index) {
-                // Si el valor del input de eliminación es 1
-                if (input.value == '1') {
-                    // Buscar el input de cantidad correspondiente y establecer su valor a 0
-                    var inputCantidad = document.querySelector('input[name="cantidad[]"]:nth-child(' + (
-                        index + 1) + ')');
-                    inputCantidad.value = 0;
-
-                    // Actualizar el resultado
-                    var resultado = document.querySelector('#valorProducto');
-                    resultado.textContent = '0';
-                }
+            // Recalcular el total
+            var total = 0;
+            resultados.forEach((resultado) => {
+                total += parseFloat(resultado.textContent);
             });
+            totalElement.textContent = total;
+        }
+        //calculamos el cambio
+        document.getElementById('cantidad_efectivo').addEventListener('input', function() {
+            var totalElement = document.querySelector('.total');
+            var cambioElement = document.querySelector('.cambio');
+            var totalInicial = parseFloat(totalElement.textContent);
+            var cantidadEfectivo = parseFloat(this.value);
+            var nuevoTotal = cantidadEfectivo - totalInicial;
+            cambioElement.textContent = 'Cambio : $' + nuevoTotal.toFixed(2);
+            console.log('El resultado de la resta es: ' + nuevoTotal.toFixed(2));
+        });
+
+        //esto sirve para mostrar un mensaje de advertencia si llega a seleccionar que quiere factura tendra que ingresar su rfc
+        document.querySelector('#factura').addEventListener('change', function() {
+            var warning = document.querySelector('#warning');
+            if (this.checked) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        });
+        //esto sirve para que mostrar u ocultar con cuanto va pagar si selecciona efectivo
+        document.getElementById('metodo_pago').addEventListener('change', function() {
+            var cantidadEfectivo = document.getElementById('cantidad_efectivo');
+            var cambioElement = document.querySelector('.cambio');
+            if (this.value === 'Efectivo') {
+                cantidadEfectivo.classList.remove('hidden');
+                cambioElement.classList.remove('hidden');
+                cantidadEfectivo.required = true;
+            } else {
+                cantidadEfectivo.classList.add('hidden');
+                cambioElement.classList.add('hidden');
+                cantidadEfectivo.required = false;
+            }
         });
     </script>
 @stop
