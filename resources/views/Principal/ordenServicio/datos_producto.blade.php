@@ -29,9 +29,6 @@
     <form action="{{ route('orden_servicio.update', $Preventa->id) }}" method="POST">
         @csrf
         @method('PUT')
-        <input type="hidden" name="dato2" value="valor2">
-        <!-- Agrega más campos de entrada ocultos según sea necesario -->
-
         <div class="flex justify-center mt-8">
             <input type="hidden" name="dato" value="valor">
             <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">

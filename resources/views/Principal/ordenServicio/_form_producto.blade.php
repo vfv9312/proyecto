@@ -27,7 +27,7 @@
     </div>
 </div>
 <div class=" flex md:mt-8">
-    <div class="flex flex-col w-full md:w-1/2 mr-8">
+    <div class="flex flex-col w-full md:w-1/3 mr-8">
         <label for="marca">Marca:</label>
         <select name="txtmarca"
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
@@ -37,7 +37,24 @@
             @endforeach
         </select>
     </div>
+    <div class="flex flex-col w-full md:w-1/3 md:mr-6">
+        <label>Tipo:</label>
+        <select name="txtmodo"
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Selecciona una tipo</option>
+            @foreach ($tipos as $tipo)
+                <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
+            @endforeach
+        </select>
+    </div>
 
+    <div class="flex flex-col w-full md:w-1/3 md:mr-6">
+        <label>Cantidad</label>
+        <input type="number" name="txtcantidad"
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+
+        </input>
+    </div>
 </div>
 
 <div class=" flex flex-col">

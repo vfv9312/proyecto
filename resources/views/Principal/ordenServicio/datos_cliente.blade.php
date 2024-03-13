@@ -32,6 +32,17 @@
             event.preventDefault();
             $('#nuevaDireccion').toggle();
         });
+
+        function validarRFCOpcional(input) {
+            var regex = /^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{3})?$/;
+            if (input.value.trim() !== '' && !regex.test(input.value)) {
+                input.setCustomValidity(
+                    'RFC inválido deben ser 3 o 4 letras mayusculas, seguido de 6 dígitos y 3 alfanumericos');
+            } else {
+                input.setCustomValidity('');
+            }
+        }
+
         //este ayuda a buscar en datos en el select
         $(document).ready(function() {
             $('#txtcolonia').select2();

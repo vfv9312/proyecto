@@ -7,9 +7,17 @@
 @stop
 
 @section('content')
-    <form action="{{ route('generarpdf.ordenservicio') }}" method="POST">
+    <form action="{{ route('generarpdf.ordenservicio', ['id' => $recoleccion->id]) }}" method="GET">
         @csrf
         @include('Principal.ordenServicio._form_completado')
+
+        <div class="flex
+            justify-center mt-8">
+            <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">
+                <i class="fas fa-file-pdf"></i>
+                Ver pdf
+            </button>
+        </div>
     </form>
 @stop
 

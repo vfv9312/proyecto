@@ -59,27 +59,29 @@
         </div>
         <div class="body">
             <div class="item">
-                <p> Orden de recoleccion</p>
                 @foreach ($productos as $produc)
-                    Producto a recolectar : {{ $produc->nombre_comercial }} -{{ $produc->descripcion }}
+                    Producto a recolectar : {{ $produc->nombre_comercial }} - {{ $produc->cantidad }} -
+                    {{ $produc->descripcion }}
                 @endforeach
-
-                <p style="margin-top: 10px;"> Costo total : ${{ $precio }}</p>
             </div>
             <!-- Agrega más items aquí -->
         </div>
         <div class="cliente">
             <h5> Datos del cliente </h5>
-            <p> {{ $nombre_cliente }}</p>
-            <p>Tel: {{ $telefono }}</p>
-            <p>RFC : {{ $rfc }}</p>
-            <p>{{ $email }}</p>
-            <p>{{ $direccion }}</p>
+            <p> {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
+            <p>Tel: {{ $ordenRecoleccion->telefonoCliente }}</p>
+            <p>RFC : {{ $ordenRecoleccion->rfc }}</p>
+            <p>{{ $ordenRecoleccion->correo }}</p>
+            <p>Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
+                #{{ $ordenRecoleccion->num_exterior }}
+                {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}</p>
         </div>
         <div class="footer">
-            <p> Le atendio :</p>
-            <p> {{ $atencion }} </p>
-            <p> {{ $fecha }} </p>
+            <span>Ticket recoleccion:{{ $ordenRecoleccion->idRecoleccion }}</span>
+            <p>Le atendio:</p>
+            <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
+            <p>Fecha : {{ $ordenRecoleccion->fechaCreacion }}</p>
+            <p>Orden de recoleccion!</p>
         </div>
     </div>
 </body>

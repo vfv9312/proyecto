@@ -10,6 +10,7 @@ use App\Models\direcciones;
 use App\Models\direcciones_clientes;
 use App\Models\empleados;
 use App\Models\Marcas;
+use App\Models\Modo;
 use App\Models\Orden_recoleccion;
 use App\Models\personas;
 use App\Models\precios_productos;
@@ -19,6 +20,7 @@ use App\Models\Servicios_preventas;
 use App\Models\Tipo;
 use App\Models\ventas_productos;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Dotenv\Util\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -123,14 +125,15 @@ class ordenServicioController extends Controller
                         $Preventa->save();
                     } else {
                         //si no selecciono direccion creamos una nueva direccion con los datos de agregar direccion
-                        $nuevaDireccion = direcciones::create([
+                        $nuevaDireccion = direcciones::firstOrCreate([
                             'id_ubicacion' => $request->input('nuevacolonia'),
                             'calle' => strtolower($request->input('nuevacalle')),
                             'num_exterior' => $request->input('nuevonum_exterior'),
                             'num_interior' => $request->input('nuevonum_interior'),
-                            'referencia' => ucfirst(strtolower($request->input('nuevareferencia'))),
+                            'referencia' => strtolower($request->input('nuevareferencia')),
+
                         ]);
-                        $ligarDireccionCliente = direcciones_clientes::create([
+                        $ligarDireccionCliente = direcciones_clientes::firstOrCreate([
                             'id_direccion' => $nuevaDireccion->id,
                             'id_cliente' => $clienteSeleccionado,
                             'estatus' => 1
@@ -143,7 +146,8 @@ class ordenServicioController extends Controller
                 }
             } else {
                 //si no hay cliente seleccionado entonces crearemos uno
-                $clientePersona = personas::create([
+                //firstOrCreate de Laravel. Este método intentará encontrar un registro en la base de datos que coincida con los valores de los atributos dados. Si no se encuentra un modelo existente, se creará una nueva instancia del modelo.
+                $clientePersona = personas::firstOrCreate([
                     'nombre' => ucwords(strtolower($request->input('txtnombreCliente'))),
                     'apellido' => ucwords(strtolower($request->input('txtapellidoCliente'))),
                     'telefono' => $request->input('txttelefono'),
@@ -151,8 +155,9 @@ class ordenServicioController extends Controller
                     'estatus' => 1,
                 ]);
 
+
                 //crearemos un cliente
-                $clienteNuevo = clientes::create([
+                $clienteNuevo = clientes::firstOrCreate([
                     'id_persona' => $clientePersona->id,
                     'comentario' => strtoupper($request->input('txtrfc')),
                     'estatus' => 1,
@@ -173,7 +178,7 @@ class ordenServicioController extends Controller
                         'referencia' => $request->input('nuevareferencia'),
                     ]);
                     //le asignamos la nueva direccion al cliente
-                    $direccionNuevaCliente = direcciones_clientes::create([
+                    $direccionNuevaCliente = direcciones_clientes::firstOrCreate([
                         'id_direccion' => $nuevaDireccion->id,
                         'id_cliente' => $clienteNuevo->id,
                         'estatus' => 1
@@ -188,6 +193,7 @@ class ordenServicioController extends Controller
 
             $marcas = Marcas::orderBy('nombre')->get();
             $categorias = Tipo::orderBy('nombre')->get();
+            $tipos = Modo::all();
             $colores = Color::all();
 
 
@@ -197,7 +203,7 @@ class ordenServicioController extends Controller
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
             //return $th->getMessage();
         }
-        return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias', 'colores'));
+        return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias', 'colores', 'tipos'));
     }
 
     /**
@@ -205,89 +211,23 @@ class ordenServicioController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Request $request, string $id)
-    {
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
-
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
 
-            $idPreventa = $id;
-            $nombre_comercial = $request->input('txtnombre_comercial');
-            $color = $request->input('txtcolor');
-            $tipo = $request->input('txttipo');
-            $marca = $request->input('txtmarca');
-            $descripcion = $request->input('txtdescripcion');
-
-            // Insertar en la tabla 'productos'
-            $producto = productos::create([
-                'nombre_comercial' => $nombre_comercial,
-                'modelo' => $request->txtmodelo,
-                'id_color' => $color,
-                'id_tipo' => $tipo,
-                'id_marca' => $marca,
-                'descripcion' => $descripcion,
-                'fotografia' => null,
-                'estatus' => 2
-            ]);
-
-            $catalago = Catalago_recepcion::create([
-                'id_producto' => $producto->id,
-                'estatus' => 2
-            ]);
-
-            $preventa_servicios = Servicios_preventas::create([
-                'id_preventa' => $idPreventa,
-                'id_producto_recepcion' => $catalago->id,
-                'estatus' => 2,
-            ]);
-
-            $marcas = Marcas::orderBy('nombre')->get();
-            $categorias = Tipo::orderBy('nombre')->get();
-            $colores = Color::all();
-
-
-            $Preventa = Preventa::find($id);
-        } catch (\Throwable $th) {
-            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            return $th->getMessage();
-        }
-
-        return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias', 'colores'));
-
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
-
-        try {
             $preventa = Preventa::find($id);
             $preventa->update([
                 'estatus' => 4 //3 entrega y 4 servicios
             ]);
             //buscar si hay una recoleccion con el id de preventa que tenemos
-            $buscarrecoleccion = Orden_recoleccion::where('id_preventa', $preventa->id)->first();
+            // $buscarrecoleccion = Orden_recoleccion::where('id_preventa', $preventa->id)->first();
             //si lo encuentra no cres nada pero si no lo encuentra crea una recoleccion
-            if ($buscarrecoleccion) {
-            } else {
-                $recoleccion = Orden_recoleccion::create([
-                    'id_preventa' => $preventa->id,
-                    'estatus' => 4, //4por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
-                ]);
-            }
 
+            $recoleccion = Orden_recoleccion::firstOrCreate([
+                'id_preventa' => $preventa->id,
+                'estatus' => 4, //4por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
+            ]);
 
             $empleado = empleados::join('roles', 'roles.id', '=', 'empleados.id_rol')
                 ->join('personas', 'personas.id', '=', 'empleados.id_persona')
@@ -323,9 +263,122 @@ class ordenServicioController extends Controller
                 ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
                 ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
                 ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+                ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
                 ->where('preventas.id', $id)
-                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
+                ->select(
+                    'productos.id',
+                    'productos.nombre_comercial',
+                    'marcas.nombre as marca',
+                    'tipos.nombre as tipo',
+                    'colors.nombre as color',
+                    'modos.nombre as modo',
+                    'servicios_preventas.cantidad_total',
+                    'productos.descripcion',
+                )
                 ->get();
+        } catch (\Throwable $th) {
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+
+            //throw $th;
+        }
+
+        return view('Principal.ordenServicio.orden_completada', compact('productos', 'direccion', 'cliente', 'empleado', 'recoleccion', 'preventa', 'id'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Request $request, string $id)
+    {
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+
+        try {
+
+            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+
+            $idPreventa = $id;
+            $nombre_comercial = $request->input('txtnombre_comercial');
+            $color = $request->input('txtcolor');
+            $tipo = $request->input('txttipo');
+            $marca = $request->input('txtmarca');
+            $descripcion = $request->input('txtdescripcion');
+            $cantidad = $request->input('txtcantidad');
+            $modo = $request->input('txtmodo');
+
+            // Insertar en la tabla 'productos'
+            $producto = productos::create([
+                'nombre_comercial' => $nombre_comercial,
+                'modelo' => $request->txtmodelo,
+                'id_color' => $color,
+                'id_tipo' => $tipo,
+                'id_modo' => $modo,
+                'id_marca' => $marca,
+                'descripcion' => $descripcion,
+                'fotografia' => null,
+                'estatus' => 2
+            ]);
+
+            $catalago = Catalago_recepcion::firstOrCreate([
+                'id_producto' => $producto->id,
+                'estatus' => 2
+            ]);
+
+            $preventa_servicios = Servicios_preventas::firstOrCreate([
+                'id_preventa' => $idPreventa,
+                'id_producto_recepcion' => $catalago->id,
+                'cantidad_total' => $cantidad,
+                'estatus' => 2,
+            ]);
+
+            $marcas = Marcas::orderBy('nombre')->get();
+            $categorias = Tipo::orderBy('nombre')->get();
+            $colores = Color::all();
+            $tipos = Modo::all();
+
+
+            $Preventa = Preventa::find($id);
+        } catch (\Throwable $th) {
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+            return $th->getMessage();
+        }
+
+        return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'categorias', 'colores', 'tipos'));
+
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+
+        try {
+
+            $preventa = Preventa::find($id);
+
+            $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
+                ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+                ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+                ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+                ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+                ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
+                ->where('preventas.id', $id)
+                ->select(
+                    'productos.id',
+                    'productos.nombre_comercial',
+                    'marcas.nombre as marca',
+                    'tipos.nombre as tipo',
+                    'colors.nombre as color',
+                    'modos.nombre as modo',
+                    'servicios_preventas.cantidad_total',
+                    'servicios_preventas.descripcion',
+                )
+                ->get();
+
+
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
@@ -333,21 +386,43 @@ class ordenServicioController extends Controller
             return $th->getMessage();
         }
 
-        return view('Principal.ordenServicio.orden_completada', compact('id', 'productos', 'direccion', 'preventa', 'empleado', 'cliente'));
+        return view('Principal.ordenServicio.carrito', compact('productos', 'preventa'));
     }
 
-    public function generarPdf(Request $request)
+    public function generarPdf(string $id)
     {
-        $datos = $request->all();
-        $id = $request->input('id');
-        $nombre_cliente = $request->input('txtnombre_cliente');
-        $atencion = $request->input('txtatencion');
-        $direccion = $request->input('txtdireccion');
-        $telefono = $request->input('txttelefono');
-        $rfc = $request->input('txtrfc');
-        $email = $request->input('txtemail');
-        $fecha = $request->input('txtfecha');
-        $precio = $request->input('txtprecio');
+
+        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
+            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
+            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
+            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
+            ->where('orden_recoleccions.id', $id)
+            ->select(
+                'orden_recoleccions.id as idRecoleccion',
+                'orden_recoleccions.created_at as fechaCreacion',
+                'preventas.metodo_pago as metodoPago',
+                'preventas.id as idPreventa',
+                'preventas.factura',
+                'preventas.pago_efectivo as pagoEfectivo',
+                'direcciones.calle',
+                'direcciones.num_exterior',
+                'direcciones.num_interior',
+                'direcciones.referencia',
+                'catalago_ubicaciones.cp',
+                'catalago_ubicaciones.localidad',
+                'clientes.comentario as rfc',
+                'personaClientes.nombre as nombreCliente',
+                'personaClientes.apellido as apellidoCliente',
+                'personaClientes.telefono as telefonoCliente',
+                'personaClientes.email as correo',
+                'personaEmpleado.nombre as nombreEmpleado',
+                'personaEmpleado.apellido as apellidoEmpleado',
+            )
+            ->first();
 
         $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
             ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
@@ -355,14 +430,15 @@ class ordenServicioController extends Controller
             ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
             ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
-            ->where('preventas.id', $id)
-            ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
+            ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
+            ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
             ->get();
 
 
 
 
-        $pdf = PDF::loadView('Principal.ordenServicio.pdf', compact('productos', 'telefono', 'nombre_cliente', 'atencion', 'direccion', 'rfc', 'email', 'fecha', 'precio'));
+        $pdf = PDF::loadView('Principal.ordenServicio.pdf', compact('productos', 'ordenRecoleccion'));
 
         // Establece el tamaño del papel a 80mm de ancho y 200mm de largo
         $pdf->setPaper([0, 0, 226.77, 699.93], 'portrait'); // 80mm x 200mm en puntos

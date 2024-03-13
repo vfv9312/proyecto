@@ -89,11 +89,11 @@
             <p>Factura : {{ $ordenRecoleccion->factura == 1 ? 'SI' : 'NO' }}</p>
         </div>
         <div class="footer">
-            <span>Ticket compra:{{ $ordenRecoleccion->idRecoleccion }}</span>
+            <span>Ticket:{{ $ordenRecoleccion->idRecoleccion }}</span>
             <p>Le atendio:</p>
             <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
             <p>Fecha : {{ $ordenRecoleccion->fechaCreacion }}</p>
-            <p>Gracias por su compra!</p>
+            <p>Orden de pedido adomicilio!</p>
         </div>
     </div>
 </body>
