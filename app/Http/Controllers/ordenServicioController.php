@@ -447,6 +447,53 @@ class ordenServicioController extends Controller
         return $pdf->stream();
     }
 
+    public function vistaPrevia(string $id)
+    {
+        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
+            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
+            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
+            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
+            ->where('orden_recoleccions.id', $id)
+            ->select(
+                'orden_recoleccions.id as idRecoleccion',
+                'orden_recoleccions.created_at as fechaCreacion',
+                'preventas.metodo_pago as metodoPago',
+                'preventas.id as idPreventa',
+                'preventas.factura',
+                'preventas.pago_efectivo as pagoEfectivo',
+                'direcciones.calle',
+                'direcciones.num_exterior',
+                'direcciones.num_interior',
+                'direcciones.referencia',
+                'catalago_ubicaciones.cp',
+                'catalago_ubicaciones.localidad',
+                'clientes.comentario as rfc',
+                'personaClientes.nombre as nombreCliente',
+                'personaClientes.apellido as apellidoCliente',
+                'personaClientes.telefono as telefonoCliente',
+                'personaClientes.email as correo',
+                'personaEmpleado.nombre as nombreEmpleado',
+                'personaEmpleado.apellido as apellidoEmpleado',
+            )
+            ->first();
+
+        $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
+            ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+            ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+            ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+            ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
+            ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
+            ->get();
+
+        return view('Principal.ordenServicio.vista_previa', compact('productos', 'ordenRecoleccion'));
+    }
 
     /**
      * Remove the specified resource from storage.
