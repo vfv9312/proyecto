@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Catalago_recepcion;
+use App\Models\clientes;
 use App\Models\Orden_recoleccion;
 use App\Models\Preventa;
 use App\Models\ventas;
@@ -173,6 +174,9 @@ class OrdenRecoleccionController extends Controller
         $preventa = Preventa::where('id', $ordenRecoleccion->id_preventa)
             ->whereIn('estatus', [2, 3, 4])
             ->first();
+
+        $cliente = clientes::where('id', $preventa->id_cliente);
+
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
@@ -190,6 +194,21 @@ class OrdenRecoleccionController extends Controller
                     'estatus' => $estatus,
                     // Agrega aquí cualquier otro campo que desees actualizar
                 ]);
+
+                if ($preventa->estatus == 4) {
+
+                    $preventa->update([
+                        'metodo_pago' => $request->input('txtmetodoPago'),
+                        'factura' => $request->input('txtfactura') == 'on' ? 1 : 0,
+                        'costo_servicio' => $request->input('txtcosto'),
+                    ]);
+
+                    if ($request->input('txtfactura') == 'on') {
+                        $cliente->update([
+                            'comentario' => $request->input('txtrfc'),
+                        ]);
+                    }
+                }
             } else if ($estatus == 1) {
                 //actualizamos orden de recoleccion
                 $ordenRecoleccion->update([
@@ -209,7 +228,7 @@ class OrdenRecoleccionController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-
+            return $th->getMessage();
             $ordenRecoleccion = false;
         }
         if ($ordenRecoleccion) {

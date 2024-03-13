@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('metodo_pago')->nullable();
             $table->boolean('factura')->nullable();
             $table->decimal('pago_efectivo', 8, 2)->nullable();
+            $table->decimal('costo_servicio', 8, 2)->nullable();
             $table->text('comentario')->nullable();
             $table->timestamps();
             $table->softDeletes();

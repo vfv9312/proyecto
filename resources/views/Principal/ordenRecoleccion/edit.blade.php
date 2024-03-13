@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'estatus')
 
 @section('content_header')
-    <h1>Dashboard</h1>
+    <h1>Estatus</h1>
 @stop
 
 @section('content')
@@ -23,5 +23,25 @@
 @stop
 
 @section('js')
-    <script></script>
+    <script>
+        var servicio = {!! json_encode($datosEnvio->estatusPreventa) !!};
+
+
+        function mostrarInputCosto(value) {
+            var inputCosto = document.getElementById('inputCosto');
+            let inputFactura = document.querySelector('#inputFactura');
+            let inputmetodopago = document.querySelector('#inputmetodopago');
+            if (value == '2' && servicio ==
+                4) { // Si el valor seleccionado es "En entrega" y el estatus de preventa es servicio
+                inputCosto.style.display = 'block';
+                inputFactura.style.display = 'flex';
+                inputmetodopago.style.display = 'block'
+
+            } else {
+                inputCosto.style.display = 'none';
+                inputFactura.style.display = 'none';
+                inputmetodopago.display = 'none';
+            }
+        }
+    </script>
 @stop

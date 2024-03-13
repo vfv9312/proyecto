@@ -46,7 +46,7 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="rfc" type="text" name="txtrfc" value="{{ $datosEnvio->rfc }}" readonly>
+            id="rfc" type="text" name="txtrfc" value="{{ $datosEnvio->rfc }}">
     </div>
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0 ">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
@@ -105,7 +105,7 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
 <div class="flex flex-col items-center mt-3">
     <div class="flex flex-col items-center">
         <label for="miSelect">Cambia el estatus:</label>
-        <select id="miSelect" name="miSelect">
+        <select id="miSelect" name="miSelect" onchange="mostrarInputCosto(this.value)">
             @if ($datosEnvio->estatusRecoleccion == 4)
                 <option value="4">En recoleccion</option>
                 <option value="3">En revision</option>
@@ -121,7 +121,38 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
             @endif
         </select>
     </div>
-    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 flex items-center mt-8">
+
+    <div class="flex justify-between mt-5">
+        <div id="inputCosto" style="display: none;" class=" mr-4">
+            <label for="costo">Costo total:</label>
+            <input type="number" id="costo" name="txtcosto"
+                class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div id="inputmetodopago" style="display: none;" class="mr-4">
+            <label for="metodoPago">Método de pago:</label>
+            <select id="metodoPago" name="txtmetodoPago"
+                class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option value="">Seleccione un método de pago</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Transferencia_Bancaria">Transferencia bancaria</option>
+                <option value="Tarjeta_Credito">Tarjeta credito</option>
+                <!-- Agrega más opciones según sea necesario -->
+            </select>
+        </div>
+
+        <div id="inputFactura" style="display: none;" class="flex flex-col items-center">
+            <label for="factura" class="text-gray-700">¿Requiere factura?</label>
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-green-500 mt-2" name="txtfactura"
+                id="factura">
+        </div>
+
+
+    </div>
+
+    <button type="submit"
+        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 flex items-center mt-8">
         <i class="fas fa-sync-alt mr-2"></i>
         Actualizar
     </button>

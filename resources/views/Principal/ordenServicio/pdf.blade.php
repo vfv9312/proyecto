@@ -60,7 +60,7 @@
         <div class="body">
             <div class="item">
                 @foreach ($productos as $produc)
-                    Producto a recolectar : {{ $produc->nombre_comercial }} - {{ $produc->cantidad }} -
+                    Producto a recolectar : {{ $produc->nombre_comercial }} - {{ $produc->cantidad_total }} -
                     {{ $produc->descripcion }}
                 @endforeach
             </div>
@@ -74,7 +74,8 @@
             <p>{{ $ordenRecoleccion->correo }}</p>
             <p>Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
                 #{{ $ordenRecoleccion->num_exterior }}
-                {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}</p>
+                {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}
+                {{ $ordenRecoleccion->referencia }}</p>
         </div>
         <div class="footer">
             <span>Ticket recoleccion:{{ $ordenRecoleccion->idRecoleccion }}</span>

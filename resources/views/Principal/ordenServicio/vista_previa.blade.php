@@ -33,7 +33,8 @@
                 <p>{{ $ordenRecoleccion->correo }}</p>
                 <p>Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
                     #{{ $ordenRecoleccion->num_exterior }}
-                    {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}</p>
+                    {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}
+                    {{ $ordenRecoleccion->referencia }}</p>
             </div>
             <div class="border-4 border-t border-dashed pt-5 text-center">
                 <span>Ticket recoleccion:{{ $ordenRecoleccion->idRecoleccion }}</span>
