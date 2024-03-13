@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('orden_recoleccions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_preventa')->nullable();
+            $table->unsignedBigInteger('id_cancelacion')->nullable();
             $table->dateTime('Fecha_recoleccion')->nullable();
             $table->dateTime('Fecha_entrega')->nullable();
             $table->text('comentario')->nullable();
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->tinyInteger('estatus')->default(5); //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
             $table->timestamps();
             $table->foreign('id_preventa')->references('id')->on('preventas');
+            $table->foreign('id_cancelacion')->references('id')->on('cancelaciones');
         });
     }
 

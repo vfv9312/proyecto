@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_preventa')->nullable();
             $table->unsignedBigInteger('id_producto_recepcion')->nullable();
-            $table->decimal('costo_total', 8, 2)->nullable();
+            $table->decimal('precio_unitario', 8, 2)->nullable();
+            $table->integer('cantidad_total')->nullable();
+            $table->Integer('cantidad_resuelto')->nullable();
+            $table->decimal('costo_extra')->nullable();
             $table->text('descripcion')->nullable();
-            $table->decimal('promocion')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(2); //dos para mi es pendiente

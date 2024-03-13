@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Cancelaciones;
 use App\Models\Catalago_ubicaciones;
 use App\Models\direcciones_clientes;
 use App\Models\precios_productos;
@@ -38,7 +39,8 @@ class DatabaseSeeder extends Seeder
             TipoSeeder::class,
             RolesSeeder::class,
             ColorSeeder::class,
-            ModoSeeder::class
+            ModoSeeder::class,
+            CancelacionesSeeder::class
             //  direcciones_clientesSeeder::class,
             //  precios_productosSeeder::class,
             //  ventas_productosSeeder::class,

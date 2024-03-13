@@ -153,4 +153,9 @@
     </div>
 
 </section>
-<button type="submit" class="bg-green-500 hover:bg-green-700 transition duration-200">Siguiente</button>
+<div class="mt-4 flex justify-center">
+    <button type="submit" class="px-4 py-2  bg-green-500 text-white rounded hover:bg-green-700">
+        Siguiente
+        <i class="fas fa-arrow-right ml-2"></i>
+    </button>
+</div>
