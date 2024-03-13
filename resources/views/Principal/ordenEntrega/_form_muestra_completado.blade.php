@@ -94,7 +94,7 @@
             readonly>
         <input type="hidden" name="total" value="{{ $total }}">
     </div>
-    @if ($datosPreventa->factura)
+    @if ($datosPreventa->metodo_pago == 'Efectivo')
         <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
             <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                 Paga con
@@ -113,6 +113,15 @@
                 id="atencion" type="text" name="txtatencion"
                 value="@php $cambio = $datosPreventa->pago_efectivo - $total @endphp ${{ $cambio }}" readonly>
             <input type="hidden" name="total" value="{{ $cambio }}">
+        </div>
+    @else
+        <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Metodo de pago
+            </label>
+            <input
+                class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="atencion" type="text" name="txtatencion" value=" {{ $datosPreventa->metodo_pago }}" readonly>
         </div>
     @endif
 

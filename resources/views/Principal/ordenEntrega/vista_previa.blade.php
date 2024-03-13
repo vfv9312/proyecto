@@ -29,8 +29,11 @@
                             $total += $producto->precio * $producto->cantidad;
                         @endphp
                     @endforeach
-                    <p style="margin-top: 10px;"> Costo total : {{ $total }}</p>
-                    {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . ($ordenRecoleccion->pagoEfectivo - $total) : '' }}
+                    <p class=" mt-4"> Costo total : ${{ $total }}</p>
+                    {{ $ordenRecoleccion->metodoPago }}
+                    {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
+                    <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . ($ordenRecoleccion->pagoEfectivo - $total) : '' }}
+                    </p>
                 </div>
                 <!-- Agrega más items aquí -->
             </div>

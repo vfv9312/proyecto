@@ -71,7 +71,10 @@
                     @endphp
                 @endforeach
                 <p style="margin-top: 10px;"> Costo total : ${{ $total }}</p>
-                {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . ($ordenRecoleccion->pagoEfectivo - $total) : '' }}
+                {{ $ordenRecoleccion->metodoPago }}
+                {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
+                <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . ($ordenRecoleccion->pagoEfectivo - $total) : '' }}
+                </p>
             </div>
             <!-- Agrega más items aquí -->
         </div>

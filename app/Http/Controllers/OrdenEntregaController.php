@@ -246,16 +246,18 @@ class OrdenEntregaController extends Controller
     public function update(Request $request, string $id)
     {
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+        $clienteSeleccionado = $request->input('cliente');
+        $id_direcciones = $request->input('id_direccion');
+        //buco la preventa con el id
+        $Preventa = Preventa::find($id);
 
+        //busco si ya existe una orden de recoleccion
+        $buscarrecoleccion = Orden_recoleccion::where('id_preventa', $Preventa->id)
+            ->first();
+
+        $Ordenderecoleccion = NULL;
         try {
-            $clienteSeleccionado = $request->input('cliente');
-            $id_direcciones = $request->input('id_direccion');
-            //buco la preventa con el id
-            $Preventa = Preventa::find($id);
 
-            //busco si ya existe una orden de recoleccion
-            $buscarrecoleccion = Orden_recoleccion::where('id_preventa', $Preventa->id)
-                ->first();
             //si ya hay una orden de recoleccion con el id de preventa no haga nada pero si no hay nada entonces crea uno
             if ($buscarrecoleccion) {
             } else {
@@ -281,10 +283,20 @@ class OrdenEntregaController extends Controller
                         //Actualizar los campos
                         $Preventa->id_cliente = $clienteSeleccionado;
                         $Preventa->id_empleado = $request->input('txtempleado');
-
                         // Guardar el modelo
                         $Preventa->save();
 
+                        $cliente = Clientes::find($clienteSeleccionado);
+
+                        if ($cliente) {
+                            $cliente->update([
+                                'comentario' => strtoupper($request->input('txtrfc')),
+                                'telefono' => $request->input('txttelefono'),
+                                'email' => strtolower($request->input('txtrfc')),
+                            ]);
+                        } else {
+                            // Maneja el caso en que el cliente no se encontró
+                        }
                         //si el id_direccion existe eligieron una direccion del usuario encontes entra
                         if ($id_direcciones) {
                             $Preventa->id_direccion = $id_direcciones;
@@ -296,7 +308,7 @@ class OrdenEntregaController extends Controller
                                 'calle' => $request->input('nuevacalle'),
                                 'num_exterior' => $request->input('nuevonum_exterior'),
                                 'num_interior' => $request->input('nuevonum_interior'),
-                                'referencia' => $request->input('nuevareferencia'),
+                                'referencia' => strtolower($request->input('nuevareferencia')),
                             ]);
                             $ligarDireccionCliente = direcciones_clientes::create([
                                 'id_direccion' => $nuevaDireccion->id,
@@ -312,10 +324,10 @@ class OrdenEntregaController extends Controller
                 } else {
 
                     $clientePersona = personas::create([
-                        'nombre' => $request->input('txtnombreCliente'),
-                        'apellido' => $request->input('txtapellidoCliente'),
+                        'nombre' => ucwords(strtolower($request->input('txtnombreCliente'))),
+                        'apellido' => ucwords(strtolower($request->input('txtapellidoCliente'))),
                         'telefono' => $request->input('txttelefono'),
-                        'email' => $request->input('txtemail'),
+                        'email' => strtolower($request->input('txtemail')),
                         'estatus' => 1,
                         // ...otros campos aquí...
                     ]);
@@ -323,7 +335,7 @@ class OrdenEntregaController extends Controller
 
                     $clienteNuevo = clientes::create([
                         'id_persona' => $clientePersona->id,
-                        'comentario' => $request->input('txtrfc'),
+                        'comentario' => strtoupper($request->input('txtrfc')),
                         'estatus' => 1,
                     ]);
 
@@ -339,7 +351,7 @@ class OrdenEntregaController extends Controller
                             'calle' => $request->input('nuevacalle'),
                             'num_exterior' => $request->input('nuevonum_exterior'),
                             'num_interior' => $request->input('nuevonum_interior'),
-                            'referencia' => $request->input('nuevareferencia'),
+                            'referencia' => strtolower($request->input('nuevareferencia')),
                         ]);
 
                         $direccionNuevaCliente = direcciones_clientes::create([
@@ -407,7 +419,7 @@ class OrdenEntregaController extends Controller
             return $th->getMessage();
         }
         if (true) {
-            return view('Principal.ordenEntrega.orden_completa', compact('buscarrecoleccion', 'listaCliente', 'listaEmpleado', 'datosPreventa', 'listaProductos'));
+            return view('Principal.ordenEntrega.orden_completa', compact('Ordenderecoleccion', 'buscarrecoleccion', 'listaCliente', 'listaEmpleado', 'datosPreventa', 'listaProductos'));
         } else {
             session()->flash("incorrect", "Error al procesar el carrito de compras");
             return redirect()->route('orden_entrega.create ');
