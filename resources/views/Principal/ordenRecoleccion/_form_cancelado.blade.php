@@ -117,6 +117,18 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
             @endif
         </div>
     </div>
+
+    <div class="flex flex-col w-full">
+        <label class="" for="motivoCancelacion">Porque se cancela:</label>
+        <select name="txtcategoriaCancelacion" id="categoriaCancelacion"
+            class="w-1/3 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Selecciona un motivo</option>
+            @foreach ($cancelar as $cancelacion)
+                <option value="{{ $cancelacion->id }}">{{ $cancelacion->nombre }}</option>
+            @endforeach
+        </select>
+    </div>
+
     <div class="flex flex-col w-full">
         <label class="" for="miSelect">Porque se cancela:</label>
         <textarea

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CancelacionesController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\DireccionesClientesController;
 use App\Http\Controllers\EmpleadosController;
@@ -67,6 +68,9 @@ Route::put('/orden_recoleccion/{id}/cancelar', [OrdenRecoleccionController::clas
 Route::resource('orden_servicio', ordenServicioController::class)->middleware(['auth', 'verified']);
 Route::get('orden_servicio_pdf/{id}/generarpdf', [ordenServicioController::class, 'generarPdf'])->name('generarpdf.ordenservicio');
 Route::get('orden_serviciof/{id}/vistaPrevia', [ordenServicioController::class, 'vistaPrevia'])->name('vistaPrevia.ordenservicio');
+
+
+Route::resource('cancelar', CancelacionesController::class)->middleware(['auth', 'verified']);
 
 
 //checar si sirve

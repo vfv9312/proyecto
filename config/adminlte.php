@@ -317,29 +317,33 @@ return [
             'text'        => 'Inicio',
             'route'         => 'inicio.index',
             'icon'        => 'fas fa-home',
-            'label'       => 0,
             'label_color' => 'success',
         ],
+        ['header' => 'Menu'],
         [
             'text'        => 'Recolección y entrega',
             'route'         => 'orden_recoleccion.index',
             'icon'        => 'fas fa-motorcycle',
-            'label'       => 0,
+            'icon_color' => 'orange',
             'label_color' => 'success',
         ],
-
-        ['header' => 'Menu'],
+        [
+            'text'       => 'Ventas',
+            'icon' => 'fas fa-money-bill-wave',
+            'icon_color' => 'green',
+            'route'        => 'ventas.index',
+        ],
+        [
+            'text'       => 'Cancelaciones',
+            'icon' => 'fas fa-ban',
+            'icon_color' => 'red',
+            'route'        => 'cancelar.index',
+        ],
         [
             'text' => 'Cuenta',
             'route'  => "profile.edit",
             'icon_color' => 'purple',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'Reportes',
-            'url'  => 'admin/settings',
-            'icon_color' => 'blue',
-            'icon' => 'fas fa-folder-open',
+            'icon' => 'fas fa-id-card',
         ],
         [
             'text'    => 'Negocio',
@@ -398,12 +402,6 @@ return [
         [
             'header' => 'Vista rapida',
             'classes'  => 'text-yellow text-bold text-center',
-        ],
-        [
-            'text'       => 'Ventas',
-            'icon' => 'fas fa-shopping-cart',
-            'icon_color' => 'green',
-            'route'        => 'ventas.index',
         ],
         [
             'text'       => 'Clientes',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cancelaciones;
 use App\Models\Catalago_recepcion;
 use App\Models\clientes;
 use App\Models\Orden_recoleccion;
@@ -316,11 +317,14 @@ class OrdenRecoleccionController extends Controller
                 ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
                 ->get();
         }
-        return view('Principal.ordenRecoleccion.cancelar', compact('productos', 'datosEnvio'));
+
+        $cancelar = Cancelaciones::all();
+        return view('Principal.ordenRecoleccion.cancelar', compact('productos', 'datosEnvio', 'cancelar'));
     }
     public function cancelar(Orden_recoleccion $id, Request $request)
     {
         $cancelado = $request->input('txtcancelado');
+        $categoriaCancelacion = $request->input('txtcategoriaCancelacion');
 
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
@@ -332,6 +336,7 @@ class OrdenRecoleccionController extends Controller
             $id->estatus = 0;
             $id->deleted_at = now();
             $id->comentario = $cancelado;
+            $id->id_cancelacion = $categoriaCancelacion;
             $ordenCancelada = $id->save();
 
             $preventa->estatus = 0;
