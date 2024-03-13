@@ -7,8 +7,8 @@
 @stop
 
 @section('content')
-
-    @include('cancelaciones._form_index')
+    @include('cancelaciones._filtros_cancelaciones')
+    @include('cancelaciones._tabla_cancelaciones')
 
 @stop
 
