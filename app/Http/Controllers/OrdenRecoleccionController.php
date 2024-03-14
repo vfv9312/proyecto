@@ -216,10 +216,7 @@ class OrdenRecoleccionController extends Controller
                     'estatus' => $estatus,
                     // Agrega aquí cualquier otro campo que desees actualizar
                 ]);
-                //actualizamos preventa
-                $preventa->update([
-                    'estatus' => 1
-                ]);
+
                 //actualizamos ventas
                 $ventaConcluida = ventas::create([
                     'id_recoleccion' => $ordenRecoleccion->id,

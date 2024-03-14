@@ -209,9 +209,11 @@ class ordenServicioController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+
+        $cantidades = $request->query('cantidad');
 
         try {
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
@@ -220,9 +222,22 @@ class ordenServicioController extends Controller
             $preventa->update([
                 'estatus' => 4 //3 entrega y 4 servicios
             ]);
-            //buscar si hay una recoleccion con el id de preventa que tenemos
-            // $buscarrecoleccion = Orden_recoleccion::where('id_preventa', $preventa->id)->first();
-            //si lo encuentra no cres nada pero si no lo encuentra crea una recoleccion
+
+            $servicioPreventa = Servicios_preventas::where('id_preventa', $id)->get();
+            foreach ($servicioPreventa as $index => $servicio) {
+                if (isset($cantidades[$index])) {
+                    if ($cantidades[$index] == 0) {
+                        $servicio->cantidad_total = $cantidades[$index];
+                        $servicio->estatus = 0;
+                        $servicio->save();
+                    } else {
+                        $servicio->cantidad_total = $cantidades[$index];
+                        $servicio->save();
+                    }
+                }
+            }
+
+
 
             $recoleccion = Orden_recoleccion::firstOrCreate([
                 'id_preventa' => $preventa->id,
@@ -265,6 +280,7 @@ class ordenServicioController extends Controller
                 ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
                 ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
                 ->where('preventas.id', $id)
+                ->where('servicios_preventas.estatus', 2)
                 ->select(
                     'productos.id',
                     'productos.nombre_comercial',
@@ -278,7 +294,7 @@ class ordenServicioController extends Controller
                 ->get();
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-
+            return $th->getMessage();
             //throw $th;
         }
 
@@ -366,6 +382,7 @@ class ordenServicioController extends Controller
                 ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
                 ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
                 ->where('preventas.id', $id)
+                ->where('servicios_preventas.estatus', 2)
                 ->select(
                     'productos.id',
                     'productos.nombre_comercial',
@@ -432,6 +449,7 @@ class ordenServicioController extends Controller
             ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
             ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->where('servicios_preventas.estatus', 2)
             ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
             ->get();
 
@@ -489,6 +507,7 @@ class ordenServicioController extends Controller
             ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
             ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->where('servicios_preventas.estatus', 2)
             ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
             ->get();
 

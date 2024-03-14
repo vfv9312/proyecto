@@ -45,7 +45,7 @@
                         <img class=" w-20" src="">
                     </td>
                     <td class="px-6 py-4">
-                        dato
+
                     </td>
                     <td>
 
