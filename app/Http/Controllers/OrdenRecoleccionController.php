@@ -358,6 +358,11 @@ class OrdenRecoleccionController extends Controller
         }
     }
 
+    public function vistaPreliminar()
+    {
+        return ('Principal.ordenRecoleccion.vista_orden');
+    }
+
     /**
      * Remove the specified resource from storage.
      */

@@ -1,4 +1,4 @@
-<form class=" flex justify-center mb-12" method="GET" action="{{ route('cancelar.index') }}">
+<form class=" flex justify-center mt-8 mb-12" method="GET" action="{{ route('cancelar.index') }}">
 
     <div class=" flex flex-col">
         <label>Por cancelar :</label>

@@ -23,7 +23,7 @@
         @endif
         <!-- boton anadir producto-->
         <button id="abrirnModalRegisrarCliente"
-            class=" mb-4 bg-gradient-to-r from-green-500 via-green-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-full">
+            class=" mb-4 bg-gradient-to-r  from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
             Añadir cliente
         </button>
         <!-- Modal -->

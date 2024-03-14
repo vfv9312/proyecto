@@ -157,5 +157,13 @@
                 actualizarTotal();
             }
         }
+
+        document.getElementById('compras').addEventListener('click', function(event) {
+            var total = document.getElementById('totalSpan').innerText;
+            if (total === '0') {
+                event.preventDefault();
+                alert('No has seleccionado nada.');
+            }
+        });
     </script>
 @stop
