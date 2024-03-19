@@ -1,7 +1,7 @@
 <form class="flex flex-col md:flex-row justify-center mt-12 mb-12" method="GET" action="{{ route('ventas.index') }}">
     <!-- Filtro por estatus //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado-->
     <div class="flex flex-col md:ml-6 mb-4 md:mb-0">
-        <label>Estatus</label>
+        <label>Tipo de venta</label>
         <select
             class="w-full md:w-auto  border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             name="entrega_servicio" id="entrega_servicio">

@@ -1,7 +1,7 @@
 <section id="filters-section" style="display: none;">
 
-    <section class="flex justify-center items-cente">
-        <div class=" mr-6">
+    <section class="flex flex-wrap justify-center items-center">
+        <div class="w-full sm:w-auto mr-6">
             <label for="tipo">Tipo</label>
             <select class="" id="modo" name="modo">
                 <option value="">Buscar por tipo</option> <!-- Opción vacía -->
@@ -10,7 +10,7 @@
                 @endforeach
             </select>
         </div>
-        <div class=" mr-6">
+        <div class="w-full sm:w-auto mr-6">
             <label for="color">Color</label>
             <select class="" id="color" name="color">
                 <option value="">Buscar por color</option> <!-- Opción vacía -->
@@ -19,7 +19,7 @@
                 @endforeach
             </select>
         </div>
-        <div class=" mr-6">
+        <div class="w-full sm:w-auto mr-6">
             <label for="marca">Marca</label>
             <select class="" id="marca" name="marca">
                 <option value="">Buscar por marca</option> <!-- Opción vacía -->
@@ -29,7 +29,7 @@
             </select>
         </div>
 
-        <div class="">
+        <div class="w-full sm:w-auto">
             <label for="tipo">Categoria</label>
             <select class="" id="tipo" name="tipo">
                 <option value="">Buscar por categoria</option> <!-- Opción vacía -->

@@ -59,41 +59,31 @@
         </div>
         <div class="body">
             <div class="item">
-                @php
-                    $total = 0;
-                @endphp
-                @foreach ($listaProductos as $producto)
-                    <p>Producto: {{ $producto->nombre_comercial }}</p>
-                    <p>Cantidad: {{ $producto->cantidad }}</p>
-                    <p style="margin-bottom: 10px;">Precio: ${{ $producto->precio }}</p>
-                    @php
-                        $total += $producto->precio * $producto->cantidad;
-                    @endphp
+                @foreach ($productos as $produc)
+                    Producto a recolectar : {{ $produc->nombre_comercial }} - {{ $produc->cantidad_total }} -
+                    {{ $produc->descripcion }}
                 @endforeach
-                <p style="margin-top: 10px;"> Costo total : ${{ $total }}</p>
-                {{ $ordenRecoleccion->metodoPago }}
-                {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
-                <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . ($ordenRecoleccion->pagoEfectivo - $total) : '' }}
-                </p>
+                Costo : ${{ $ordenRecoleccion->costo_servicio }}
             </div>
             <!-- Agrega más items aquí -->
         </div>
         <div class="cliente">
             <h5> Datos del cliente </h5>
-            <p>{{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
-            <p>{{ $ordenRecoleccion->telefonoCliente }}</p>
+            <p> {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
+            <p>Tel: {{ $ordenRecoleccion->telefonoCliente }}</p>
+            <p>RFC : {{ $ordenRecoleccion->rfc }}</p>
+            <p>{{ $ordenRecoleccion->correo }}</p>
             <p>Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
                 #{{ $ordenRecoleccion->num_exterior }}
-                {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}</p>
-            <p>Referencia: {{ $ordenRecoleccion->referencia }}</p>
-            <p>Factura : {{ $ordenRecoleccion->factura == 1 ? 'SI' : 'NO' }}</p>
+                {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}
+                {{ $ordenRecoleccion->referencia }}</p>
         </div>
         <div class="footer">
-            <span>Ticket:{{ $ordenRecoleccion->idRecoleccion }}</span>
+            <span>Ticket recoleccion:{{ $ordenRecoleccion->idRecoleccion }}</span>
             <p>Le atendio:</p>
             <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
             <p>Fecha : {{ $ordenRecoleccion->fechaCreacion }}</p>
-            <p>Orden de Entrega!</p>
+            <p>Orden para Entrega!</p>
         </div>
     </div>
 </body>

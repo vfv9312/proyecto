@@ -14,13 +14,20 @@ class EmpleadosController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        $busqueda = $request->query('adminlteSearch');
         //
         $empleados = empleados::join('personas', 'personas.id', '=', 'empleados.id_persona')
             ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('empleados.estatus', 1)
             ->where('personas.estatus', 1)
+            ->where(function ($query) use ($busqueda) {
+                $query->where('personas.telefono', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('personas.nombre', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('personas.apellido', 'LIKE', "%{$busqueda}%");
+            })
             ->select('empleados.id', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento', 'empleados.id_rol', 'roles.nombre as nombreRol', 'empleados.fotografia')
             ->orderBy('empleados.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente

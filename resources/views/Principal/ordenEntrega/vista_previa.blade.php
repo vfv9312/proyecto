@@ -56,7 +56,7 @@
                 <p>Le atendio:</p>
                 <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
                 <p>Fecha : {{ $ordenRecoleccion->fechaCreacion }}</p>
-                <p>Gracias por su compra!</p>
+                <p>orden de Entrega!</p>
             </div>
         </div>
     </body>

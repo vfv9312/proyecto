@@ -6,9 +6,11 @@ use App\Models\Cancelaciones;
 use App\Models\Catalago_recepcion;
 use App\Models\clientes;
 use App\Models\Orden_recoleccion;
+use App\Models\precios_productos;
 use App\Models\Preventa;
 use App\Models\ventas;
 use App\Models\ventas_productos;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -161,7 +163,62 @@ class OrdenRecoleccionController extends Controller
      */
     public function show(Orden_recoleccion $orden_recoleccion)
     {
-        //
+        // $preventa = Preventa::find($orden_recoleccion->id_preventa);
+        $datosEnvio = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
+            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+            ->join('personas as empleadoPersona', 'empleadoPersona.id', '=', 'empleados.id_persona')
+            ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
+            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
+            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->whereIn('preventas.estatus', [3, 4]) //3 entrega, 4 servicios, 2 inconcluso, 0 eliminado
+            ->where('orden_recoleccions.id', $orden_recoleccion->id)
+            ->select(
+                'orden_recoleccions.id as idRecoleccion',
+                'preventas.id as idPreventa',
+                'preventas.estatus as estatusPreventa',
+                'preventas.costo_servicio',
+                'orden_recoleccions.id as idOrden_recoleccions',
+                'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
+                'orden_recoleccions.Fecha_entrega as fechaEntrega',
+                'orden_recoleccions.created_at',
+                'orden_recoleccions.id as id_recoleccion',
+                'orden_recoleccions.estatus as estatusRecoleccion', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
+                'orden_recoleccions.created_at',
+                'empleadoPersona.nombre as nombreEmpleado',
+                'empleadoPersona.apellido as apellidoEmpleado',
+                'empleadoPersona.telefono as telefonoEmpleado',
+                'clientePersona.nombre as nombreCliente',
+                'clientePersona.apellido as apellidoCliente',
+                'clientePersona.telefono as telefonoCliente',
+                'clientePersona.email as emailCliente',
+                'clientes.comentario as rfc',
+                'catalago_ubicaciones.localidad as colonia',
+                'roles.nombre as nombre_rol',
+                'direcciones.calle',
+                'direcciones.num_exterior',
+                'direcciones.num_interior',
+                'direcciones.referencia',
+            )
+            ->first();
+
+
+        $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+            ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+            ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+            ->where('preventas.id', $datosEnvio->idPreventa)
+            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
+            ->get();
+        if ($datosEnvio->estatusRecoleccion == 4 || $datosEnvio->estatusRecoleccion == 3) {
+            return redirect()->route('generarpdf.ordenservicio', ['id' => $orden_recoleccion->id]);
+        } else if ($datosEnvio->estatusRecoleccion == 2  && $datosEnvio->estatusPreventa == 4) {
+
+            return redirect()->route('generarpdf2.ordenentrega', ['id' => $orden_recoleccion->id, 'listaProductos' => $listaProductos]);
+        } else if ($datosEnvio->estatusRecoleccion == 2) {
+
+            return redirect()->route('generarpdf.ordenentrega', ['id' => $orden_recoleccion->id, 'listaProductos' => $listaProductos]);
+        }
     }
 
     /**
@@ -358,9 +415,63 @@ class OrdenRecoleccionController extends Controller
         }
     }
 
-    public function vistaPreliminar()
+    public function generarPdf2(string $id)
     {
-        return ('Principal.ordenRecoleccion.vista_orden');
+        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
+            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
+            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
+            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
+            ->where('orden_recoleccions.id', $id)
+            ->select(
+                'orden_recoleccions.id as idRecoleccion',
+                'orden_recoleccions.created_at as fechaCreacion',
+                'preventas.metodo_pago as metodoPago',
+                'preventas.id as idPreventa',
+                'preventas.factura',
+                'preventas.pago_efectivo as pagoEfectivo',
+                'preventas.costo_servicio',
+                'direcciones.calle',
+                'direcciones.num_exterior',
+                'direcciones.num_interior',
+                'direcciones.referencia',
+                'catalago_ubicaciones.cp',
+                'catalago_ubicaciones.localidad',
+                'clientes.comentario as rfc',
+                'personaClientes.nombre as nombreCliente',
+                'personaClientes.apellido as apellidoCliente',
+                'personaClientes.telefono as telefonoCliente',
+                'personaClientes.email as correo',
+                'personaEmpleado.nombre as nombreEmpleado',
+                'personaEmpleado.apellido as apellidoEmpleado',
+            )
+            ->first();
+
+        $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
+            ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+            ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+            ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+            ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
+            ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->where('servicios_preventas.estatus', 2)
+            ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
+            ->get();
+
+        $pdf = PDF::loadView('Principal.ordenRecoleccion.vista_pdf', compact(
+            'ordenRecoleccion',
+            'productos'
+        ));
+
+        // Establece el tamaño del papel a 80mm de ancho y 200mm de largo
+        $pdf->setPaper([0, 0, 226.77, 699.93], 'portrait'); // 80mm x 200mm en puntos
+
+        // Renderiza el documento PDF y lo envía al navegador
+        return $pdf->stream();
     }
 
     /**

@@ -10,8 +10,6 @@
     @include('ventas._filtros_ventas')
 
     @include('ventas._tabla_ventas')
-
-
 @stop
 
 @section('css')

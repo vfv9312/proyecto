@@ -23,7 +23,6 @@
                 <td class="py-3 px-6 text-left border-r">Cliente</td>
                 <td class="py-3 px-6 text-left border-r">Fecha de la venta</td>
                 <td class="py-3 px-6 text-left border-r">Direccion</td>
-                <td class="py-3 px-6 text-left border-r">Fecha de transaccion</td>
                 <td class="py-3 px-6 text-left border-r">Costo total</td>
             </tr>
             <!--foreach ($productos as $producto)-->
@@ -42,29 +41,22 @@
                         {{ $datosVenta->num_interior }} - referencia : {{ $datosVenta->referencia }}
                     </td>
                     <td class="px-6 py-4 flex justify-center items-center">
-                        <img class=" w-20" src="">
+                        @php $total = 0; @endphp
+                        @foreach ($datosVenta->productos as $producto)
+                            @php $total += $producto->cantidad * $producto->precio; @endphp
+                        @endforeach
+                        ${{ $datosVenta->costo_servicio ? $datosVenta->costo_servicio : $total }}
                     </td>
-                    <td class="px-6 py-4">
 
-                    </td>
                     <td>
-
-                        <button onclick="location.href=''"
-                            class="abrirModalEditar border rounded
-                        px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200
-                        ease-in-out">
-                            <i class="fas fa-eye"></i>
-                        </button>
-
-                    </td>
-                    <td>
-                        <form action="" method="POST">
+                        <form action="{{ route('ventas.show', $datosVenta->idVenta) }}" method="GET">
                             @csrf
-                            @method('PUT')
                             <button
-                                class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                                <i class="fas fa-ban"></i></button>
+                                class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-file-pdf"></i>
+                            </button>
                         </form>
+
                     </td>
 
                 </tr>

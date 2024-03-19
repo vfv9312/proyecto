@@ -60,12 +60,19 @@
                     </form>
                 </td>
                 <td>
-                    <form action="{{ route('generarpdf.ordenentrega', $pendiente->id_recoleccion) }}" method="GET">
+
+                    <a href="{{ route('orden_recoleccion.show', $pendiente->id_recoleccion) }}" target="_blank"
+                        class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
+                        <i class="fas fa-file-pdf"></i>
+                    </a>
+
+                </td>
+                <td>
+                    <form action="" method="GET">
                         @csrf
                         <button
-                            class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-file-pdf"></i>
-                        </button>
+                            class="border rounded px-6 py-4 bg-purple-600 text-white cursor-pointer hover:bg-purple-800 transition duration-200 ease-in-out">
+                            <i class="fas fa-paper-plane"></i></button>
                     </form>
                 </td>
                 <td>

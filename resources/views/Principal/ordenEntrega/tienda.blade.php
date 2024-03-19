@@ -27,7 +27,7 @@
         @csrf
         <header class=" flex justify-between p-3">
             <button id="toggle-filters" type="button"
-                class="mt-4 mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                class="mt-4 mb-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                 <i class="fas fa-filter"></i> Añadir Filtros
             </button>
             <button type="submit" id="compras" class="fa fa-shopping-bag fa-2x text-red-500 cursor-pointer"><span

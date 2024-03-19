@@ -19,14 +19,9 @@ class ProductosController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        /*
-        $datos = DB::select('SELECT p.nombre_comercial, p.modelo, p.color, p.marca, p.fotografia, pp.precio
-        FROM canacotu_tuxtla.productos AS p
-        INNER JOIN canacotu_tuxtla.precios_productos AS pp
-        ON p.id = pp.id_producto
-        WHERE p.estatus = 1;');*/
+        $busqueda = $request->query('adminlteSearch');
 
         $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
@@ -35,6 +30,11 @@ class ProductosController extends Controller
             ->join('colors', 'colors.id', '=', 'productos.id_color')
             ->where('productos.estatus', 1)
             ->where('precios_productos.estatus', 1)
+            ->where(function ($query) use ($busqueda) {
+                $query->where('productos.nombre_comercial', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('marcas.nombre', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('modos.nombre', 'LIKE', "%{$busqueda}%");
+            })
             ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'productos.fotografia', 'precios_productos.precio')
             ->orderBy('productos.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
