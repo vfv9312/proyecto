@@ -57,8 +57,8 @@
                     <option value="">Seleccione un método de pago</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Cheque">Cheque</option>
-                    <option value="Transferencia_Bancaria">Transferencia bancaria</option>
-                    <option value="Tarjeta_Credito">Tarjeta credito</option>
+                    <option value="Transferencia Bancaria">Transferencia bancaria</option>
+                    <option value="Tarjeta Credito">Tarjeta credito</option>
                     <!-- Agrega más opciones según sea necesario -->
                 </select>
 

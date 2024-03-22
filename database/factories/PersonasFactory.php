@@ -22,7 +22,8 @@ class PersonasFactory extends Factory
             'apellido' => $this->faker->lastName(),
             'telefono' => $this->faker->phoneNumber(),
             'fecha_nacimiento' => $this->faker->dateTimeBetween('-80 years', '-18 years'),
-            'email' => $this->faker->unique()->safeEmail()
+            'email' => $this->faker->unique()->safeEmail(),
+            'estatus' => 1
         ];
     }
 }

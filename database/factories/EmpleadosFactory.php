@@ -20,9 +20,7 @@ class EmpleadosFactory extends Factory
             //
             'id_persona' => \App\Models\personas::factory(),
             'comentario' => $this->faker->text(30),
-            'rol_empleado' => $this->faker->jobTitle(),
-            'fotografia' => $this->faker->imageUrl(640, 480, 'people'),
-
+            'id_rol' => rand(1, 6),
         ];
     }
 }

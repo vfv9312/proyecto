@@ -17,22 +17,13 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+
+
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-        /*
-        \App\Models\direcciones::factory(30)->create();
-        \App\Models\personas::factory(30)->create();
-        \App\Models\clientes::factory(20)->create();
-        \App\Models\empleados::factory(10)->create();
-        \App\Models\usuarios::factory(2)->create();
-        \App\Models\productos::factory(10)->create();
-        \App\Models\ventas::factory(15)->create();
-*/
-
         $this->call([
             Catalago_ubicacionesSeeder::class,
             MarcaSeeder::class,
@@ -40,12 +31,23 @@ class DatabaseSeeder extends Seeder
             RolesSeeder::class,
             ColorSeeder::class,
             ModoSeeder::class,
-            CancelacionesSeeder::class
-            //  direcciones_clientesSeeder::class,
-            //  precios_productosSeeder::class,
-            //  ventas_productosSeeder::class,
-            //  serviciosSeeder::class,
+            CancelacionesSeeder::class,
+            ProductosSeeder::class,
+            precios_productosSeeder::class,
         ]);
+
+        //\App\Models\personas::factory(6)->create();
+        \App\Models\empleados::factory(500)->create();
+        \App\Models\clientes::factory(500)->create();
+        \App\Models\User::factory(1)->create();
+        /*
+        \App\Models\direcciones::factory(30)->create();
+        \App\Models\usuarios::factory(2)->create();
+        \App\Models\productos::factory(10)->create();
+        \App\Models\ventas::factory(15)->create();
+*/
+
+
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',

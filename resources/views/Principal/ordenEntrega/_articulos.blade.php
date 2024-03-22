@@ -1,9 +1,12 @@
 <section class="flex flex-wrap overflow-auto h-screen">
     @foreach ($productos as $producto)
         <div class="producto m-3 pb-12 bg-white cursor-pointer w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 h-72 border rounded-lg hover:shadow-2xl"
-            data-nombre="{{ $producto->nombre_comercial }}" data-marca="{{ $producto->marca_id }}"
-            data-tipo="{{ $producto->tipo_id }}" data-modo="{{ $producto->modo_id }}"
-            data-color="{{ $producto->idColor }}">
+            data-id="{{ $producto->id }}" data-nombre="{{ $producto->nombre_comercial }}"
+            data-marca="{{ $producto->marca_id }}" data-tipo="{{ $producto->tipo_id }}"
+            data-modo="{{ $producto->modo_id }}" data-color="{{ $producto->idColor }}"
+            data-nombre_marca="{{ $producto->nombre_marca }}" data-nombre_modo="{{ $producto->nombre_modo }}"
+            data-nombre_color="{{ $producto->nombre_color }}" data-nombre_categoria="{{ $producto->nombre_categoria }}"
+            data-precio="{{ $producto->precio }}">
             <figure class=" relative mb-3 w-full h-4/5">
                 <span
                     class=" absolute bottom-0 left-0  bg-green-500 rounded-lg font-semibold m-2">{{ $producto->nombre_categoria }}</span>
@@ -50,7 +53,8 @@
             <p class="flex justify-between">
                 <span>Cantidad</span>
                 <input type="hidden" name="producto_id[]" value="{{ $producto->id }}">
-                <input id="inputNumber" type="number" class="suma form-input w-10 " name="cantidad[]" value="0">
+                <input id="inputNumber_{{ $producto->id }}" type="number" class="suma form-input w-10"
+                    name="cantidad[]" value="0">
                 <button type="button" onclick="decrementar(this)"><i class="fas fa-minus"></i></button>
                 <button type="button" onclick="incrementar(this)"><i class="fas fa-plus ml-0"></i></button>
             </p>

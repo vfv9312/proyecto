@@ -18,7 +18,7 @@ class ClientesFactory extends Factory
     {
         return [
             'id_persona' => \App\Models\personas::factory(),
-            'comentario' => $this->faker->text(50),
+            'comentario' => $this->faker->regexify('[A-Z]{4}[0-9]{6}[A-Z0-9]{3}'),
             //
         ];
     }

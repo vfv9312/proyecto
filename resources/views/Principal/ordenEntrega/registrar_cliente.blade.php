@@ -13,7 +13,6 @@
         @csrf
         @method('PUT')
         @include('Principal.ordenEntrega._form_orden')
-
     </form>
 @stop
 
