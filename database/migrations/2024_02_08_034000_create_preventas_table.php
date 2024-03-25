@@ -16,6 +16,11 @@ return new class extends Migration
             $table->unsignedBigInteger('id_empleado')->nullable();
             $table->unsignedBigInteger('id_cliente')->nullable();
             $table->unsignedBigInteger('id_direccion')->nullable();
+            $table->string('nombre_atencion')->nullable();
+            $table->string('nombre_quien_recibe')->nullable();
+            $table->time('horario_trabajo_inicio')->nullable();
+            $table->time('horario_trabajo_final')->nullable();
+            $table->string('dia_semana')->nullable();
             $table->string('metodo_pago')->nullable();
             $table->boolean('factura')->nullable();
             $table->decimal('pago_efectivo', 8, 2)->nullable();

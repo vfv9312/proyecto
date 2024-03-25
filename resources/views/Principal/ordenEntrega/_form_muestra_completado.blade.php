@@ -6,17 +6,17 @@
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="nombre_cliente" type="text" name="txtnombre_cliente"
-            value=" {{ $listaCliente->nombre_cliente }} {{ $listaCliente->apellido }}" readonly>
+            value=" {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}" readonly>
     </div>
     <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            Atendido por
+            Empleado
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="atencion" type="text" name="txtatencion"
-            value="{{ $listaEmpleado->nombre_empleado }} {{ $listaEmpleado->apellido }} -
-            {{ $listaEmpleado->nombre_rol }}"
+            value="{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }} -
+            {{ $ordenRecoleccion->nombreRol }}"
             readonly>
     </div>
 </div>
@@ -27,8 +27,8 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="nombre_cliente" type="text" name="txtnombre_cliente" value=" {{ $listaCliente->telefono_cliente }}"
-            readonly>
+            id="nombre_cliente" type="text" name="txtnombre_cliente"
+            value=" {{ $ordenRecoleccion->telefonoCliente }}" readonly>
     </div>
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
@@ -36,7 +36,7 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="atencion" type="text" name="txtatencion" value=" {{ $listaCliente->comentario }}" readonly>
+            id="atencion" type="text" name="txtatencion" value=" {{ $ordenRecoleccion->rfc }}" readonly>
     </div>
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
@@ -44,7 +44,7 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="atencion" type="text" name="txtatencion" value="{{ $listaCliente->email }}" readonly>
+            id="atencion" type="text" name="txtatencion" value="{{ $ordenRecoleccion->correo }}" readonly>
     </div>
 </div>
 <div class="flex flex-wrap -mx-3 mt-5 px-6 py-4 whitespace-no-wrap border-b border-gray-200">
@@ -55,10 +55,10 @@
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="nombre_cliente" type="text" name="txtnombre_cliente"
-            value="{{ $datosPreventa->municipio }}, {{ $datosPreventa->estado }};
-            Col.{{ $datosPreventa->localidad }}; {{ $datosPreventa->calle }}
-            #{{ $datosPreventa->num_exterior }} / numero interior
-            {{ $datosPreventa->num_interior == null ? 'S/N' : $datosPreventa->num_interior }}"
+            value="{{ $ordenRecoleccion->municipio }}, {{ $ordenRecoleccion->estado }};
+            Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
+            #{{ $ordenRecoleccion->num_exterior }} / numero interior
+            {{ $ordenRecoleccion->num_interior == null ? 'S/N' : $ordenRecoleccion->num_interior }}"
             readonly>
     </div>
     <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -67,19 +67,19 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="atencion" type="text" name="txtatencion" value="{{ $datosPreventa->fecha }}" readonly>
+            id="atencion" type="text" name="txtatencion" value="{{ $ordenRecoleccion->fechaCreacion }}" readonly>
     </div>
 </div>
 
 <div class="flex flex-wrap -mx-3 mt-5 px-6 py-4 whitespace-no-wrap border-b border-gray-200">
     <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            Factura
+            Requiere :
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="nombre_cliente" type="text" name="txtnombre_cliente"
-            value="{{ $datosPreventa->factura == 1 ? 'Sí' : 'No' }}" readonly>
+            value="{{ $ordenRecoleccion->factura == 1 ? 'Factura' : 'Nota' }}" readonly>
     </div>
     <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
@@ -94,14 +94,14 @@
             readonly>
         <input type="hidden" name="total" value="{{ $total }}">
     </div>
-    @if ($datosPreventa->metodo_pago == 'Efectivo')
+    @if ($ordenRecoleccion->metodoPago == 'Efectivo')
         <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
             <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                 Paga con
             </label>
             <input
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="atencion" type="text" name="txtatencion" value=" ${{ $datosPreventa->pago_efectivo }}"
+                id="atencion" type="text" name="txtatencion" value=" ${{ $ordenRecoleccion->pagoEfectivo }}"
                 readonly>
         </div>
         <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
@@ -111,7 +111,8 @@
             <input
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="atencion" type="text" name="txtatencion"
-                value="@php $cambio = $datosPreventa->pago_efectivo - $total @endphp ${{ $cambio }}" readonly>
+                value="@php $cambio = number_format($ordenRecoleccion->pagoEfectivo - $total, 2); @endphp ${{ $cambio }}"
+                readonly>
             <input type="hidden" name="total" value="{{ $cambio }}">
         </div>
     @else
@@ -121,7 +122,7 @@
             </label>
             <input
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="atencion" type="text" name="txtatencion" value=" {{ $datosPreventa->metodo_pago }}" readonly>
+                id="atencion" type="text" name="txtatencion" value=" {{ $ordenRecoleccion->metodoPago }}" readonly>
         </div>
     @endif
 

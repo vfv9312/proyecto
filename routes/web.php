@@ -53,8 +53,9 @@ Route::middleware('auth')->group(function () {
 });
 
 //Todo el proceso de venta
-Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']);
-Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['auth', 'verified']);
+Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']); //aqui se muestra dos iconos si quiere una orden de servicio o una orden de entrega
+Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['auth', 'verified']); //index: muestra la vista con todos los datos para hacer una orden de entrega, show: muestra una vista previa
+Route::get('orden_entrega/{id}/vistaprevia', [OrdenEntregaController::class, 'VistaPrevioOrdenEntrega'])->name('orden_recoleccion.vistaPreviaOrdenEntrega')->middleware(['auth', 'verified']); //muestra el contenido
 
 //generar pdf
 Route::get('orden_entrega_pdf/{id}/generarpdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');

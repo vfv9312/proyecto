@@ -20,7 +20,7 @@ class PersonasFactory extends Factory
             //
             'nombre' => $this->faker->firstName(),
             'apellido' => $this->faker->lastName(),
-            'telefono' => $this->faker->phoneNumber(),
+            'telefono' => $this->faker->numerify('##########'),
             'fecha_nacimiento' => $this->faker->dateTimeBetween('-80 years', '-18 years'),
             'email' => $this->faker->unique()->safeEmail(),
             'estatus' => 1
