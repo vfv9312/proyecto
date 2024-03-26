@@ -62,7 +62,7 @@
                 <td>
 
                     <a href="{{ route('orden_recoleccion.show', $pendiente->id_recoleccion) }}" target="_blank"
-                        class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
+                        class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out block">
                         <i class="fas fa-file-pdf"></i>
                     </a>
 

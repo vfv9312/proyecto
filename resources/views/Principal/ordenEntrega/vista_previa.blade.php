@@ -61,7 +61,8 @@
                 <!-- Agrega más items aquí -->
             </div>
             <div class="border-4 border-t border-dashed pt-5 text-center">
-                <span>Numero de Folio:{{ $ordenRecoleccion->idRecoleccion }}</span>
+                <span>Numero de
+                    Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
                 <p>Le atendio:</p>
                 <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
                 <p>Gracias por su pedido</p>

@@ -8,6 +8,7 @@ use App\Models\Color;
 use App\Models\direcciones;
 use App\Models\direcciones_clientes;
 use App\Models\empleados;
+use App\Models\Folio;
 use App\Models\Marcas;
 use App\Models\Modo;
 use App\Models\Orden_recoleccion;
@@ -251,12 +252,17 @@ class OrdenEntregaController extends Controller
 
 
                 $cliente = Clientes::find($idCliente);
+                $ubicarpersona = personas::find($cliente->id_persona);
 
                 $cliente->update([
                     'comentario' => strtoupper($rfc),
+                ]);
+
+                $ubicarpersona->update([
                     'telefono' => $telefono,
                     'email' => strtolower($email),
                 ]);
+
 
                 //si el id_direccion  eligieron una direccion del usuario encontes entra
                 if (!is_null($idDireccion) && is_numeric($idDireccion)) {
@@ -340,6 +346,7 @@ class OrdenEntregaController extends Controller
                         'referencia' => strtolower($nuevareferencia),
                     ]);
 
+
                     $direccionNuevaCliente = direcciones_clientes::create([
                         'id_direccion' => $nuevaDireccion->id,
                         'id_cliente' => $clienteNuevo->id,
@@ -353,8 +360,30 @@ class OrdenEntregaController extends Controller
                 }
             }
 
+            $ultimoFolio = Folio::orderBy('id', 'desc')->first();
+            $letra = $ultimoFolio ? $ultimoFolio->letra_actual : 'A';
+            $valor = $ultimoFolio ? $ultimoFolio->ultimo_valor + 1 : 1;
+
+            if ($valor > 999999) {
+                // Incrementa la letra
+                $letra = chr(ord($letra) + 1);
+                $valor = 1;
+            }
+
+            $folio = Folio::create([
+                'letra_actual' => $letra,
+                'ultimo_valor' => $valor,
+            ]);
+
+
+            $folio->update([
+                'letra_actual' => $letra,
+                'ultimo_valor' => $valor,
+            ]);
+
             $Ordenderecoleccion = Orden_recoleccion::create([
                 'id_preventa' => $preventa->id,
+                'id_folio' => $folio->id,
                 'estatus' => 2 //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
             ]);
 
@@ -364,9 +393,9 @@ class OrdenEntregaController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            //return $th->getMessage();
+            return $th->getMessage();
             session()->flash("incorrect", "Error al procesar los productos, posiblemente no registro productos");
-            return redirect()->route('inicio.index');
+            // return redirect()->route('inicio.index');
         }
         // Redirecciona al usuario a una página de vista de resumen o éxito
         return redirect()->route('orden_recoleccion.vistaPreviaOrdenEntrega', $preventa->id); // Reemplaza 'ruta.nombre' con el nombre real de la ruta a la que deseas redirigir
@@ -379,6 +408,7 @@ class OrdenEntregaController extends Controller
             ->first();
 
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
@@ -390,6 +420,8 @@ class OrdenEntregaController extends Controller
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
+                'folios.letra_actual as letraActual',
+                'folios.ultimo_valor as ultimoValor',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
@@ -422,7 +454,6 @@ class OrdenEntregaController extends Controller
             ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
             ->get();
 
-
         return view('Principal.ordenEntrega.orden_completa', compact('ordenRecoleccion', 'listaProductos'));
     }
 
@@ -432,6 +463,7 @@ class OrdenEntregaController extends Controller
     public function show(string $orden_recoleccion)
     {
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
@@ -443,6 +475,8 @@ class OrdenEntregaController extends Controller
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
+                'folios.letra_actual as letraActual',
+                'folios.ultimo_valor as ultimoValor',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
@@ -497,190 +531,12 @@ class OrdenEntregaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
-        $clienteSeleccionado = $request->input('cliente');
-        $id_direcciones = $request->input('id_direccion');
-        //buco la preventa con el id
-        $Preventa = Preventa::find($id);
-
-        //busco si ya existe una orden de recoleccion
-        $buscarrecoleccion = Orden_recoleccion::where('id_preventa', $Preventa->id)
-            ->first();
-
-        $Ordenderecoleccion = NULL;
-        try {
-
-            //si ya hay una orden de recoleccion con el id de preventa no haga nada pero si no hay nada entonces crea uno
-            if ($buscarrecoleccion) {
-            } else {
-
-
-                $Preventa->estatus = 3;
-                // Guardar el modelo
-                $Preventa->save();
-
-
-
-                $venta_producto = ventas_productos::where('id_preventa', $Preventa->id)->get();
-                foreach ($venta_producto as $producto) {
-                    $producto->estatus = 3;
-                    $producto->save();
-                }
-
-                // si id_direccion tiene datos entonces entra
-                if (!is_null($clienteSeleccionado) && is_numeric($clienteSeleccionado)) {
-
-                    //si preventa esxite que si entonces entra
-                    if ($Preventa) {
-                        //Actualizar los campos
-                        $Preventa->id_cliente = $clienteSeleccionado;
-                        $Preventa->id_empleado = $request->input('txtempleado');
-                        // Guardar el modelo
-                        $Preventa->save();
-
-                        $cliente = Clientes::find($clienteSeleccionado);
-
-                        if ($cliente) {
-                            $cliente->update([
-                                'comentario' => strtoupper($request->input('txtrfc')),
-                                'telefono' => $request->input('txttelefono'),
-                                'email' => strtolower($request->input('txtrfc')),
-                            ]);
-                        } else {
-                            // Maneja el caso en que el cliente no se encontró
-                        }
-                        //si el id_direccion existe eligieron una direccion del usuario encontes entra
-                        if ($id_direcciones) {
-                            $Preventa->id_direccion = $id_direcciones;
-                            // Guardar el modelo
-                            $Preventa->save();
-                        } else {
-                            $nuevaDireccion = direcciones::create([
-                                'id_ubicacion' => $request->input('nuevacolonia'),
-                                'calle' => $request->input('nuevacalle'),
-                                'num_exterior' => $request->input('nuevonum_exterior'),
-                                'num_interior' => $request->input('nuevonum_interior'),
-                                'referencia' => strtolower($request->input('nuevareferencia')),
-                            ]);
-                            $ligarDireccionCliente = direcciones_clientes::create([
-                                'id_direccion' => $nuevaDireccion->id,
-                                'id_cliente' => $clienteSeleccionado,
-                                'estatus' => 1
-                            ]);
-
-                            $Preventa->id_direccion = $nuevaDireccion->id;
-                            // Guardar el modelo
-                            $Preventa->save();
-                        }
-                    }
-                } else {
-
-                    $clientePersona = personas::create([
-                        'nombre' => ucwords(strtolower($request->input('txtnombreCliente'))),
-                        'apellido' => ucwords(strtolower($request->input('txtapellidoCliente'))),
-                        'telefono' => $request->input('txttelefono'),
-                        'email' => strtolower($request->input('txtemail')),
-                        'estatus' => 1,
-                        // ...otros campos aquí...
-                    ]);
-
-
-                    $clienteNuevo = clientes::create([
-                        'id_persona' => $clientePersona->id,
-                        'comentario' => strtoupper($request->input('txtrfc')),
-                        'estatus' => 1,
-                    ]);
-
-                    $Preventa->id_cliente = $clienteNuevo->id;
-                    $Preventa->id_empleado = $request->input('txtempleado');
-                    // Guardar el modelo
-                    $Preventa->save();
-
-                    if ($request->input('nuevacolonia') && $request->input('nuevacalle')) {
-
-                        $nuevaDireccion = direcciones::create([
-                            'id_ubicacion' => $request->input('nuevacolonia'),
-                            'calle' => $request->input('nuevacalle'),
-                            'num_exterior' => $request->input('nuevonum_exterior'),
-                            'num_interior' => $request->input('nuevonum_interior'),
-                            'referencia' => strtolower($request->input('nuevareferencia')),
-                        ]);
-
-                        $direccionNuevaCliente = direcciones_clientes::create([
-                            'id_direccion' => $nuevaDireccion->id,
-                            'id_cliente' => $clienteNuevo->id,
-                            'estatus' => 1
-
-                        ]);
-
-                        $Preventa->id_direccion = $nuevaDireccion->id;
-                        // Guardar el modelo
-                        $Preventa->save();
-                    }
-                }
-
-                $Ordenderecoleccion = Orden_recoleccion::create([
-                    'id_preventa' => $Preventa->id,
-                    'estatus' => 2 //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
-
-                ]);
-            }
-
-
-            //consultas para motrar los datos
-            $listaCliente = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
-                ->where('clientes.estatus', 1)
-                ->where('clientes.id', $Preventa->id_cliente)
-                ->orWhere('clientes.id', $clienteSeleccionado)
-                ->select(
-                    'personas.nombre as nombre_cliente',
-                    'personas.apellido',
-                    'personas.telefono as telefono_cliente',
-                    'personas.email',
-                    'clientes.comentario',
-                    'clientes.id as id_cliente',
-                )
-                ->orderBy('clientes.updated_at', 'desc')
-                ->first();
-
-            $listaEmpleado = empleados::join('roles', 'roles.id', '=', 'empleados.id_rol')
-                ->join('personas', 'personas.id', '=', 'empleados.id_persona')
-                ->where('empleados.estatus', 1)
-                ->where('empleados.id', $request->input('txtempleado'))
-                ->select('empleados.id', 'roles.nombre as nombre_rol', 'personas.nombre as nombre_empleado', 'personas.apellido')
-                ->first();
-
-            $datosPreventa = Preventa::join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
-                ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-                ->where('preventas.id', $id)
-                ->select('preventas.updated_at as fecha', 'preventas.pago_efectivo', 'preventas.metodo_pago', 'preventas.factura', 'preventas.comentario', 'catalago_ubicaciones.localidad', 'catalago_ubicaciones.estado', 'catalago_ubicaciones.municipio', 'direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia')
-                ->first();
-
-            $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
-                ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
-                ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-                ->where('preventas.id', $id)
-                ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
-                ->get();
-
-
-            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-
-        } catch (\Throwable $th) {
-            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            return $th->getMessage();
-        }
-        if (true) {
-            return view('Principal.ordenEntrega.orden_completa', compact('Ordenderecoleccion', 'buscarrecoleccion', 'listaCliente', 'listaEmpleado', 'datosPreventa', 'listaProductos'));
-        } else {
-            session()->flash("incorrect", "Error al procesar el carrito de compras");
-            return redirect()->route('orden_entrega.create ');
-        }
     }
 
     public function generarPdf($id)
     {
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
@@ -692,6 +548,8 @@ class OrdenEntregaController extends Controller
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
+                'folios.letra_actual as letraActual',
+                'folios.ultimo_valor as ultimoValor',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',

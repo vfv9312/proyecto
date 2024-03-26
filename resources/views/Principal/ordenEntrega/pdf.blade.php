@@ -45,6 +45,13 @@
             margin-top: 5mm;
         }
 
+        .body h5 {
+            font-weight: bold;
+            text-align: center;
+            font-size: 11px;
+            margin: 0;
+        }
+
         .footer {
             border-top: 1px dashed;
             padding-top: 5mm;
@@ -67,7 +74,6 @@
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
             <h1>Ecotoner</h1>
             <p>Orden de Entrega!</p>
-            <p>Fecha recepcion: {{ $ordenRecoleccion->fechaCreacion }}</p>
             <p>Horario de trabajo : {{ $ordenRecoleccion->horarioTrabajoInicio }} hasta las:
                 {{ $ordenRecoleccion->horarioTrabajoFinal }}. {{ $ordenRecoleccion->diaSemana }}</p>
         </div>
@@ -110,16 +116,16 @@
             <!-- Agrega más items aquí -->
         </div>
         <div class="cliente">
-            <h3>Localizanos</h3>
+            <h5>Localizanos</h5>
             <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas</p>
             <p>Tel: (961) 61.115.44 o 961.1777.992</p>
         </div>
     </div>
-    <div class="footer">
-        <span>Folio:{{ $ordenRecoleccion->idRecoleccion }}</span>
+    <div class="footer item">
+        <p>Fecha recepcion: {{ $ordenRecoleccion->fechaCreacion }}</p>
         <p>Le atendio:</p>
         <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
-        <p>Gracias por su pedido!</p>
+        <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
     </div>
     </div>
 </body>

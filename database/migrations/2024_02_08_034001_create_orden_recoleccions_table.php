@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_preventa')->nullable();
             $table->unsignedBigInteger('id_cancelacion')->nullable();
+            $table->unsignedBigInteger('id_folio')->nullable();
             $table->dateTime('Fecha_recoleccion')->nullable();
             $table->dateTime('Fecha_entrega')->nullable();
             $table->text('comentario')->nullable();
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('id_preventa')->references('id')->on('preventas');
             $table->foreign('id_cancelacion')->references('id')->on('cancelaciones');
+            $table->foreign('id_folio')->references('id')->on('folios');
         });
     }
 

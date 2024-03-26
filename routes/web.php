@@ -12,6 +12,7 @@ use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiciosController;
 use App\Http\Controllers\VentasController;
+use App\Http\Controllers\WhatsAppController;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -56,6 +57,9 @@ Route::middleware('auth')->group(function () {
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']); //aqui se muestra dos iconos si quiere una orden de servicio o una orden de entrega
 Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['auth', 'verified']); //index: muestra la vista con todos los datos para hacer una orden de entrega, show: muestra una vista previa
 Route::get('orden_entrega/{id}/vistaprevia', [OrdenEntregaController::class, 'VistaPrevioOrdenEntrega'])->name('orden_recoleccion.vistaPreviaOrdenEntrega')->middleware(['auth', 'verified']); //muestra el contenido
+
+Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMensaje'])->name('WhatsApp.enviar')->middleware(['auth', 'verified']);
+
 
 //generar pdf
 Route::get('orden_entrega_pdf/{id}/generarpdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');

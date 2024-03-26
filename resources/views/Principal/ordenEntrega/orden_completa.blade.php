@@ -3,7 +3,7 @@
 @section('title', 'Orden de recoleccion')
 
 @section('content_header')
-    <h1>Orden de Entrega</h1>
+    <h1>Orden de Entrega {{ $ordenRecoleccion->letraActual }} {{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</h1>
 @stop
 
 @section('content')
@@ -19,7 +19,7 @@
     href='{{ route('generarpdf.ordenentrega', ['id' => $Ordenderecoleccion->idRecoleccion]) }}' @endif
             class=" items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
             <i class="fas fa-file-pdf"></i>
-            Ver PDF
+            Ver Folio
         </a>
 
         <button type="button"
@@ -37,6 +37,12 @@
             <i class="fas fa-envelope"></i>
             Enviar por correo
         </button>
+
+        <a href='{{ route('WhatsApp.enviar', ['id' => $ordenRecoleccion->idRecoleccion]) }}' target="_blank"
+            class="inline-flex items-center ml-8 px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150 cursor-pointer">
+            <i class="fab fa-whatsapp fa-2x"></i>
+            Enviar por whatsapp
+        </a>
     </div>
 
 @stop
