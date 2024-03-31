@@ -346,56 +346,34 @@ return [
             'icon' => 'fas fa-id-card',
         ],
         [
-            'text'    => 'Negocio',
-            'icon_color' => 'green',
-            'icon'    => 'fas fa-fw fa-store',
+            'text' => 'Motoreparto',
+            'icon' => 'fas fa-truck',
+            'icon_color' => '',
             'submenu' => [
                 [
-                    'text' => 'Servicios',
-                    'url'  => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'Registrar',
-                            'url'  => '#',
-                        ],
-                        [
-                            'text'    => 'Consultar',
-                            'url'     => '#',
-                        ]
-                    ]
-
+                    'text' => 'Tiempo aproximado',
+                    'icon' => 'fas fa-clock',
+                    'icon_color' => 'purple',
+                    'route'        => 'TiempoAproximado.index',
+                ],
+            ]
+        ],
+        [
+            'text'    => 'Ajustes',
+            'icon_color' => 'cyan',
+            'icon'    => 'fas fa-cogs',
+            'submenu' => [
+                [
+                    'text' => 'Folios',
+                    'icon' => 'fas fa-font',
+                    'icon_color' => 'yellow',
+                    'route'        => 'Folio.index',
                 ],
                 [
-                    'text'    => 'Productos',
-                    'url'     => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'Registrar',
-                            'url'  => '#',
-                        ],
-                        [
-                            'text'    => 'Consultar',
-                            'url'     => '#',
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'Ventas',
-                    'url'  => '#',
-                ],
-                [
-                    'text' => 'Empleados',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'Registrar',
-                            'url'  => '#',
-                        ],
-                        [
-                            'text'    => 'Consultar',
-                            'url'     => '#',
-                        ],
-                    ],
+                    'text' => 'Cancelaciones',
+                    'icon' => 'fas fa-ban',
+                    'icon_color' => 'red',
+                    'route'      => 'cancelar.create',
                 ],
             ],
         ],

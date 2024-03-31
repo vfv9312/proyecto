@@ -4,6 +4,8 @@ use App\Http\Controllers\CancelacionesController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\DireccionesClientesController;
 use App\Http\Controllers\EmpleadosController;
+use App\Http\Controllers\EnviarCorreoController;
+use App\Http\Controllers\FoliosController;
 use App\Http\Controllers\OrdenEntregaController;
 use App\Http\Controllers\OrdenRecoleccionController;
 use App\Http\Controllers\ordenServicioController;
@@ -11,8 +13,10 @@ use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiciosController;
+use App\Http\Controllers\TiempoAproximadoController;
 use App\Http\Controllers\VentasController;
 use App\Http\Controllers\WhatsAppController;
+use App\Mail\correoMailable;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -38,9 +42,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/menu', function () {
-    return view('menu');
-});
 
 
 Route::get('/dashboard', function () {
@@ -53,18 +54,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-//Todo el proceso de venta
+//Todo el proceso de orden entrega
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']); //aqui se muestra dos iconos si quiere una orden de servicio o una orden de entrega
 Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['auth', 'verified']); //index: muestra la vista con todos los datos para hacer una orden de entrega, show: muestra una vista previa
 Route::get('orden_entrega/{id}/vistaprevia', [OrdenEntregaController::class, 'VistaPrevioOrdenEntrega'])->name('orden_recoleccion.vistaPreviaOrdenEntrega')->middleware(['auth', 'verified']); //muestra el contenido
-
 Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMensaje'])->name('WhatsApp.enviar')->middleware(['auth', 'verified']);
 
 
 //generar pdf
 Route::get('orden_entrega_pdf/{id}/generarpdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');
 Route::get('orden_entrega_pdf/{id}/generarpdf2', [OrdenRecoleccionController::class, 'generarPdf2'])->name('generarpdf2.ordenentrega');
-Route::post('registro', [PrincipalController::class, 'registro'])->name('inicio.registro')->middleware(['auth', 'verified']);
+
+Route::resource('Folio', FoliosController::class)->middleware(['auth', 'verified']);
+
+Route::resource('TiempoAproximado', TiempoAproximadoController::class)->middleware(['auth', 'verified']);
+Route::get('enviar-correo/{id}/correo', [EnviarCorreoController::class, 'enviarCorreos'])->name('Correo.enviar');
+
 
 //estatus de las entregas
 Route::resource('orden_recoleccion', OrdenRecoleccionController::class)->middleware(['auth', 'verified']);
@@ -79,11 +84,6 @@ Route::get('orden_serviciof/{id}/vistaPrevia', [ordenServicioController::class, 
 
 
 Route::resource('cancelar', CancelacionesController::class)->middleware(['auth', 'verified']);
-
-
-//checar si sirve
-Route::post('guardarProductoVenta', [PrincipalController::class, 'guardarProductoVenta'])->name('inicio.guardarProductoVenta')->middleware(['auth', 'verified']);
-
 
 
 

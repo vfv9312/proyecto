@@ -1,6 +1,10 @@
 <section id="filters-section" style="display: none;">
 
     <section class="flex flex-wrap justify-center items-center">
+        <div class="sm:w-auto mr-6">
+            <label for="search">Buscar <i class="fas fa-search"></i></label>
+            <input class=" border" type="text" id="search" name="search" placeholder="Buscar por nombre">
+        </div>
         <div class="w-full sm:w-auto mr-6">
             <label for="tipo">Tipo</label>
             <select class="" id="modo" name="modo">

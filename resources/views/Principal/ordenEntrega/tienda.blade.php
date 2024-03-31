@@ -95,20 +95,26 @@
                 });
             });
             //BUSCA POR NOMBRE
-            $('#miBuscador').on('input', function() {
-                var searchText = $(this).val().toLowerCase();
+            $('#search').on('input', function() {
+                var searchText = $(this).val().toLowerCase().replace(/\s/g, '');
 
                 $('.producto').each(function() {
-                    var productoNombre = $(this).data('nombre').toLowerCase();
+                    var productoNombre = $(this).data('nombre').toLowerCase().replace(/\s/g, '');
 
-                    if (productoNombre.includes(searchText)) {
+                    if (productoNombre.startsWith(searchText)) {
+                        $(this).show();
+                    } else if (productoNombre.includes(searchText)) {
                         $(this).show();
                     } else {
                         $(this).hide();
                     }
                 });
             });
+
+
         });
+
+
 
         //mostrar y ocultar los filtros
         document.getElementById('toggle-filters').addEventListener('click', function() {
@@ -377,6 +383,8 @@
         //pasamos los valores recibidos a variables js
         var datosClientes = @json($listaClientes);
         var datosDirecciones = @json($listaDirecciones);
+
+
         //el select de direcciones se lo damos a la variable selectDirecciones
         var selectDirecciones = $('#inputDirecciones');
         //esta funcion entra al momento de interactuar con el select de cliente
@@ -399,6 +407,7 @@
 
 
             // Vacía los campos al incio
+            $('#inputAtiende').val('');
             $('#telefono').val('');
             $('#rfc').val('');
             $('#email').val('');
@@ -408,7 +417,7 @@
 
             //si hay datos comenzamos a imprimir
             if (clienteSeleccionado) {
-
+                $('#inputAtiende').val(clienteSeleccionado.nombre_cliente + ' ' + clienteSeleccionado.apellido);
                 $('#telefono').val(clienteSeleccionado.telefono_cliente);
                 // Asegúrate de que los nombres de los campos en el objeto clienteSeleccionado coinciden con los nombres de los campos que estás tratando de rellenar
                 // Por ejemplo, si el campo RFC se llama rfc_cliente en el objeto clienteSeleccionado, deberías usar clienteSeleccionado.rfc_cliente

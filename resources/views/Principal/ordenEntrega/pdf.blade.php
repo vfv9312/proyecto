@@ -36,9 +36,13 @@
             margin: 0;
         }
 
-        .cliente {
+        .ubicacion {
             border-top: 1px dashed;
             padding-bottom: 5mm;
+        }
+
+        .ubicacion p {
+            font-size: 9px;
         }
 
         .body {
@@ -115,18 +119,18 @@
             </div>
             <!-- Agrega más items aquí -->
         </div>
-        <div class="cliente">
-            <h5>Localizanos</h5>
-            <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas</p>
-            <p>Tel: (961) 61.115.44 o 961.1777.992</p>
-        </div>
+
     </div>
     <div class="footer item">
         <p>Fecha recepcion: {{ $ordenRecoleccion->fechaCreacion }}</p>
-        <p>Le atendio:</p>
+        <p>Recepciono:</p>
         <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
         <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
+        <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
+        </p>
     </div>
+    <div class="ubicacion">
+        <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas; Tel: (961) 61.115.44 o 961.1777.992</p>
     </div>
 </body>
 

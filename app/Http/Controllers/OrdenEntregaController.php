@@ -16,6 +16,7 @@ use App\Models\personas;
 use App\Models\precios_productos;
 use App\Models\Preventa;
 use App\Models\productos;
+use App\Models\TiempoAproximado;
 use App\Models\Tipo;
 use App\Models\ventas;
 use App\Models\ventas_productos;
@@ -393,9 +394,9 @@ class OrdenEntregaController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            return $th->getMessage();
+            //return $th->getMessage();
             session()->flash("incorrect", "Error al procesar los productos, posiblemente no registro productos");
-            // return redirect()->route('inicio.index');
+            return redirect()->route('inicio.index');
         }
         // Redirecciona al usuario a una página de vista de resumen o éxito
         return redirect()->route('orden_recoleccion.vistaPreviaOrdenEntrega', $preventa->id); // Reemplaza 'ruta.nombre' con el nombre real de la ruta a la que deseas redirigir
@@ -453,6 +454,7 @@ class OrdenEntregaController extends Controller
             ->where('preventas.id', $id)
             ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
             ->get();
+
 
         return view('Principal.ordenEntrega.orden_completa', compact('ordenRecoleccion', 'listaProductos'));
     }
@@ -515,7 +517,9 @@ class OrdenEntregaController extends Controller
             ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
             ->get();
 
-        return view('Principal.ordenEntrega.vista_previa', compact('ordenRecoleccion', 'listaProductos'));
+        $Tiempo = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->first();
+
+        return view('Principal.ordenEntrega.vista_previa', compact('ordenRecoleccion', 'listaProductos', 'Tiempo'));
     }
 
     /**
@@ -588,6 +592,9 @@ class OrdenEntregaController extends Controller
             ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
             ->get();
 
+        $Tiempo = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->first();
+
+
 
         $largoDelTicket = 700; // Inicializa la variable
 
@@ -599,7 +606,8 @@ class OrdenEntregaController extends Controller
 
         $pdf = PDF::loadView('Principal.ordenEntrega.pdf', compact(
             'ordenRecoleccion',
-            'listaProductos'
+            'listaProductos',
+            'Tiempo'
         ));
 
         // Establece el tamaño del papel a 80mm de ancho y 200mm de largo

@@ -11,6 +11,6 @@ class FoliosController extends Controller
      */
     public function index()
     {
-        //
+        return view('Modificacion_Folio.folios');
     }
 }

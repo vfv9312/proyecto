@@ -1,4 +1,4 @@
-<section class="flex flex-wrap overflow-auto h-screen">
+<section class="flex flex-wrap md:justify-center md:items-center overflow-auto h-screen">
     @foreach ($productos as $producto)
         <div class="producto m-3 pb-12 bg-white cursor-pointer w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 h-72 border rounded-lg hover:shadow-2xl"
             data-id="{{ $producto->id }}" data-nombre="{{ $producto->nombre_comercial }}"
