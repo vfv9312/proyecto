@@ -74,6 +74,7 @@
 
 
             // Vacía los campos al incio
+            $('#inputAtiende').val('');
             $('#telefono').val('');
             $('#rfc').val('');
             $('#email').val('');
@@ -83,7 +84,7 @@
 
             //si hay datos comenzamos a imprimir
             if (clienteSeleccionado) {
-
+                $('#inputAtiende').val(clienteSeleccionado.nombre_cliente + ' ' + clienteSeleccionado.apellido);
                 $('#telefono').val(clienteSeleccionado.telefono_cliente);
                 // Asegúrate de que los nombres de los campos en el objeto clienteSeleccionado coinciden con los nombres de los campos que estás tratando de rellenar
                 // Por ejemplo, si el campo RFC se llama rfc_cliente en el objeto clienteSeleccionado, deberías usar clienteSeleccionado.rfc_cliente

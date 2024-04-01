@@ -102,7 +102,8 @@
 
                         </td>
                         <td>
-                            <form action="{{ route('cancelar.desactivar', $dato->id) }}" method="POST">
+                            <form action="{{ route('cancelar.desactivar', $dato->id) }}" method="POST"
+                                onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
                                 @csrf
                                 @method('PUT')
                                 <button

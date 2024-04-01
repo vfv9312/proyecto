@@ -69,6 +69,7 @@ Route::resource('Folio', FoliosController::class)->middleware(['auth', 'verified
 
 Route::resource('TiempoAproximado', TiempoAproximadoController::class)->middleware(['auth', 'verified']);
 Route::get('enviar-correo/{id}/correo', [EnviarCorreoController::class, 'enviarCorreos'])->name('Correo.enviar');
+Route::get('enviar-correo/{error}/{id}/estatus', [EnviarCorreoController::class, 'vistaPrevia'])->name('Correo.vistaPrevia');
 
 
 //estatus de las entregas

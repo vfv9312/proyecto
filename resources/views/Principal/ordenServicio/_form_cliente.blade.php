@@ -1,6 +1,6 @@
 <div class="flex flex-col md:flex-row">
 
-    <div class="flex flex-col w-full md:w-1/2 md:mr-10">
+    <div class="flex flex-col w-full md:w-1/3 md:mr-4">
         <label class="mr-4">Cliente</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -12,9 +12,15 @@
             @endforeach
         </select>
     </div>
-
-    <div class="flex flex-col w-full md:w-1/2 ">
+    <div class="flex flex-col w-full md:w-1/3 md:mr-2">
         <label class="mr-4">Atención</label>
+        <input
+            class="w-full px-3 py-1  border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="inputAtiende" name="txtatencion" placeholder="Nombre de la persona que atiende" required>
+        </input>
+    </div>
+    <div class="flex flex-col w-full md:w-1/3 ">
+        <label class="mr-4">Empleado</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="inputAtencion" name="txtempleado" required

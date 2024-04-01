@@ -364,9 +364,9 @@ return [
             'icon'    => 'fas fa-cogs',
             'submenu' => [
                 [
-                    'text' => 'Folios',
-                    'icon' => 'fas fa-font',
-                    'icon_color' => 'yellow',
+                    'text' => 'Recuperar información',
+                    'icon' => 'fas fa-trash',
+                    'icon_color' => 'red',
                     'route'        => 'Folio.index',
                 ],
                 [
