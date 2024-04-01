@@ -148,7 +148,10 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                 id="factura">
         </div>
 
-
+        <div id="personaRecibe" style="display: none;" class="flex flex-col items-center">
+            <label for="recibe">Quien recibe:</label>
+            <input type="text" name="personaRecibe" placeholder="Nombre de la persona que recibe">
+        </div>
     </div>
 
     <button type="submit"

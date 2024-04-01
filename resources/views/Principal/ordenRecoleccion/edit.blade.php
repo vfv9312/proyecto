@@ -43,5 +43,15 @@
                 inputmetodopago.display = 'none';
             }
         }
+
+        function mostrarInputCosto(value) {
+            var inputPersonaRecibe = document.getElementById('personaRecibe');
+
+            if (value == '1') { // Si se selecciona "Venta completa"
+                inputPersonaRecibe.style.display = 'block';
+            } else {
+                inputPersonaRecibe.style.display = 'none';
+            }
+        }
     </script>
 @stop

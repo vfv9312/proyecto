@@ -195,12 +195,13 @@
 
                             <button onclick="location.href='{{ route('productos.edit', $producto->id) }}';"
                                 class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-sync"></i>
                             </button>
 
                         </td>
                         <td>
-                            <form action="{{ route('productos.desactivar', $producto->id) }}" method="POST">
+                            <form action="{{ route('productos.desactivar', $producto->id) }}" method="POST"
+                                onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
                                 @csrf
                                 @method('PUT')
                                 <button

@@ -84,6 +84,7 @@ Route::get('orden_serviciof/{id}/vistaPrevia', [ordenServicioController::class, 
 
 
 Route::resource('cancelar', CancelacionesController::class)->middleware(['auth', 'verified']);
+Route::put('/cancelar/{id}/desactivar', [CancelacionesController::class, 'desactivar'])->name('cancelar.desactivar')->middleware(['auth', 'verified']);
 
 
 

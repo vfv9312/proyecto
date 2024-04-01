@@ -15,7 +15,7 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="atencion" type="text" name="txtatencion" value="{{ $ordenRecoleccion->nombreEmpleado }}" readonly>
+            id="atencion" type="text" name="txtatencion" value="{{ $ordenRecoleccion->nombreAtencion }}" readonly>
     </div>
 
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">

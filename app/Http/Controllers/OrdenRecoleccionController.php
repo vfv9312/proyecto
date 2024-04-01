@@ -27,6 +27,8 @@ class OrdenRecoleccionController extends Controller
         $filtroFecha_inicio = $request->query('fecha_inicio');
         $fecha_fin = $request->query('fecha_fin');
         $filtroEstatus = $request->query('estatus');
+        $palabras = explode(' ', $busqueda); // Divide la cadena de búsqueda en palabras
+
 
 
         $preventas = Preventa::join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
@@ -35,16 +37,32 @@ class OrdenRecoleccionController extends Controller
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('orden_recoleccions', 'orden_recoleccions.id_preventa', '=', 'preventas.id')
+            ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
             ->WhereIn('orden_recoleccions.estatus', [4, 3, 2])
-            ->where(function ($query) use ($busqueda) {
-                $query->where('personas.telefono', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('personas.nombre', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('personas.apellido', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$busqueda}%");
+            ->where(function ($query) use ($palabras) {
+                foreach ($palabras as $palabra) {
+                    $query->where(function ($query) use ($palabra) {
+                        $query->where('personas.telefono', 'LIKE', "%{$palabra}%")
+                            ->orWhere('personas.nombre', 'LIKE', "%{$palabra}%")
+                            ->orWhere('personas.apellido', 'LIKE', "%{$palabra}%")
+                            ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$palabra}%")
+                            ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$palabra}%");
+                    });
+                }
             });
-        if ($filtroES) {
+        // Búsqueda por número de folio
+        if (preg_match('/^[A-Z]\d+$/', $busqueda)) {
+            $letra = substr($busqueda, 0, 1);
+            $numero = (int) substr($busqueda, 1);
+
+            $preventas->orWhere(function ($query) use ($letra, $numero) {
+                $query->where('folios.letra_actual', $letra)
+                    ->where('folios.ultimo_valor', $numero);
+            });
+        }
+
+        if ($filtroES) { //E : Entrega , S: Servicio
             $preventas->where('preventas.estatus', $filtroES);
         }
 
@@ -57,8 +75,10 @@ class OrdenRecoleccionController extends Controller
         }
         $preventas = $preventas->select(
             'orden_recoleccions.id as idRecoleccion',
+            'folios.letra_actual as letraActual',
+            'folios.ultimo_valor as ultimoValor',
+            'preventas.id as idPreventa',
             'preventas.estatus as estatusPreventa',
-            'orden_recoleccions.id as id_recoleccion',
             'orden_recoleccions.estatus', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
             'orden_recoleccions.created_at',
             'personas.nombre as nombreCliente',
@@ -210,12 +230,12 @@ class OrdenRecoleccionController extends Controller
             ->where('preventas.id', $datosEnvio->idPreventa)
             ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
             ->get();
-        if ($datosEnvio->estatusRecoleccion == 4 || $datosEnvio->estatusRecoleccion == 3) {
+        if ($datosEnvio->estatusRecoleccion == 4 || $datosEnvio->estatusRecoleccion == 3) { //4 por recolectar, 3 revision
             return redirect()->route('generarpdf.ordenservicio', ['id' => $orden_recoleccion->id]);
-        } else if ($datosEnvio->estatusRecoleccion == 2  && $datosEnvio->estatusPreventa == 4) {
+        } else if ($datosEnvio->estatusRecoleccion == 2  && $datosEnvio->estatusPreventa == 4) { // si ya es estatus 2 = entrega  y fue una orden de 4 servicios
 
             return redirect()->route('generarpdf2.ordenentrega', ['id' => $orden_recoleccion->id, 'listaProductos' => $listaProductos]);
-        } else if ($datosEnvio->estatusRecoleccion == 2) {
+        } else if ($datosEnvio->estatusRecoleccion == 2) { //si ya es estatus 2 = entrega y no fue una orden de 4 servicio quiere decir que es una orden de 3 entrega
 
             return redirect()->route('generarpdf.ordenentrega', ['id' => $orden_recoleccion->id, 'listaProductos' => $listaProductos]);
         }
@@ -226,6 +246,7 @@ class OrdenRecoleccionController extends Controller
      */
     public function edit(Orden_recoleccion $orden_recoleccion, Request $request)
     {
+        $recibe = $request->personaRecibe;
         // Recuperar el ID de la orden de recolección
         $ordenRecoleccion = $orden_recoleccion;
         $estatus = $request->miSelect;
@@ -272,6 +293,10 @@ class OrdenRecoleccionController extends Controller
                 $ordenRecoleccion->update([
                     'estatus' => $estatus,
                     // Agrega aquí cualquier otro campo que desees actualizar
+                ]);
+
+                $preventa->update([
+                    'nombre_quien_recibe' => $recibe,
                 ]);
 
                 //actualizamos ventas
@@ -372,7 +397,9 @@ class OrdenRecoleccionController extends Controller
                 ->get();
         }
 
-        $cancelar = Cancelaciones::all();
+        $cancelar = Cancelaciones::where('estatus', 1)
+            ->orderBy('cancelaciones.nombre', 'desc')->get();
+
         return view('Principal.ordenRecoleccion.cancelar', compact('productos', 'datosEnvio', 'cancelar'));
     }
     public function cancelar(Orden_recoleccion $id, Request $request)

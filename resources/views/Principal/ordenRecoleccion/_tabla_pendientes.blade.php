@@ -4,7 +4,7 @@
     <table class="min-w-full">
         <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
         <tr class="text-black uppercase text-xs  font-bold leading-normal">
-            <td class="py-3 px-6 text-left border-r">Ticket</td>
+            <td class="py-3 px-6 text-left border-r">Folio</td>
             <td class="py-3 px-6 text-left border-r">Nombre del cliente</td>
             <td class="py-3 px-6 text-left border-r">Direccion de servicio</td>
             <td class="py-3 px-6 text-left border-r">Fecha del pedido</td>
@@ -14,7 +14,7 @@
         </tr>
         @foreach ($preventas as $pendiente)
             <tr class= " border-b border-gray-200 text-sm">
-                <td class="px-6 py-4">{{ $pendiente->idRecoleccion }}</td>
+                <td class="px-6 py-4">{{ $pendiente->letraActual }}{{ sprintf('%06d', $pendiente->ultimoValor) }}</td>
                 <td class="px-6 py-4">
                     {{ $pendiente->nombreCliente }} {{ $pendiente->apellidoCliente }}
                 </td>
@@ -60,23 +60,17 @@
                     </form>
                 </td>
                 <td>
-
-                    <a href="{{ route('orden_recoleccion.show', $pendiente->id_recoleccion) }}" target="_blank"
+                    <a @if ($pendiente->estatusPreventa == 3) href="{{ route('orden_recoleccion.vistaPreviaOrdenEntrega', $pendiente->idPreventa) }}"
+                    @elseif ($pendiente->estatusPreventa == 4)
+                    href="{{ route('orden_recoleccion.show', $pendiente->idRecoleccion) }}" @endif
+                        target="_blank"
                         class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out block">
-                        <i class="fas fa-file-pdf"></i>
+                        <i class="fas fa-eye"></i>
                     </a>
 
                 </td>
                 <td>
-                    <form action="" method="GET">
-                        @csrf
-                        <button
-                            class="border rounded px-6 py-4 bg-purple-600 text-white cursor-pointer hover:bg-purple-800 transition duration-200 ease-in-out">
-                            <i class="fas fa-paper-plane"></i></button>
-                    </form>
-                </td>
-                <td>
-                    <form action="{{ route('orden_recoleccion.vistacancelar', $pendiente->id_recoleccion) }}"
+                    <form action="{{ route('orden_recoleccion.vistacancelar', $pendiente->idRecoleccion) }}"
                         method="GET">
                         @csrf
                         <button

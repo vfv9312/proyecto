@@ -56,7 +56,6 @@
                                 <i class="fas fa-file-pdf"></i>
                             </button>
                         </form>
-
                     </td>
 
                 </tr>

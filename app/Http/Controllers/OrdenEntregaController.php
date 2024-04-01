@@ -427,6 +427,7 @@ class OrdenEntregaController extends Controller
                 'preventas.id as idPreventa',
                 'preventas.factura',
                 'preventas.pago_efectivo as pagoEfectivo',
+                'preventas.nombre_atencion as nombreAtencion',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
@@ -517,7 +518,9 @@ class OrdenEntregaController extends Controller
             ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
             ->get();
 
-        $Tiempo = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->first();
+        $fechaCreacion = \Carbon\Carbon::parse($ordenRecoleccion->fechaCreacion);
+
+        $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
 
         return view('Principal.ordenEntrega.vista_previa', compact('ordenRecoleccion', 'listaProductos', 'Tiempo'));
     }
@@ -554,6 +557,7 @@ class OrdenEntregaController extends Controller
                 'orden_recoleccions.created_at as fechaCreacion',
                 'folios.letra_actual as letraActual',
                 'folios.ultimo_valor as ultimoValor',
+                'folios.created_at as fechaDelTiempoAproximado',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
@@ -591,10 +595,9 @@ class OrdenEntregaController extends Controller
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
             ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
             ->get();
+        $fechaCreacion = \Carbon\Carbon::parse($ordenRecoleccion->fechaCreacion);
 
-        $Tiempo = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->first();
-
-
+        $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
 
         $largoDelTicket = 700; // Inicializa la variable
 

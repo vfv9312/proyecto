@@ -6,6 +6,7 @@ use App\Models\Catalago_recepcion;
 use App\Models\Orden_recoleccion;
 use App\Models\precios_productos;
 use App\Models\Preventa;
+use App\Models\TiempoAproximado;
 use App\Models\ventas;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -115,46 +116,48 @@ class VentasController extends Controller
     public function show(ventas $venta)
     {
 
-        $datosEnvio = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
-            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
-            ->join('personas as empleadoPersona', 'empleadoPersona.id', '=', 'empleados.id_persona')
-            ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
+            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->whereIn('preventas.estatus', [3, 4]) //3 entrega, 4 servicios, 2 inconcluso, 0 eliminado
+            ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
+            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
+            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $venta->id_recoleccion)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
-                'preventas.id as idPreventa',
-                'preventas.estatus as estatusPreventa',
-                'preventas.costo_servicio',
+                'orden_recoleccions.created_at as fechaCreacion',
+                'folios.letra_actual as letraActual',
+                'folios.ultimo_valor as ultimoValor',
                 'preventas.metodo_pago as metodoPago',
+                'preventas.id as idPreventa',
                 'preventas.factura',
                 'preventas.pago_efectivo as pagoEfectivo',
-                'orden_recoleccions.id as idOrden_recoleccions',
-                'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
-                'orden_recoleccions.Fecha_entrega as fechaEntrega',
-                'orden_recoleccions.created_at',
-                'orden_recoleccions.id as id_recoleccion',
-                'orden_recoleccions.estatus as estatusRecoleccion', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
-                'empleadoPersona.nombre as nombreEmpleado',
-                'empleadoPersona.apellido as apellidoEmpleado',
-                'empleadoPersona.telefono as telefonoEmpleado',
-                'clientePersona.nombre as nombreCliente',
-                'clientePersona.apellido as apellidoCliente',
-                'clientePersona.telefono as telefonoCliente',
-                'clientePersona.email as emailCliente',
-                'clientes.comentario as rfc',
-                'catalago_ubicaciones.localidad as colonia',
-                'roles.nombre as nombre_rol',
+                'preventas.nombre_atencion as nombreAtencion',
+                'preventas.horario_trabajo_inicio as horarioTrabajoInicio',
+                'preventas.horario_trabajo_final as horarioTrabajoFinal',
+                'preventas.dia_semana as diaSemana',
+                'preventas.nombre_quien_recibe as recibe',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
                 'direcciones.referencia',
+                'catalago_ubicaciones.cp',
+                'catalago_ubicaciones.localidad',
+                'clientes.comentario as rfc',
+                'personaClientes.nombre as nombreCliente',
+                'personaClientes.apellido as apellidoCliente',
+                'personaClientes.telefono as telefonoCliente',
+                'personaClientes.email as correo',
+                'personaEmpleado.nombre as nombreEmpleado',
+                'personaEmpleado.apellido as apellidoEmpleado',
+                'personaEmpleado.telefono as telefonoEmpleado',
+                'roles.nombre as nombreRol',
             )
             ->first();
+
 
         $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
             ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
@@ -163,30 +166,44 @@ class VentasController extends Controller
             ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
             ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
-            ->where('preventas.id', $datosEnvio->idPreventa)
+            ->where('preventas.id', $ordenRecoleccion->idPreventa)
             ->where('servicios_preventas.estatus', 2)
             ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
             ->get();
 
+
         $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
             ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
             ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-            ->where('preventas.id', $datosEnvio->idPreventa)
-            ->select(
-                'productos.nombre_comercial',
-                'precios_productos.precio',
-                'ventas_productos.cantidad',
-            )
+            ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->join('colors', 'colors.id', '=', 'productos.id_color')
+            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->join('modos', 'modos.id', '=', 'productos.id_modo')
+            ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
             ->get();
 
+        $Tiempo = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->first();
+
+
+
+        $largoDelTicket = 700; // Inicializa la variable
+
+
+        if ($listaProductos->count() > 1) {
+            $extra = max(0, $listaProductos->count() - 1);
+            $largoDelTicket += $extra * 50;
+        }
+
         $pdf = PDF::loadView('ventas.pdf', compact(
-            'datosEnvio',
+            'ordenRecoleccion',
             'productos',
-            'listaProductos'
+            'listaProductos',
+            'Tiempo'
         ));
 
         // Establece el tamaño del papel a 80mm de ancho y 200mm de largo
-        $pdf->setPaper([0, 0, 226.77, 699.93], 'portrait'); // 80mm x 200mm en puntos
+        $pdf->setPaper([0, 0, 226.77, $largoDelTicket], 'portrait'); // 80mm x 200mm en puntos
 
         // Renderiza el documento PDF y lo envía al navegador
         return $pdf->stream();

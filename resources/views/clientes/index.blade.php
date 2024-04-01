@@ -184,16 +184,16 @@
                             <td>
                                 <!--Edtiamos un cliente-->
                                 <button type="submit"
-                                    class=" border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out"
+                                    class=" border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out"
                                     title="Editar cliente">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-sync"></i>
                                 </button>
                             </td>
                         </form>
                         <td>
                             <!--Agregamos mas direcciones a un usuario-->
                             <button onclick="window.location='{{ route('direcciones.edit', $cliente->id) }}'"
-                                class="border rounded px-4 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out"
+                                class="border rounded px-4 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out"
                                 title="Agregar más direcciones">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <i class="fas fa-plus"></i>
@@ -201,7 +201,8 @@
                         </td>
                         <td>
                             <!--Desactivamos al cliente-->
-                            <form method="POST" action="{{ route('clientes.desactivar', $cliente->id) }}">
+                            <form method="POST" action="{{ route('clientes.desactivar', $cliente->id) }}"
+                                onsubmit="return confirm('¿Estás seguro de que quieres eliminar este cliente?');">
                                 @csrf
                                 @method('PUT')
                                 <button type="submit"

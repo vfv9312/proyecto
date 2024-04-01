@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cancelaciones;
 use App\Models\Orden_recoleccion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CancelacionesController extends Controller
 {
@@ -57,7 +58,8 @@ class CancelacionesController extends Controller
             ->orderBy('clientes.updated_at', 'desc')
             ->paginate(5);
 
-        $cancelaciones = Cancelaciones::orderBy('cancelaciones.nombre', 'desc')->get();
+        $cancelaciones = Cancelaciones::where('estatus', 1)
+            ->orderBy('cancelaciones.nombre', 'desc')->get();
 
 
         return view('cancelaciones.index', compact('datosEnvio', 'cancelaciones'));
@@ -68,7 +70,11 @@ class CancelacionesController extends Controller
      */
     public function create()
     {
-        return view('cancelaciones.agregarCancelacion');
+
+        $cancelaciones = Cancelaciones::where('estatus', 1)
+            ->orderBy('cancelaciones.nombre', 'desc')->paginate(5); // Mueve paginate() aquí para que funcione correctamente;
+
+        return view('cancelaciones.agregarCancelacion', compact('cancelaciones'));
     }
 
     /**
@@ -76,7 +82,22 @@ class CancelacionesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $motivoNuevo = $request->input('txtnombre');
+
+            $cancelaciones = Cancelaciones::create([
+                'nombre' => ucfirst(strtolower($motivoNuevo)),
+                'estatus' => 1,
+            ]);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            session()->flash("incorrect", "Error al agregar el registro");
+            return redirect()->route('cancelar.create');
+        }
+        session()->flash("correcto", "Motivo de cancelacion agregado correctamente");
+        return redirect()->route('cancelar.create');
     }
 
     /**
@@ -90,17 +111,55 @@ class CancelacionesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Cancelaciones $cancelaciones)
+    public function edit(Cancelaciones $cancelar)
     {
-        //
+        return view('cancelaciones.edit', compact('cancelar'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Cancelaciones $cancelaciones)
+    public function update(Request $request, Cancelaciones $cancelar)
     {
-        //
+        DB::beginTransaction();
+        try {
+
+            $nombre = $request->input('nombre');
+            $cancelar->update([
+                'nombre' => $nombre,
+                // Agrega aquí otros campos que quieras actualizar
+            ]);
+
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            session()->flash("incorrect", "Error al actualizar el registro");
+            return redirect()->route('cancelar.create');
+        }
+        session()->flash("correcto", "Motivo de cancelacion actualizado correctamente");
+        return redirect()->route('cancelar.create');
+    }
+
+    public function desactivar(Cancelaciones $id)
+    {
+        DB::beginTransaction();
+        try {
+
+
+            $id->estatus = 0;
+            $id->deleted_at = now();
+            $cancelacionDesactivado = $id->save();
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+
+            session()->flash("incorrect", "Error al eliminar el registro");
+            return redirect()->route('cancelar.create');
+        }
+        session()->flash("correcto", "Motivo de cancelacion eliminada correctamente");
+        return redirect()->route('cancelar.create');
     }
 
     /**
