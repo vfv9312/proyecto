@@ -1,7 +1,7 @@
-<div class="flex flex-col w-full ">
-    <label for="nombre_comercial">Nombre comercial:</label>
+<div class="flex flex-col w-full">
+    <label for="nombre_comercial" class="md:ml-4">Nombre comercial:</label>
     <input
-        class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        class="w-full md:w-11/12 md:ml-4 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         type="text" id="nombre_comercial" name="txtnombre_comercial">
 </div>
 <div class="flex md:mt-8">
@@ -64,7 +64,7 @@
         id="descripcion" name="txtdescripcion" maxlength="255"></textarea>
 </div>
 <div class=" flex justify-center mt-8 ">
-    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">
+    <button type="button" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">
         <i class="fas fa-save mr-2"></i>
         Almacenar producto
     </button>

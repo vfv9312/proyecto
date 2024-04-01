@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Articulos')
+@section('title', 'Orden de entrega')
 
 @section('content_header')
 
@@ -21,8 +21,9 @@
         </div>
     @endif
     <!-- Botón para abrir el modal -->
-    <button id="myBtn" class=" mt-2 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-        <i class="fas fa-shopping-basket"></i> Productos</button>
+    <button id="myBtn"
+        class=" mt-4 bg-gradient-to-r from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
+        <i class="fas fa-shopping-basket"></i> Añadir productos</button>
     <form class="mt-8 flex flex-col justify-center" action="{{ route('orden_entrega.store') }}" method="POST">
         @csrf
 

@@ -15,7 +15,7 @@ class ServiciosController extends Controller
      */
     public function index()
     {
-        //
+
         $servicios = servicios::join('ventas', 'ventas.id', '=', 'servicios.id_venta')
             ->join('clientes', 'clientes.id', '=', 'ventas.id_cliente')
             ->join('personas', 'personas.id', '=', 'clientes.id_persona')

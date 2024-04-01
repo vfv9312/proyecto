@@ -70,9 +70,14 @@ class ordenServicioController extends Controller
 
         $ListaColonias = Catalago_ubicaciones::orderBy('localidad')->get();
 
+        $marcas = Marcas::orderBy('nombre')->get();
+        $categorias = Tipo::orderBy('nombre')->get();
+        $tipos = Modo::all();
+        $colores = Color::all();
 
 
-        return view('Principal.ordenServicio.datos_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias'));
+
+        return view('Principal.ordenServicio.datos_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'marcas', 'categorias', 'tipos', 'colores'));
     }
 
     /**
@@ -90,6 +95,8 @@ class ordenServicioController extends Controller
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
+
+            $atiende = ucwords(strtolower($request->input('txtatencion')));
 
 
             //clienteSeleccionado es el id del cliente seleccionado si elegi uno ya registrado
@@ -114,6 +121,7 @@ class ordenServicioController extends Controller
                 if ($Preventa) {
                     //Actualizar los campos
                     $Preventa->id_cliente = $clienteSeleccionado;
+                    $Preventa->nombre_atencion = $atiende;
 
                     // Guardar el modelo
                     $Preventa->save();
@@ -164,6 +172,7 @@ class ordenServicioController extends Controller
                 ]);
                 //Preventa le asignamos el clienta nuevo
                 $Preventa->id_cliente = $clienteNuevo->id;
+                $Preventa->nombre_atencion = $atiende;
                 // Guardar el modelo
                 $Preventa->save();
 
@@ -452,9 +461,6 @@ class ordenServicioController extends Controller
             ->where('servicios_preventas.estatus', 2)
             ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
             ->get();
-
-
-
 
         $pdf = PDF::loadView('Principal.ordenServicio.pdf', compact('productos', 'ordenRecoleccion'));
 
