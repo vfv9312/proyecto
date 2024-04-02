@@ -74,6 +74,8 @@ Route::prefix('restablecer')->group(function () {
     Route::get('productos', [RestablecerController::class, 'productos'])->name('Restablecer.productos')->middleware(['auth', 'verified']);
     Route::put('cancelaciones/{id}', [RestablecerController::class, 'actualizarCancelacion'])->name('Restablecer.actualizarcancelacion')->middleware(['auth', 'verified']);
     Route::put('clientes/{id}', [RestablecerController::class, 'actualizarCliente'])->name('Restablecer.actualizarcliente')->middleware(['auth', 'verified']);
+    Route::put('productos/{id}', [RestablecerController::class, 'actualizarProducto'])->name('Restablecer.actualizarProducto')->middleware(['auth', 'verified']);
+    Route::put('empleados/{id}', [RestablecerController::class, 'actualizarEmpleado'])->name('Restablecer.actualizarEmpleado')->middleware(['auth', 'verified']);
 });
 
 
