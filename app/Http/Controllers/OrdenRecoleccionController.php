@@ -224,7 +224,6 @@ class OrdenRecoleccionController extends Controller
             )
             ->first();
 
-
         $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
             ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
             ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')

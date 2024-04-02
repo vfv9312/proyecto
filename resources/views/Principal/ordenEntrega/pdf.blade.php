@@ -76,8 +76,7 @@
     <div class="ticket">
         <div class="header">
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-            <h1>Ecotoner</h1>
-            <p>Orden de Entrega!</p>
+            <h1>Orden de Entrega!</h1>
             <p>Horario de trabajo : {{ $ordenRecoleccion->horarioTrabajoInicio }} hasta las:
                 {{ $ordenRecoleccion->horarioTrabajoFinal }}. {{ $ordenRecoleccion->diaSemana }}</p>
         </div>

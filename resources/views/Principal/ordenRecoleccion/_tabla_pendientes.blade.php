@@ -62,8 +62,7 @@
                 <td>
                     <a @if ($pendiente->estatusPreventa == 3) href="{{ route('orden_recoleccion.vistaPreviaOrdenEntrega', $pendiente->idPreventa) }}"
                     @elseif ($pendiente->estatusPreventa == 4)
-                    href="{{ route('orden_recoleccion.show', $pendiente->idRecoleccion) }}" @endif
-                        target="_blank"
+                    href="{{ route('ordenServicio.vistaGeneral', $pendiente->idRecoleccion) }}" @endif
                         class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out block">
                         <i class="fas fa-eye"></i>
                     </a>

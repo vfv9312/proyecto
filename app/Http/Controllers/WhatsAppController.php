@@ -29,6 +29,7 @@ class WhatsAppController extends Controller
                 'preventas.id as idPreventa',
                 'preventas.factura',
                 'preventas.pago_efectivo as pagoEfectivo',
+                'preventas.estatus as estatusPreventa',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
@@ -49,10 +50,15 @@ class WhatsAppController extends Controller
             )
             ->first();
         //9612602898
+        if ($ordenRecoleccion->estatusPreventa == 3) {
+            $enlace = "https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/$ordenRecoleccion->idRecoleccion/generarpdf";
+        } else if ($ordenRecoleccion->estatusPreventa == 4) {
+            $enlace = "https://administrativo.ecotonerdelsureste.com/orden_servicio_pdf/$ordenRecoleccion->idRecoleccion/generarpdf";
+        }
 
 
         $numero = 52 . $ordenRecoleccion->telefonoCliente; //$ordenRecoleccion->telefonoCliente; // Número de teléfono al que deseas enviar el mensaje
-        $mensaje = "*Ecotoner* \n\n Hola {$ordenRecoleccion->nombreCliente} {$ordenRecoleccion->apellidoCliente}, te saludamos de ecotoner aquí está el enlace a tu orden de entrega:  https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/{$ordenRecoleccion->idRecoleccion}/generarpdf"; // Mensaje que deseas enviar
+        $mensaje = "*Ecotoner* \n\n Hola {$ordenRecoleccion->nombreCliente} {$ordenRecoleccion->apellidoCliente}, te saludamos de ecotoner aquí está el enlace a tu orden de entrega:  {$enlace}"; // Mensaje que deseas enviar
 
         // Genera el enlace de WhatsApp
         $url = "https://wa.me/{$numero}?text=" . urlencode($mensaje);

@@ -228,7 +228,7 @@ class ClientesController extends Controller
                 ]);
             }
 
-            if ($calleCliente | $numExterior | $numInterior | $numReferencia) {
+            if ($calleCliente || $numExterior || $numInterior || $numReferencia) {
                 $actualizarDireccion = $tablaDireccion->update([
                     'calle' => $calleCliente,
                     'num_exterior' => $numExterior,

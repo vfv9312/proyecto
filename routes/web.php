@@ -58,7 +58,6 @@ Route::middleware('auth')->group(function () {
 Route::resource('inicio', PrincipalController::class)->middleware(['auth', 'verified']); //aqui se muestra dos iconos si quiere una orden de servicio o una orden de entrega
 Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['auth', 'verified']); //index: muestra la vista con todos los datos para hacer una orden de entrega, show: muestra una vista previa
 Route::get('orden_entrega/{id}/vistaprevia', [OrdenEntregaController::class, 'VistaPrevioOrdenEntrega'])->name('orden_recoleccion.vistaPreviaOrdenEntrega')->middleware(['auth', 'verified']); //muestra el contenido
-Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMensaje'])->name('WhatsApp.enviar')->middleware(['auth', 'verified']);
 
 
 //generar pdf
@@ -82,6 +81,7 @@ Route::prefix('restablecer')->group(function () {
 Route::resource('TiempoAproximado', TiempoAproximadoController::class)->middleware(['auth', 'verified']);
 Route::get('enviar-correo/{id}/correo', [EnviarCorreoController::class, 'enviarCorreos'])->name('Correo.enviar');
 Route::get('enviar-correo/{error}/{id}/estatus', [EnviarCorreoController::class, 'vistaPrevia'])->name('Correo.vistaPrevia');
+Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMensaje'])->name('WhatsApp.enviar')->middleware(['auth', 'verified']);
 
 
 //estatus de las entregas
