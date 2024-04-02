@@ -73,7 +73,7 @@
     </div>
     <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            Fecha del pedido
+            Fecha de recepción
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -138,3 +138,52 @@
     @endif
 
 </div>
+<div class="mt-7 flex flex-col">
+    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nombre Comercial
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cantidad Total
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Descripción
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Precio unitario
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach ($listaProductos as $producto)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $producto->nombre_comercial }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $producto->cantidad }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    Color : {{ $producto->nombreColor }}, Marca : {{ $producto->nombreMarca }},
+                                    Categoria :
+                                    {{ $producto->nombreTipo }}, Tipo : {{ $producto->nombreModo }}
+                                </td>
+                                <td>
+                                    ${{ $producto->precio }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>

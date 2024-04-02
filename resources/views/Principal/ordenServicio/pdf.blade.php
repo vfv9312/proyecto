@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ticket</title>
+    <title>Folio</title>
     <style>
         .ticket {
             width: 60mm;
             font-family: Arial, sans-serif;
+            font-size: 10px;
             margin: auto;
         }
 
@@ -24,13 +25,35 @@
             height: auto;
         }
 
-        .cliente {
+        .datoscliente {
+            border-bottom: 1px dashed;
+        }
+
+        .datoscliente h5 {
+            font-weight: bold;
+            text-align: center;
+            font-size: 11px;
+            margin: 0;
+        }
+
+        .ubicacion {
             border-top: 1px dashed;
             padding-bottom: 5mm;
         }
 
+        .ubicacion p {
+            font-size: 9px;
+        }
+
         .body {
-            margin-top: 10mm;
+            margin-top: 5mm;
+        }
+
+        .body h5 {
+            font-weight: bold;
+            text-align: center;
+            font-size: 11px;
+            margin: 0;
         }
 
         .footer {
@@ -53,37 +76,60 @@
     <div class="ticket">
         <div class="header">
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-            <h1>Ecotoner</h1>
-            <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas</p>
-            <p>Tel: (961) 61.115.44 o 961.1777.992</p>
+            <h1>Orden de Servicio!</h1>
+            <p>Horario de trabajo : {{ $ordenRecoleccion->horarioTrabajoInicio }} hasta las:
+                {{ $ordenRecoleccion->horarioTrabajoFinal }}. {{ $ordenRecoleccion->diaSemana }}</p>
         </div>
         <div class="body">
+            <div class="datoscliente item">
+                <h5> Datos del cliente </h5>
+                <p>Cliente : {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
+                <p>{{ $ordenRecoleccion->rfc ? 'RFC : ' . $ordenRecoleccion->rfc : '' }}</p>
+                <p>Atencion : {{ $ordenRecoleccion->nombreAtencion }}</p>
+                <p>Tel : {{ $ordenRecoleccion->telefonoCliente }}</p>
+                <p>{{ $ordenRecoleccion->correo ? 'Correo : ' . $ordenRecoleccion->correo : '' }}</p>
+                <p>Direccion : Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
+                    #{{ $ordenRecoleccion->num_exterior }},
+                    {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
+                <p>CP :{{ $ordenRecoleccion->cp }}</p>
+                <p> Referencia : {{ $ordenRecoleccion->referencia }}</p>
+            </div>
             <div class="item">
-                @foreach ($productos as $produc)
-                    Producto a recolectar : {{ $produc->nombre_comercial }} - {{ $produc->cantidad_total }} -
-                    {{ $produc->descripcion }}
+                @php
+                    $total = 0;
+                @endphp
+                @foreach ($listaProductos as $producto)
+                    <p>Producto: {{ $producto->nombre_comercial }}</p>
+                    <p>Color : {{ $producto->nombreColor }}, Marca : {{ $producto->nombreMarca }}, Tipo :
+                        {{ $producto->nombreModo }}, Categoria : {{ $producto->nombreTipo }}, Cantidad:
+                        {{ $producto->cantidad }}</p>
+                    <p style="margin-bottom: 10px;">Precio: ${{ $producto->precio * $producto->cantidad }}</p>
+                    @php
+                        $total += $producto->precio * $producto->cantidad;
+                    @endphp
                 @endforeach
+                <h5> Datos del pago </h5>
+                <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
+                <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
+                Costo total : ${{ $total }}<br>
+                {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
+                <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
+                </p>
             </div>
             <!-- Agrega más items aquí -->
         </div>
-        <div class="cliente">
-            <h5> Datos del cliente </h5>
-            <p> {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
-            <p>Tel: {{ $ordenRecoleccion->telefonoCliente }}</p>
-            <p>RFC : {{ $ordenRecoleccion->rfc }}</p>
-            <p>{{ $ordenRecoleccion->correo }}</p>
-            <p>Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
-                #{{ $ordenRecoleccion->num_exterior }}
-                {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}
-                {{ $ordenRecoleccion->referencia }}</p>
-        </div>
-        <div class="footer">
-            <span>Ticket recoleccion:{{ $ordenRecoleccion->idRecoleccion }}</span>
-            <p>Le atendio:</p>
-            <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
-            <p>Fecha : {{ $ordenRecoleccion->fechaCreacion }}</p>
-            <p>Orden de recoleccion!</p>
-        </div>
+
+    </div>
+    <div class="footer item">
+        <p>Fecha recepcion: {{ $ordenRecoleccion->fechaCreacion }}</p>
+        <p>Recepciono:</p>
+        <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
+        <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
+        <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
+        </p>
+    </div>
+    <div class="ubicacion">
+        <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas; Tel: (961) 61.115.44 o 961.1777.992</p>
     </div>
 </body>
 

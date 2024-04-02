@@ -1,21 +1,30 @@
 <div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
-    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Nombre del Cliente
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="nombre_cliente" type="text" name="txtnombre_cliente"
-            value="{{ $cliente->nombre_cliente }} {{ $cliente->apellido }}" readonly>
+            value="{{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}" readonly>
     </div>
-    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Atencion</label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="nombre_cliente" type="text" name="txtnombre_cliente" value="{{ $ordenRecoleccion->nombreAtencion }}"
+            readonly>
+    </div>
+    <div class="w-full md:w-1/3 px-3
+            mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Empleado
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="atencion" type="text" name="txtatencion"
-            value="{{ $empleado->nombre_empleado }} {{ $empleado->apellido }} - {{ $empleado->nombre_rol }}" readonly>
+            value="{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }} - {{ $ordenRecoleccion->nombreRol }}"
+            readonly>
     </div>
 </div>
 
@@ -27,7 +36,7 @@
     <input
         class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         id="direccion" type="text" name="txtdireccion"
-        value="Col.{{ $direccion->colonia }}; {{ $direccion->calle }} #{{ $direccion->num_exterior }} - numero interio {{ $direccion->num_interior }} - Referencia {{ $direccion->referencia }}"
+        value="Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }} #{{ $ordenRecoleccion->num_exterior }} {{ $ordenRecoleccion->num_interior ? ' - Numero interior : ' . $ordenRecoleccion->num_interior : '' }} {{ $ordenRecoleccion->referencia ? '- Referencia :' . $ordenRecoleccion->referencia : '' }}"
         readonly>
 </div>
 <div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
@@ -37,7 +46,7 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="telefono" type="text" name="txttelefono" value="{{ $cliente->telefono_cliente }}" readonly>
+            id="telefono" type="text" name="txttelefono" value="{{ $ordenRecoleccion->telefonoCliente }}" readonly>
     </div>
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
@@ -45,7 +54,7 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="rfc" type="text" name="txtrfc" value="{{ $cliente->comentario }}" readonly>
+            id="rfc" type="text" name="txtrfc" value="{{ $ordenRecoleccion->rfc }}" readonly>
     </div>
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0 ">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
@@ -53,7 +62,7 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="email" type="text" name="txtemail" value="{{ $cliente->email }}" readonly>
+            id="email" type="text" name="txtemail" value="{{ $ordenRecoleccion->correo }}" readonly>
     </div>
 
 </div>
@@ -64,14 +73,48 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="fecha" type="text" name="txtfecha" value="{{ $preventa->created_at }}" readonly>
+            id="fecha" type="text" name="txtfecha" value="{{ $ordenRecoleccion->fechaCreacion }}" readonly>
     </div>
 
 </div>
-<label class=" mt-7 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-    Productos a recolectar
-</label>
-@foreach ($productos as $producto)
-    {{ $producto->nombre_comercial }} - Cantidad :{{ $producto->cantidad_total }} - {{ $producto->descripcion }}<br>
-@endforeach
-<input type="hidden" name="id" value="{{ $id }}">
+<div class="mt-7 flex flex-col">
+    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nombre Comercial
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cantidad Total
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Descripción
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach ($productos as $producto)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $producto->nombre_comercial }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $producto->cantidad_total }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $producto->descripcion }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -3,11 +3,11 @@
 @section('title', 'Orden de recoleccion')
 
 @section('content_header')
-    <h1>Orden de Entrega {{ $ordenRecoleccion->letraActual }} {{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</h1>
+    <h1 class=" text-center">Orden de Entrega {{ $ordenRecoleccion->letraActual }}
+        {{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</h1>
 @stop
 
 @section('content')
-    <p>Listo puede descargar el ticket de entrega o puede descargarlo despues en el apartade se ordenes de recoleccion</p>
 
     @include('Principal.ordenEntrega._form_muestra_completado')
 

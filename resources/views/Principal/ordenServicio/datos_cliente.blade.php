@@ -7,10 +7,10 @@
 
 @section('content')
     <!-- boton anadir producto-->
-    <button id="myBtn"
-        class=" mt-4 bg-gradient-to-r from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
-        <i class="fas fa-shopping-basket"></i> Añadir producto
-    </button>
+    <!-- <button id="myBtn"
+            class=" mt-4 bg-gradient-to-r from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
+            <i class="fas fa-shopping-basket"></i> Añadir producto
+        </button> -->
 
     <form class="mt-8 flex flex-col justify-center " action="{{ route('orden_servicio.store') }}" method="POST"
         enctype="multipart/form-data">
@@ -18,12 +18,12 @@
 
         @include('Principal.ordenServicio._form_cliente')
 
-        <div id="myModal" class="modal">
-            <div class="modal-content h-screen">
-                <span class="close cursor-pointer mb-4"><i class="fas fa-times"></i></span>
-                @include('Principal.ordenServicio._form_producto')
-            </div>
-        </div>
+        <!-- <div id="myModal" class="modal">
+                    <div class="modal-content h-screen">
+                        <span class="close cursor-pointer mb-4"><i class="fas fa-times"></i></span>
+                        ('Principal.ordenServicio._form_producto')
+                    </div>
+                </div>-->
 
     </form>
 @stop

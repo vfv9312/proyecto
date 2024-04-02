@@ -94,6 +94,7 @@ Route::put('/orden_recoleccion/{id}/cancelar', [OrdenRecoleccionController::clas
 Route::resource('orden_servicio', ordenServicioController::class)->middleware(['auth', 'verified']);
 Route::get('orden_servicio_pdf/{id}/generarpdf', [ordenServicioController::class, 'generarPdf'])->name('generarpdf.ordenservicio');
 Route::get('orden_serviciof/{id}/vistaPrevia', [ordenServicioController::class, 'vistaPrevia'])->name('vistaPrevia.ordenservicio');
+Route::get('/orden-servicio/{id}/vista-general', [OrdenServicioController::class, 'vistaGeneral'])->name('ordenServicio.vistaGeneral');
 
 
 Route::resource('cancelar', CancelacionesController::class)->middleware(['auth', 'verified']);

@@ -20,7 +20,7 @@
         <select name="txttipo"
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             <option value="">Selecciona una categoria</option>
-            @foreach ($categorias as $tipo)
+            @foreach ($modos as $tipo)
                 <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
             @endforeach
         </select>
@@ -64,7 +64,7 @@
         id="descripcion" name="txtdescripcion" maxlength="255"></textarea>
 </div>
 <div class=" flex justify-center mt-8 ">
-    <button type="button" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">
+    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">
         <i class="fas fa-save mr-2"></i>
         Almacenar producto
     </button>

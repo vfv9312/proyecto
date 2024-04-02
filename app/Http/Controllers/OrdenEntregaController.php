@@ -457,8 +457,12 @@ class OrdenEntregaController extends Controller
         $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
             ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
             ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-            ->where('preventas.id', $id)
-            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
+            ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->join('colors', 'colors.id', '=', 'productos.id_color')
+            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->join('modos', 'modos.id', '=', 'productos.id_modo')
+            ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
             ->get();
 
 
