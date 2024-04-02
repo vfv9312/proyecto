@@ -70,6 +70,11 @@ class ordenServicioController extends Controller
 
         $ListaColonias = Catalago_ubicaciones::orderBy('localidad')->get();
 
+        $listaAtencion = Preventa::select('id_cliente', 'nombre_atencion')
+            ->distinct()
+            ->whereNotNull('nombre_atencion')
+            ->get();
+
         $marcas = Marcas::orderBy('nombre')->get();
         $categorias = Tipo::orderBy('nombre')->get();
         $tipos = Modo::all();
@@ -77,7 +82,7 @@ class ordenServicioController extends Controller
 
 
 
-        return view('Principal.ordenServicio.datos_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'marcas', 'categorias', 'tipos', 'colores'));
+        return view('Principal.ordenServicio.datos_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'marcas', 'categorias', 'tipos', 'colores', 'listaAtencion'));
     }
 
     /**

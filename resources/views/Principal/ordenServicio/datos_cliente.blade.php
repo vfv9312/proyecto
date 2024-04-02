@@ -64,6 +64,9 @@
         //pasamos los valores recibidos a variables js
         var datosClientes = @json($listaClientes);
         var datosDirecciones = @json($listaDirecciones);
+        let datosAtencion = @json($listaAtencion);
+
+        let selectAtencion = $('#inputAtiende');
         //el select de direcciones se lo damos a la variable selectDirecciones
         var selectDirecciones = $('#inputDirecciones');
         //esta funcion entra al momento de interactuar con el select de cliente
@@ -82,6 +85,11 @@
                 var direccionesCliente = datosDirecciones.filter(function(direccion) {
                     return direccion.id_cliente == clienteSeleccionado.id_cliente;
                 });
+
+                // Filtra los nombres de atención para obtener solo los que pertenecen al cliente seleccionado
+                var atencionCliente = datosAtencion.filter(function(atencion) {
+                    return atencion.id_cliente == clienteSeleccionado.id_cliente;
+                });
             }
 
             // Vacía los campos al incio
@@ -92,6 +100,10 @@
             $('#nombreCliente').val('').prop('disabled', false);
             $('#apellidoCliente').val('').prop('disabled', false);
             $('#inputDirecciones').empty();
+            $('#inputNombreAtencion').val('').prop('disabled', false);
+            // Vacía el select de atención
+            selectAtencion.empty();
+
 
             //si hay datos comenzamos a imprimir
             if (clienteSeleccionado) {
@@ -104,6 +116,35 @@
                 $('#nombreCliente').val(clienteSeleccionado.nombre_cliente).prop('disabled', true);
                 $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
 
+                selectAtencion.empty();
+                // Si atencionCliente tiene datos, los añade al select de atención
+                if (atencionCliente && clienteSeleccionado) {
+                    selectAtencion.append(new Option('Nueva persona en atencion', ''));
+                    atencionCliente.forEach(function(atencion) {
+                        selectAtencion.append(new Option(atencion.nombre_atencion, atencion.id));
+                    });
+
+
+                } else {
+                    // Si el cliente no tiene ningún nombre de atención registrado
+                    selectAtencion.append(new Option('No hay nombres de atención disponibles', ''));
+                }
+
+                // Agrega un evento de cambio al select de atención
+                selectAtencion.on('change', function() {
+                    // Obtén el valor seleccionado en el select de atención
+                    var atencionSeleccionada = $(this).val();
+                    // Si se ha seleccionado una atención
+
+                    // Si se encontró la atención, actualiza el valor del campo txtatencion
+                    if (atencionSeleccionada) {
+                        $('#inputNombreAtencion').val(atencionSeleccionada).prop('disabled', true);
+
+                    } else {
+                        // Si no se seleccionó ninguna atención, vacía el campo txtatencion
+                        $('#inputNombreAtencion').val('').prop('disabled', false);
+                    }
+                });
 
                 // Vacía el select de direcciones
                 selectDirecciones.empty();
@@ -130,6 +171,9 @@
                 $('#nombreCliente').val('').prop('disabled', false);
                 $('#apellidoCliente').val('').prop('disabled', false);
                 selectDirecciones.append(new Option('No hay direcciones disponibles', ''));
+                $('#inputNombreAtencion').val('').prop('disabled', false);
+                // Vacía el select de atención
+                selectAtencion.append(new Option('Nueva persona en atencion', ''));
             }
         }
 

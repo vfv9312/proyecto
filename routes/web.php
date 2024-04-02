@@ -65,6 +65,7 @@ Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMe
 Route::get('orden_entrega_pdf/{id}/generarpdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');
 Route::get('orden_entrega_pdf/{id}/generarpdf2', [OrdenRecoleccionController::class, 'generarPdf2'])->name('generarpdf2.ordenentrega');
 
+//rutas para restablecer informacion eliminada
 Route::prefix('restablecer')->group(function () {
     Route::get('/', [RestablecerController::class, 'index'])->name('Restablecer.index')->middleware(['auth', 'verified']);
     Route::get('cancelaciones', [RestablecerController::class, 'cancelaciones'])->name('Restablecer.cancelaciones')->middleware(['auth', 'verified']);
