@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cancelaciones;
+use App\Models\Catalago_ubicaciones;
+use App\Models\clientes;
+use App\Models\direcciones;
 use App\Models\Orden_recoleccion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -89,10 +92,60 @@ class RestablecerController extends Controller
         session()->flash("correcto", "Restaurado correctamente");
         return redirect()->route('Restablecer.cancelaciones');
     }
-    public function clientes()
+    public function clientes(Request $request)
     {
-        return view('Restablecer.clientes');
+        $busqueda = $request->query('adminlteSearch');
+
+        //Consulta para mostras los datos de las personas y paginar de 5 en 5
+        $clientes = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
+            ->where('clientes.estatus', 0)
+            ->where(function ($query) use ($busqueda) {
+                $query->where('personas.telefono', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('personas.nombre', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('personas.apellido', 'LIKE', "%{$busqueda}%")
+                    ->orWhere(DB::raw("CONCAT(personas.nombre, ' ', personas.apellido)"), 'LIKE', "%{$busqueda}%");
+            })
+            ->select('clientes.id', 'clientes.comentario', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento')
+            ->orderBy('clientes.updated_at', 'desc')
+            ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
+
+        //consulta para conseguir datos de la direccion
+        $direcciones = direcciones::join('direcciones_clientes', 'direcciones_clientes.id_direccion', '=', 'direcciones.id')
+            ->join('clientes', 'clientes.id', '=', 'direcciones_clientes.id_cliente')
+            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->where('clientes.estatus', 1)
+            ->select('clientes.id', 'direcciones.id as id_direccion', 'catalago_ubicaciones.municipio', 'catalago_ubicaciones.localidad', 'direcciones.calle', 'direcciones.num_exterior', 'direcciones.num_interior', 'direcciones.referencia')
+            ->orderBy('clientes.updated_at', 'desc')
+            ->get();
+        //enviamos todas las colonias
+        $catalogo_colonias = Catalago_ubicaciones::orderBy('localidad')->get();
+
+
+        return view('Restablecer.clientes', compact('clientes', 'direcciones', 'catalogo_colonias'));
     }
+    public function actualizarCliente(clientes $id)
+    {
+        DB::beginTransaction();
+        try {
+            $cliente = $id;
+
+            $cliente->update([
+                'estatus' => 1
+            ]);
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            // Redirigir al usuario a una página después de la actualización
+            session()->flash("incorrect", "Error al restaurar el registro");
+
+            return redirect()->route('clientes.index');
+        }
+        session()->flash("correcto", "Restaurado correctamente");
+        return redirect()->route('clientes.index');
+    }
+
+
     public function empleados()
     {
         return view('Restablecer.empleados');

@@ -73,6 +73,7 @@ Route::prefix('restablecer')->group(function () {
     Route::get('empleados', [RestablecerController::class, 'empleados'])->name('Restablecer.empleados')->middleware(['auth', 'verified']);
     Route::get('productos', [RestablecerController::class, 'productos'])->name('Restablecer.productos')->middleware(['auth', 'verified']);
     Route::put('cancelaciones/{id}', [RestablecerController::class, 'actualizarCancelacion'])->name('Restablecer.actualizarcancelacion')->middleware(['auth', 'verified']);
+    Route::put('clientes/{id}', [RestablecerController::class, 'actualizarCliente'])->name('Restablecer.actualizarcliente')->middleware(['auth', 'verified']);
 });
 
 
