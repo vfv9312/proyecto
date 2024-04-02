@@ -107,7 +107,12 @@ class OrdenEntregaController extends Controller
 
         $ListaColonias = Catalago_ubicaciones::orderBy('localidad')->get();
 
-        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores', 'listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias'));
+        $listaAtencion = Preventa::select('id_cliente', 'nombre_atencion')
+            ->distinct()
+            ->whereNotNull('nombre_atencion')
+            ->get();
+
+        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores', 'listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion'));
     }
 
     /**

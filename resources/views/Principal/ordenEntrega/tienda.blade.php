@@ -375,6 +375,7 @@
             $('#nuevaDireccion').toggle();
         });
 
+
         //este ayuda a buscar en datos en el select
         $(document).ready(function() {
             $('#txtcolonia').select2();
@@ -384,12 +385,15 @@
         //pasamos los valores recibidos a variables js
         var datosClientes = @json($listaClientes);
         var datosDirecciones = @json($listaDirecciones);
+        let datosAtencion = @json($listaAtencion);
 
 
+        let selectAtencion = $('#inputAtiende');
         //el select de direcciones se lo damos a la variable selectDirecciones
         var selectDirecciones = $('#inputDirecciones');
         //esta funcion entra al momento de interactuar con el select de cliente
         function rellenarFormulario() {
+
             //el id que esta en value del select va almacenar en la variable clienteId
             var clienteId = $('#inputCliente').val();
             //buscamos el id del cliente en el array de objetos de direcciones
@@ -398,27 +402,36 @@
                 return cliente.id_cliente == clienteId;
             }) || null;
 
+
             //si hay valores en la variable clienteSeleccionado entonces entra esto para no marcar error en consola
             if (clienteSeleccionado) {
                 // Filtra las direcciones para obtener solo las que pertenecen al cliente seleccionado
                 var direccionesCliente = datosDirecciones.filter(function(direccion) {
                     return direccion.id_cliente == clienteSeleccionado.id_cliente;
                 });
+
+                // Filtra los nombres de atención para obtener solo los que pertenecen al cliente seleccionado
+                var atencionCliente = datosAtencion.filter(function(atencion) {
+                    return atencion.id_cliente == clienteSeleccionado.id_cliente;
+                });
+
             }
 
-
             // Vacía los campos al incio
-            $('#inputAtiende').val('');
             $('#telefono').val('');
             $('#rfc').val('');
             $('#email').val('');
             $('#nombreCliente').val('').prop('disabled', false);
             $('#apellidoCliente').val('').prop('disabled', false);
             $('#inputDirecciones').empty();
+            $('#inputNombreAtencion').val('').prop('disabled', false);
+
+
+            // Vacía el select de atención
+            selectAtencion.empty();
 
             //si hay datos comenzamos a imprimir
             if (clienteSeleccionado) {
-                $('#inputAtiende').val(clienteSeleccionado.nombre_cliente + ' ' + clienteSeleccionado.apellido);
                 $('#telefono').val(clienteSeleccionado.telefono_cliente);
                 // Asegúrate de que los nombres de los campos en el objeto clienteSeleccionado coinciden con los nombres de los campos que estás tratando de rellenar
                 // Por ejemplo, si el campo RFC se llama rfc_cliente en el objeto clienteSeleccionado, deberías usar clienteSeleccionado.rfc_cliente
@@ -426,6 +439,39 @@
                 $('#email').val(clienteSeleccionado.email);
                 $('#nombreCliente').val(clienteSeleccionado.nombre_cliente).prop('disabled', true);
                 $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
+
+
+
+                selectAtencion.empty();
+
+                // Si atencionCliente tiene datos, los añade al select de atención
+                if (atencionCliente && clienteSeleccionado) {
+                    selectAtencion.append(new Option('Nueva persona en atencion', ''));
+                    atencionCliente.forEach(function(atencion) {
+                        selectAtencion.append(new Option(atencion.nombre_atencion, atencion.id));
+                    });
+
+
+                } else {
+                    // Si el cliente no tiene ningún nombre de atención registrado
+                    selectAtencion.append(new Option('No hay nombres de atención disponibles', ''));
+                }
+
+                // Agrega un evento de cambio al select de atención
+                selectAtencion.on('change', function() {
+                    // Obtén el valor seleccionado en el select de atención
+                    var atencionSeleccionada = $(this).val();
+                    // Si se ha seleccionado una atención
+
+                    // Si se encontró la atención, actualiza el valor del campo txtatencion
+                    if (atencionSeleccionada) {
+                        $('#inputNombreAtencion').val(atencionSeleccionada).prop('disabled', true);
+
+                    } else {
+                        // Si no se seleccionó ninguna atención, vacía el campo txtatencion
+                        $('#inputNombreAtencion').val('').prop('disabled', false);
+                    }
+                });
 
 
                 // Vacía el select de direcciones
@@ -446,15 +492,21 @@
                 }
                 //si clienteSeleccionado es null vacio todos los campos y habilita los bloqueados
             } else if (!clienteSeleccionado) {
-
                 $('#telefono').val('');
                 $('#rfc').val('');
                 $('#email').val('');
                 $('#nombreCliente').val('').prop('disabled', false);
                 $('#apellidoCliente').val('').prop('disabled', false);
+                $('#inputNombreAtencion').val('').prop('disabled', false);
+
                 selectDirecciones.append(new Option('No hay direcciones disponibles', ''));
+                // Vacía el select de atención
+                selectAtencion.append(new Option('Nueva persona en atencion', ''));
             }
+
         }
+
+
 
         function toggleRFCField() {
             var checkbox = document.getElementById("factura");

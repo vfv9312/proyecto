@@ -5,13 +5,13 @@ use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\DireccionesClientesController;
 use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\EnviarCorreoController;
-use App\Http\Controllers\FoliosController;
 use App\Http\Controllers\OrdenEntregaController;
 use App\Http\Controllers\OrdenRecoleccionController;
 use App\Http\Controllers\ordenServicioController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RestablecerController;
 use App\Http\Controllers\ServiciosController;
 use App\Http\Controllers\TiempoAproximadoController;
 use App\Http\Controllers\VentasController;
@@ -65,7 +65,15 @@ Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMe
 Route::get('orden_entrega_pdf/{id}/generarpdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');
 Route::get('orden_entrega_pdf/{id}/generarpdf2', [OrdenRecoleccionController::class, 'generarPdf2'])->name('generarpdf2.ordenentrega');
 
-Route::resource('Folio', FoliosController::class)->middleware(['auth', 'verified']);
+Route::prefix('restablecer')->group(function () {
+    Route::get('/', [RestablecerController::class, 'index'])->name('Restablecer.index')->middleware(['auth', 'verified']);
+    Route::get('cancelaciones', [RestablecerController::class, 'cancelaciones'])->name('Restablecer.cancelaciones')->middleware(['auth', 'verified']);
+    Route::get('clientes', [RestablecerController::class, 'clientes'])->name('Restablecer.clientes')->middleware(['auth', 'verified']);
+    Route::get('empleados', [RestablecerController::class, 'empleados'])->name('Restablecer.empleados')->middleware(['auth', 'verified']);
+    Route::get('productos', [RestablecerController::class, 'productos'])->name('Restablecer.productos')->middleware(['auth', 'verified']);
+    Route::put('cancelaciones/{id}', [RestablecerController::class, 'actualizarCancelacion'])->name('Restablecer.actualizarcancelacion')->middleware(['auth', 'verified']);
+});
+
 
 Route::resource('TiempoAproximado', TiempoAproximadoController::class)->middleware(['auth', 'verified']);
 Route::get('enviar-correo/{id}/correo', [EnviarCorreoController::class, 'enviarCorreos'])->name('Correo.enviar');

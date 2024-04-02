@@ -19,7 +19,7 @@
         <table class="min-w-full">
             <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
             <tr class="text-black uppercase text-xs  font-bold leading-normal">
-                <td class="py-3 px-6 text-left border-r">Ticket</td>
+                <td class="py-3 px-6 text-left border-r">Folio</td>
                 <td class="py-3 px-6 text-left border-r">Nombre cliente</td>
                 <td class="py-3 px-6 text-left border-r">Fecha de la recepcion</td>
                 <td class="py-3 px-6 text-left border-r">Fecha de la cancelación</td>

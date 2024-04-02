@@ -367,7 +367,7 @@ return [
                     'text' => 'Recuperar información',
                     'icon' => 'fas fa-trash',
                     'icon_color' => 'red',
-                    'route'        => 'Folio.index',
+                    'route'        => 'Restablecer.index',
                 ],
                 [
                     'text' => 'Cancelaciones',

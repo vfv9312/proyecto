@@ -40,6 +40,7 @@ class OrdenRecoleccionController extends Controller
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
             ->WhereIn('orden_recoleccions.estatus', [4, 3, 2])
+            ->where('id_cancelacion', null)
             ->where(function ($query) use ($palabras) {
                 foreach ($palabras as $palabra) {
                     $query->where(function ($query) use ($palabra) {
@@ -414,13 +415,13 @@ class OrdenRecoleccionController extends Controller
                 ->whereIn('estatus', [2, 3, 4])
                 ->first();
 
-            $id->estatus = 0;
+
             $id->deleted_at = now();
             $id->comentario = $cancelado;
             $id->id_cancelacion = $categoriaCancelacion;
             $ordenCancelada = $id->save();
 
-            $preventa->estatus = 0;
+
             $preventa->deleted_at = now();
             $preventaCancelada = $preventa->save();
 
