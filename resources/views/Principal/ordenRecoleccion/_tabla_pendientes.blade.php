@@ -51,7 +51,7 @@
                 <td>
                     <form class="" action="{{ route('orden_recoleccion.store') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="id_recoleccion" value="{{ $pendiente->id_recoleccion }}">
+                        <input type="hidden" name="id_recoleccion" value="{{ $pendiente->idRecoleccion }}">
 
                         <button type="submit"
                             class="border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">

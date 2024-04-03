@@ -8,6 +8,7 @@ use App\Models\clientes;
 use App\Models\Orden_recoleccion;
 use App\Models\precios_productos;
 use App\Models\Preventa;
+use App\Models\Servicios_preventas;
 use App\Models\ventas;
 use App\Models\ventas_productos;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -121,7 +122,7 @@ class OrdenRecoleccionController extends Controller
             ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
             ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->whereIn('preventas.estatus', [3, 4]) //3 entrega, 4 servicios, 2 inconcluso, 0 eliminado
+            ->whereIn('preventas.estatus', [3, 4]) //3 entrega, 4 servicios, 2 inconcluso,
             ->where('orden_recoleccions.id', $id_recoleccion)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
@@ -132,7 +133,7 @@ class OrdenRecoleccionController extends Controller
                 'orden_recoleccions.Fecha_entrega as fechaEntrega',
                 'orden_recoleccions.created_at',
                 'orden_recoleccions.id as id_recoleccion',
-                'orden_recoleccions.estatus as estatusRecoleccion', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
+                'orden_recoleccions.estatus as estatusRecoleccion', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo
                 'orden_recoleccions.created_at',
                 'empleadoPersona.nombre as nombreEmpleado',
                 'empleadoPersona.apellido as apellidoEmpleado',
@@ -162,7 +163,7 @@ class OrdenRecoleccionController extends Controller
                 ->join('modos', 'modos.id', '=', 'productos.id_modo')
                 ->where('precios_productos.estatus', 1)
                 ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
+                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color', 'ventas_productos.cantidad', 'precios_productos.precio as precio_unitario')
 
                 ->get();
         } else if ($datosEnvio->estatusPreventa == 4) { //leftjoin me devolvera null si no hay relaciones
@@ -173,9 +174,10 @@ class OrdenRecoleccionController extends Controller
                 ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
                 ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
                 ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
+                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color', 'servicios_preventas.cantidad_total as cantidad', 'servicios_preventas.precio_unitario')
                 ->get();
         }
+
         return view('Principal.ordenRecoleccion.edit', compact('productos', 'datosEnvio'));
     }
 
@@ -246,6 +248,9 @@ class OrdenRecoleccionController extends Controller
      */
     public function edit(Orden_recoleccion $orden_recoleccion, Request $request)
     {
+        $costo_unitario = $request->input('costo_unitario');
+        $pagaCon = $request->input('txtpagoEfectivo');
+
         $recibe = $request->personaRecibe;
         // Recuperar el ID de la orden de recolección
         $ordenRecoleccion = $orden_recoleccion;
@@ -253,6 +258,11 @@ class OrdenRecoleccionController extends Controller
         $preventa = Preventa::where('id', $ordenRecoleccion->id_preventa)
             ->whereIn('estatus', [2, 3, 4])
             ->first();
+
+        $serviciosPreventas = Servicios_preventas::join('catalago_recepcions', 'catalago_recepcions.id', '=', 'servicios_preventas.id_producto_recepcion')
+            ->whereIn('catalago_recepcions.id_producto', array_keys($costo_unitario))->get();
+
+
 
         $cliente = clientes::where('id', $preventa->id_cliente);
 
@@ -276,10 +286,19 @@ class OrdenRecoleccionController extends Controller
 
                 if ($preventa->estatus == 4) {
 
+                    foreach ($serviciosPreventas as $servicioPreventa) {
+                        // Obtén el costo unitario correspondiente a este servicio preventa
+                        $costo = $costo_unitario[$servicioPreventa->id_producto];
+
+                        // Actualiza el servicio preventa con el nuevo costo unitario
+                        $servicioPreventa->update(['precio_unitario' => $costo]);
+                    }
+
                     $preventa->update([
                         'metodo_pago' => $request->input('txtmetodoPago'),
                         'factura' => $request->input('txtfactura') == 'on' ? 1 : 0,
-                        'costo_servicio' => $request->input('txtcosto'),
+                        'costo_servicio' => $request->input('costo_total'),
+                        'pago_efectivo' => $pagaCon
                     ]);
 
                     if ($request->input('txtfactura') == 'on') {

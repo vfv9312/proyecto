@@ -541,8 +541,18 @@ class ordenServicioController extends Controller
             ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
             ->where('servicios_preventas.estatus', 2)
-            ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
+            ->select(
+                'productos.nombre_comercial',
+                'productos.descripcion',
+                'modos.nombre as nombreModo',
+                'servicios_preventas.cantidad_total as cantidad',
+                'marcas.nombre as nombreMarca',
+                'tipos.nombre as nombreTipo',
+                'colors.nombre as nombreColor',
+                'servicios_preventas.precio_unitario as precio'
+            )
             ->get();
+
 
         $fechaCreacion = \Carbon\Carbon::parse($ordenRecoleccion->fechaCreacion);
 

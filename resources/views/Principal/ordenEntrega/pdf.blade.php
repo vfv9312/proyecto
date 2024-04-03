@@ -103,7 +103,7 @@
                     <p>Color : {{ $producto->nombreColor }}, Marca : {{ $producto->nombreMarca }}, Tipo :
                         {{ $producto->nombreModo }}, Categoria : {{ $producto->nombreTipo }}, Cantidad:
                         {{ $producto->cantidad }}</p>
-                    <p style="margin-bottom: 10px;">Precio: ${{ $producto->precio * $producto->cantidad }}</p>
+                    <p style="margin-bottom: 10px;">Precio unitario: ${{ $producto->precio }}</p>
                     @php
                         $total += $producto->precio * $producto->cantidad;
                     @endphp
