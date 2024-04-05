@@ -96,6 +96,15 @@
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Descripción
                             </th>
+                            @if (
+                                $productos->every(function ($producto) {
+                                    return isset($producto->precio) && !is_null($producto->precio);
+                                }))
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Precio unitario
+                                </th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -109,6 +118,9 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $producto->descripcion }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $producto->precio }}
                                 </td>
                             </tr>
                         @endforeach

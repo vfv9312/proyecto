@@ -127,6 +127,7 @@
         <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
         <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
         </p>
+
     </div>
     <div class="ubicacion">
         <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas; Tel: (961) 61.115.44 o 961.1777.992</p>

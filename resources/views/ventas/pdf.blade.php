@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ticket</title>
+    <title>Folio</title>
     <style>
         .ticket {
             width: 60mm;
@@ -76,10 +76,11 @@
     <div class="ticket">
         <div class="header">
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-            <h1>Ecotoner</h1>
-            <p>Venta completada!</p>
-            <p>Horario de trabajo : {{ $ordenRecoleccion->horarioTrabajoInicio }} hasta las:
-                {{ $ordenRecoleccion->horarioTrabajoFinal }}. {{ $ordenRecoleccion->diaSemana }}</p>
+            <h1>Venta completada!</h1>
+            <p>{{ $ordenRecoleccion->horarioTrabajoInicio ? 'Horario de trabajo : ' . $ordenRecoleccion->horarioTrabajoInicio : '' }}
+
+                {{ $ordenRecoleccion->horarioTrabajoFinal ? 'hasta las : ' . $ordenRecoleccion->horarioTrabajoFinal . '.' : '' }}
+                {{ $ordenRecoleccion->diaSemana ? 'Dias de la semana : ' . $ordenRecoleccion->diaSemana : '' }}</p>
         </div>
         <div class="body">
             <div class="datoscliente item">
@@ -103,19 +104,26 @@
                     <p>Producto: {{ $producto->nombre_comercial }}</p>
                     <p>Color : {{ $producto->nombreColor }}, Marca : {{ $producto->nombreMarca }}, Tipo :
                         {{ $producto->nombreModo }}, Categoria : {{ $producto->nombreTipo }}, Cantidad:
-                        {{ $producto->cantidad }}</p>
-                    <p style="margin-bottom: 10px;">Precio: ${{ $producto->precio * $producto->cantidad }}</p>
+                        {{ $producto->cantidad }},
+                        {{ $producto->descripcion ? 'Descripcion : ' . $producto->descripcion : '' }}
+                    </p>
+                    <p style="margin-bottom: 10px;">
+                        {{ $producto->precio ? 'Precio unitario: $' . $producto->precio : '' }}</p>
                     @php
                         $total += $producto->precio * $producto->cantidad;
                     @endphp
                 @endforeach
                 <h5> Datos del pago </h5>
-                <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
-                <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
-                Costo total : ${{ $total }}<br>
-                {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
-                <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
-                </p>
+                @if ($ordenRecoleccion->metodoPago)
+                    <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
+                    <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
+                    Costo total : ${{ $total }}<br>
+                    {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
+                    <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
+                    </p>
+                @else
+                    <p class=" text-center">Se espera revision para determinar costo del servicio</p>
+                @endif
             </div>
             <!-- Agrega más items aquí -->
         </div>
@@ -126,8 +134,11 @@
         <p>Recepciono:</p>
         <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
         <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
-        <p>Recibe :{{ $ordenRecoleccion->recibe }}
+        <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
         </p>
+        <p>Fecha de entrega </p>
+        <p>{{ $ordenRecoleccion->fechaVenta ? $ordenRecoleccion->fechaVenta : '' }}</p>
+        <p>{{ $ordenRecoleccion->recibe ? 'Recibio : ' . $ordenRecoleccion->recibe : '' }}</p>
     </div>
     <div class="ubicacion">
         <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas; Tel: (961) 61.115.44 o 961.1777.992</p>

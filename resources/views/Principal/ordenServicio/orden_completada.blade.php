@@ -3,7 +3,7 @@
 @section('title', 'Orden de recoleccion')
 
 @section('content_header')
-    <h1 class=" text-center">Orden de Recoleccion {{ $ordenRecoleccion->letraActual }}
+    <h1 class=" text-center">Orden de Servicio {{ $ordenRecoleccion->letraActual }}
         {{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</h1>
 @stop
 

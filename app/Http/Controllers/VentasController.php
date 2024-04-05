@@ -26,6 +26,7 @@ class VentasController extends Controller
 
         $datosVentas = ventas::join('orden_recoleccions', 'orden_recoleccions.id', '=', 'ventas.id_recoleccion')
             ->join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
@@ -56,6 +57,9 @@ class VentasController extends Controller
             'preventas.id as idPreventa',
             'preventas.estatus as estatusPreventa',
             'preventas.pago_efectivo',
+            'preventas.nombre_quien_recibe as recibe',
+            'folios.letra_actual as letraActual',
+            'folios.ultimo_valor as ultimoValor',
             'orden_recoleccions.id as idOrden_recoleccions',
             'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
             'orden_recoleccions.Fecha_entrega as fechaEntrega',
@@ -79,6 +83,7 @@ class VentasController extends Controller
         )
             ->orderBy('ventas.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
+
 
         $datosVentas->getCollection()->transform(function ($venta) {
             $venta->productos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
@@ -115,8 +120,8 @@ class VentasController extends Controller
      */
     public function show(ventas $venta)
     {
-
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
@@ -127,6 +132,7 @@ class VentasController extends Controller
             ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $venta->id_recoleccion)
             ->select(
+                'ventas.created_at as fechaVenta',
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
                 'folios.letra_actual as letraActual',
@@ -140,6 +146,7 @@ class VentasController extends Controller
                 'preventas.horario_trabajo_final as horarioTrabajoFinal',
                 'preventas.dia_semana as diaSemana',
                 'preventas.nombre_quien_recibe as recibe',
+                'preventas.estatus as estatusPreventa',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
@@ -158,33 +165,32 @@ class VentasController extends Controller
             )
             ->first();
 
+        if ($ordenRecoleccion->estatusPreventa == 4) { //3 entrega y 4 servicios
+            $listaProductos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
+                ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+                ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+                ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+                ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+                ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
+                ->where('preventas.id', $ordenRecoleccion->idPreventa)
+                ->where('servicios_preventas.estatus', 2)
+                ->select('productos.nombre_comercial', 'servicios_preventas.precio_unitario as precio', 'productos.descripcion', 'servicios_preventas.cantidad_total as cantidad', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'colors.nombre as nombreColor', 'modos.nombre as nombreModo')
+                ->get();
+        } else {
 
-        $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
-            ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
-            ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
-            ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
-            ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
-            ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
-            ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
-            ->where('preventas.id', $ordenRecoleccion->idPreventa)
-            ->where('servicios_preventas.estatus', 2)
-            ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
-            ->get();
-
-
-        $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
-            ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
-            ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-            ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
-            ->join('colors', 'colors.id', '=', 'productos.id_color')
-            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
-            ->join('modos', 'modos.id', '=', 'productos.id_modo')
-            ->where('preventas.id', $ordenRecoleccion->idPreventa)
-            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
-            ->get();
-
+            $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+                ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+                ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                ->join('colors', 'colors.id', '=', 'productos.id_color')
+                ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                ->where('preventas.id', $ordenRecoleccion->idPreventa)
+                ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
+                ->get();
+        }
         $Tiempo = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->first();
-
 
 
         $largoDelTicket = 700; // Inicializa la variable
@@ -197,7 +203,6 @@ class VentasController extends Controller
 
         $pdf = PDF::loadView('ventas.pdf', compact(
             'ordenRecoleccion',
-            'productos',
             'listaProductos',
             'Tiempo'
         ));

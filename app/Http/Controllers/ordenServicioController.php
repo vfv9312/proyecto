@@ -375,9 +375,11 @@ class ordenServicioController extends Controller
                 'colors.nombre as color',
                 'modos.nombre as modo',
                 'servicios_preventas.cantidad_total',
+                'servicios_preventas.precio_unitario as precio',
                 'productos.descripcion',
             )
             ->get();
+
 
         return view('Principal.ordenServicio.orden_completada', compact('productos', 'ordenRecoleccion'));
     }

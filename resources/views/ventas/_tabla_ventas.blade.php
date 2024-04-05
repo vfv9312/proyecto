@@ -19,7 +19,7 @@
         <table class="min-w-full">
             <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
             <tr class="text-black uppercase text-xs  font-bold leading-normal">
-                <td class="py-3 px-6 text-left border-r">Numero Venta</td>
+                <td class="py-3 px-6 text-left border-r">Folio</td>
                 <td class="py-3 px-6 text-left border-r">Cliente</td>
                 <td class="py-3 px-6 text-left border-r">Fecha de la venta</td>
                 <td class="py-3 px-6 text-left border-r">Direccion</td>
@@ -28,8 +28,10 @@
             <!--foreach ($productos as $producto)-->
             @foreach ($datosVentas as $datosVenta)
                 <tr class= " border-b border-gray-200 text-sm">
-                    <td class=" px-6 py-4">
-                        {{ $datosVenta->idVenta }}</td>
+
+                    <td class="px-6 py-4">{{ $datosVenta->letraActual }}{{ sprintf('%06d', $datosVenta->ultimoValor) }}
+                    </td>
+
                     <td class="px-6 py-4">
                         {{ $datosVenta->nombreCliente }} {{ $datosVenta->apellidoCliente }}
                     </td>
@@ -56,6 +58,18 @@
                                 <i class="fas fa-file-pdf"></i>
                             </button>
                         </form>
+                    </td>
+                    <td>
+                        <a href='{{ route('WhatsApp.enviar', ['id' => $datosVenta->idRecoleccion]) }}' target="_blank"
+                            class="tems-center px-6 py-4 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href='{{ route('Correo.enviar', ['id' => $datosVenta->idRecoleccion]) }}' target="_blank"
+                            class=" items-center px-6 py-4 bg-purple-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <i class="fas fa-envelope"></i>
+                        </a>
                     </td>
 
                 </tr>
