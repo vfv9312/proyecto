@@ -216,11 +216,10 @@ class ClientesController extends Controller
                 $actualizadoPersona = $tablaPersona->update([
                     'nombre' => $nombreCliente,
                     'apellido' => $apellidoCliente,
-                    'telefonoCliente' => $telefonoCliente,
+                    'telefono' => $telefonoCliente,
                     'email' => $emailCliente,
                 ]);
             }
-
 
             if ($datosColonia) {
                 $actualizarColonia = $tablaDireccion->update([

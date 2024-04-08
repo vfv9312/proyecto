@@ -16,7 +16,7 @@ class precios_productosSeeder extends Seeder
 
         $precios = [];
 
-        for ($i = 1; $i <= 225; $i++) {
+        for ($i = 1; $i <= 34; $i++) {
             $precio = rand(15000, 30000) / 100; // Genera un número aleatorio entre 15000 y 30000 y luego lo divide por 100 para obtener el precio con decimales
             $precios[] = [$i, $precio];
         }

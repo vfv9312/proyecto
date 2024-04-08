@@ -112,7 +112,13 @@ class OrdenEntregaController extends Controller
             ->whereNotNull('nombre_atencion')
             ->get();
 
-        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores', 'listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion'));
+        $HorarioTrabajo = Preventa::where('estatus', 3)
+            ->whereNotNull('horario_trabajo_inicio')
+            ->select('id_cliente as idCliente', 'horario_trabajo_inicio as horaInicio', 'horario_trabajo_final as horaFinal', 'dia_semana as dias', 'nombre_quien_recibe as recibe')
+            ->orderBy('updated_at', 'asc')->get();
+
+
+        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores', 'listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion', 'HorarioTrabajo'));
     }
 
     /**
@@ -168,6 +174,7 @@ class OrdenEntregaController extends Controller
      */
     public function store(Request $request)
     {
+
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
@@ -179,6 +186,7 @@ class OrdenEntregaController extends Controller
             $telefono = $request->input('txttelefono');
             $rfc = $request->input('txtrfc');
             $email = $request->input('txtemail');
+            $recibe = $request->input('txtrecibe');
 
             //si registramos un cliente nuevo recibiremos
             $nuevoCliente = $request->input('txtnombreCliente');
@@ -202,21 +210,11 @@ class OrdenEntregaController extends Controller
             $horarioTrabajoInicio = $request->input('horarioTrabajoInicio');
             $horarioTrabajoFinal = $request->input('horarioTrabajoFinal');
             $diasHorarioTrabajo = $request->input('dias');
+            // Decodifica la cadena JSON
+            $relacion = json_decode($request->input('inputProductosSeleccionados'), true);
 
 
-            // Datos del id de productos y su cantidad podria mejorarse para no enviar dos array para enviar todo
-            $producto_ids = $request->input('producto_id');
-            $cantidades = $request->input('cantidad');
-            //creamos un array vacio para juntar los productos con su cantidad
-            $relacion = [];
-            //un for que al ir iterando va confirmando con un if si cantidad tienen algun numero mayor a 0 entonces lo une
-            for ($i = 0; $i < count($producto_ids); $i++) {
-                if ($cantidades[$i] > 0) {
-                    $relacion[$producto_ids[$i]] = $cantidades[$i];
-                }
-            }
-
-            //crearemos una preventa con estatus 3
+            //crearemos una preventa con estatus 2
             $preventa = Preventa::create([
                 'estatus' => 2
             ]);
@@ -236,22 +234,23 @@ class OrdenEntregaController extends Controller
                 $preventa->factura = $factura === 'on' ? 1 : 0;
                 $preventa->pago_efectivo = $pagaCon;
                 $preventa->estatus = 3;
+                $preventa->nombre_quien_recibe = $recibe;
 
                 $preventa->save();
 
                 // iteramos en un forech para ir agregando los productos seleccionados en el pedido para agregarlos en ventas_productos
-                foreach ($relacion as $id_Producto => $cantidad) {
+                foreach ($relacion as $articulo) {
                     //primero identificammos el precio del producto solicitado
-                    $producto_precio = precios_productos::where('id_producto', $id_Producto)
+                    $producto_precio = precios_productos::where('id_producto', $articulo['id'])
                         ->where('estatus', 1)
                         ->first();
                     //luego buscamos los datos del producto
-                    $producto = Productos::where('id', $id_Producto)->first();
+                    $producto = Productos::where('id', $articulo['id'])->first();
                     //ya una vez identificados le agregamos el id del precio actual y cantidad
                     $producto_venta = ventas_productos::firstOrCreate([
                         'id_precio_producto' => $producto_precio->id, //id del precio producto que esta relacionado con el producto
                         'id_preventa' => $preventa->id, //le asignamos su nummero de preventa
-                        'cantidad' => $cantidad, //le asignamos su cantidad
+                        'cantidad' => $articulo['cantidad'], //le asignamos su cantidad
                         'estatus' => 3 //le asignamos estatus 3
                     ]);
                 }
@@ -322,22 +321,23 @@ class OrdenEntregaController extends Controller
                 $preventa->factura = $factura === 'on' ? 1 : 0;
                 $preventa->pago_efectivo = $pagaCon;
                 $preventa->estatus = 3;
+                $preventa->nombre_quien_recibe = $recibe;
                 // Guardar el modelo
                 $preventa->save();
 
                 // iteramos en un forech para ir agregando los productos seleccionados en el pedido para agregarlos en ventas_productos
-                foreach ($relacion as $id_Producto => $cantidad) {
+                foreach ($relacion as $articulo) {
                     //primero identificammos el precio del producto solicitado
-                    $producto_precio = precios_productos::where('id_producto', $id_Producto)
+                    $producto_precio = precios_productos::where('id_producto', $articulo['id'])
                         ->where('estatus', 1)
                         ->first();
                     //luego buscamos los datos del producto
-                    $producto = Productos::where('id', $id_Producto)->first();
+                    $producto = Productos::where('id', $articulo['id'])->first();
                     //ya una vez identificados le agregamos el id del precio actual y cantidad
                     $producto_venta = ventas_productos::firstOrCreate([
                         'id_precio_producto' => $producto_precio->id, //id del precio producto que esta relacionado con el producto
                         'id_preventa' => $preventa->id, //le asignamos su nummero de preventa
-                        'cantidad' => $cantidad, //le asignamos su cantidad
+                        'cantidad' => $articulo['cantidad'], //le asignamos su cantidad
                         'estatus' => 3 //le asignamos estatus 3
                     ]);
                 }
@@ -369,7 +369,7 @@ class OrdenEntregaController extends Controller
             $ultimoFolio = Folio::orderBy('id', 'desc')->first();
             $letra = $ultimoFolio ? $ultimoFolio->letra_actual : 'A';
             $valor = $ultimoFolio ? $ultimoFolio->ultimo_valor + 1 : 1;
-
+            //999999
             if ($valor > 999999) {
                 // Incrementa la letra
                 $letra = chr(ord($letra) + 1);
@@ -400,8 +400,8 @@ class OrdenEntregaController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
             //return $th->getMessage();
-            session()->flash("incorrect", "Error al procesar los productos, posiblemente no registro productos");
-            return redirect()->route('inicio.index');
+            session()->flash("incorrect", "Error al procesar los productos, posiblemente no registro algun dato");
+            return redirect()->route('orden_entrega.index');
         }
         // Redirecciona al usuario a una página de vista de resumen o éxito
         return redirect()->route('orden_recoleccion.vistaPreviaOrdenEntrega', $preventa->id); // Reemplaza 'ruta.nombre' con el nombre real de la ruta a la que deseas redirigir
@@ -433,6 +433,7 @@ class OrdenEntregaController extends Controller
                 'preventas.factura',
                 'preventas.pago_efectivo as pagoEfectivo',
                 'preventas.nombre_atencion as nombreAtencion',
+                'preventas.nombre_quien_recibe as recibe',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',

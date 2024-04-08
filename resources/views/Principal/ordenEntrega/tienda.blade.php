@@ -20,29 +20,24 @@
             {{ session('incorrect') }}
         </div>
     @endif
-    <!-- Botón para abrir el modal -->
-    <button id="myBtn"
-        class=" mt-4 bg-gradient-to-r from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
-        <i class="fas fa-shopping-basket"></i> Añadir productos</button>
-    <form class="mt-8 flex flex-col justify-center" action="{{ route('orden_entrega.store') }}" method="POST">
+
+    <form id="formulario" class="mt-8 flex flex-col justify-center" action="{{ route('orden_entrega.store') }}" method="POST">
         @csrf
 
         @include('Principal.ordenEntrega._form_orden')
+        @include('Principal.ordenEntrega._Lista_Productos')
         @include('Principal.ordenEntrega._carro_campras')
-
-        @include('Principal.ordenEntrega._modal')
 
         <div class="mt-4 flex justify-center">
             <button type="submit" class="px-4 py-2  bg-green-500 text-white rounded hover:bg-green-700">
-                Siguiente
-                <i class="fas fa-arrow-right ml-2"></i>
+                <i class="fas fa-save mr-2"></i>
+                Guardar
             </button>
         </div>
     </form>
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="../../../css/app.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome para los iconos-->
@@ -56,148 +51,126 @@
 @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
-        //cambiar icono por 1 segundo de compra del modal
-        document.getElementById('compras').addEventListener('click', function() {
-            this.classList.remove('fa-shopping-bag');
-            this.classList.add('fa-save', 'text-green-500');
-
-            setTimeout(() => {
-                this.classList.remove('fa-save', 'text-green-500');
-                this.classList.add('fa-shopping-bag', 'text-gray-500');
-            }, 1000);
-        });
-
-        //BUSCA POR LOS DATOS DE SELECT
-        $(document).ready(function() {
-            $('#color ,#modo ,#marca, #tipo').on('change', function() { // Cambiar a #marca y #tipo
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('#formulario').addEventListener('submit', function(event) {
+                let inputDirecciones = document.querySelector('#inputDirecciones');
+                let txtcolonia = document.querySelector('#txtcolonia');
+                let calle = document.querySelector('#calle');
+                let cambioInput = document.querySelector(
+                    '#cambioInput'); // Obtener el campo de entrada de cambio
 
 
-                var marcaFiltro = $('#marca').val(); // Cambiar a #marca
-                var tipoFiltro = $('#tipo').val(); // Cambiar a #tipo
-                var modoFiltro = $('#modo').val(); // Cambiar a #tipo
-                var colorFiltro = $('#color').val(); // Cambiar a #tipo
+                // Verificar si no se seleccionó una dirección existente y tampoco se ingresó una nueva
+                if (inputDirecciones.value === '' && txtcolonia.value === 'null' && calle.value.trim() ===
+                    '') {
+                    event.preventDefault();
 
-
-
-                $('.producto').each(function() {
-                    var marca = $(this).data('marca');
-                    var tipo = $(this).data('tipo');
-                    var modo = $(this).data('modo');
-                    var color = $(this).data('color');
-
-                    if ((marcaFiltro === "" || marcaFiltro == marca) &&
-                        (tipoFiltro === "" || tipoFiltro == tipo) &&
-                        (colorFiltro === "" || colorFiltro == color) &&
-                        (modoFiltro === "" || modoFiltro == modo)) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-            });
-            //BUSCA POR NOMBRE
-            $('#search').on('input', function() {
-                var searchText = $(this).val().toLowerCase().replace(/\s/g, '');
-
-                $('.producto').each(function() {
-                    var productoNombre = $(this).data('nombre').toLowerCase().replace(/\s/g, '');
-
-                    if (productoNombre.startsWith(searchText)) {
-                        $(this).show();
-                    } else if (productoNombre.includes(searchText)) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-            });
-
-
-        });
-
-
-
-        //mostrar y ocultar los filtros
-        document.getElementById('toggle-filters').addEventListener('click', function() {
-            var filtersSection = document.getElementById('filters-section');
-            if (filtersSection.style.display === "none") {
-                filtersSection.style.display = "block";
-            } else {
-                filtersSection.style.display = "none";
-            }
-        });
-        //actualizar el total de productos seleccionado en la bolsita de manera visual
-        function actualizarTotal() {
-
-            var inputs = document.querySelectorAll('.suma');
-            let totalSpan = document.querySelector('#totalSpan');
-            var total = 0;
-
-            inputs.forEach(function(input) {
-                total += parseInt(input.value);
-            });
-            totalSpan.textContent = total;
-        }
-
-        //incrementar el valor cuando le de al icono +
-        function incrementar(button) {
-            var input = button.parentNode.querySelector('.suma');
-            var currentValue = parseInt(input.value);
-            input.value = currentValue + 1;
-            actualizarTotal();
-        }
-        //decremmentar en 1 cuando le de click al icono -
-        function decrementar(button) {
-            var input = button.parentNode.querySelector('.suma');
-            var currentValue = parseInt(input.value);
-            if (currentValue > 0) {
-                input.value = currentValue - 1;
-                actualizarTotal();
-            }
-        }
-        //si llega a ser 0 marcara no haz seleccionado un producto
-        document.getElementById('compras').addEventListener('click', function(event) {
-            var total = document.getElementById('totalSpan').innerText;
-            if (total === '0') {
-                event.preventDefault();
-                alert('No has seleccionado nada.');
-            }
-        });
-        //guarda los datos del producto seleccionado para mostrarlo en una tabla
-        document.getElementById('compras').addEventListener('click', function() {
-            var productosSeleccionados = [];
-            var productos = document.getElementsByClassName('producto');
-
-            for (var i = 0; i < productos.length; i++) {
-                var producto = productos[i];
-                var cantidad = parseInt(producto.querySelector('.suma').value);
-                if (cantidad > 0) {
-                    let id = producto.dataset.id;
-                    var nombre = producto.dataset.nombre;
-                    var marca = producto.dataset.nombre_marca;
-                    var tipo = producto.dataset.nombre_categoria;
-                    var modo = producto.dataset.nombre_modo;
-                    var color = producto.dataset.nombre_color;
-                    var precio = producto.dataset.precio;
-                    productosSeleccionados.push({
-                        id: id,
-                        nombre: nombre,
-                        marca: marca,
-                        tipo: tipo,
-                        modo: modo,
-                        color: color,
-                        cantidad: cantidad,
-                        precio: precio
-                    });
+                    // Establecer un mensaje de error personalizado y marcar el campo como inválido
+                    inputDirecciones.setCustomValidity(
+                        'Debes seleccionar una dirección existente o ingresar una nueva.');
+                    inputDirecciones.reportValidity();
+                } else {
+                    // Si los campos son válidos, limpiar cualquier mensaje de error anterior
+                    inputDirecciones.setCustomValidity('');
                 }
+
+                // Verificar si el cambio es menor que 0
+                if (parseFloat(cambioInput.value) < 0) {
+                    event.preventDefault();
+
+                    // Establecer un mensaje de error personalizado y marcar el campo como inválido
+                    cambioInput.setCustomValidity('El cambio no puede ser menor que 0.');
+                    cambioInput.reportValidity();
+                } else {
+                    // Si el campo es válido, limpiar cualquier mensaje de error anterior
+                    cambioInput.setCustomValidity('');
+                }
+            });
+
+            // Escuchar cambios en los campos txtcolonia y calle para limpiar los mensajes de error cuando se corrijan
+            document.querySelector('#txtcolonia').addEventListener('input', function() {
+                let inputDirecciones = document.querySelector('#inputDirecciones');
+                inputDirecciones.setCustomValidity('');
+            });
+            document.querySelector('#calle').addEventListener('input', function() {
+                let inputDirecciones = document.querySelector('#inputDirecciones');
+                inputDirecciones.setCustomValidity('');
+            });
+            document.querySelector('#inputDirecciones').addEventListener('input', function() {
+                this.setCustomValidity('');
+            });
+        });
+
+
+
+
+        // Inicializa el array
+        var productosSeleccionados = [];
+        // Función para manejar el evento click del botón
+        function agregarProducto() {
+            // Obtiene los valores del select y del input
+            var selectProducto = document.getElementById('producto');
+            var idProducto = selectProducto.value;
+            let cantidadInput = document.getElementById('cantidad');
+            let cantidad = cantidadInput.value;
+
+            // Verificar si la cantidad es menor que 1
+            if (parseInt(cantidad) < 1 || isNaN(cantidad)) {
+                // Establecer un mensaje de error personalizado y marcar el campo como inválido
+                cantidadInput.setCustomValidity('La cantidad debe ser al menos 1.');
+                cantidadInput.reportValidity();
+                return; // Salir de la función
+            } else {
+                // Si el campo es válido, limpiar cualquier mensaje de error anterior
+                cantidadInput.setCustomValidity('');
             }
 
-            // Aquí puedes hacer lo que desees con el array de productos seleccionados
-            console.log(productosSeleccionados);
-            // Por ejemplo, podrías enviar este array a un formulario oculto para luego procesarlo en el backend
-            // O podrías agregar los productos directamente a una tabla en la misma página
+
+            // Obtiene los datos del producto seleccionado
+            var productoSeleccionado = selectProducto.options[selectProducto.selectedIndex].text.split('_');
+            var nombreComercial = productoSeleccionado[0];
+            var nombreModo = productoSeleccionado[1];
+            var nombreMarca = productoSeleccionado[2];
+            var nombreCategoria = productoSeleccionado[3];
+            var nombreColor = productoSeleccionado[4];
+            var precio = productoSeleccionado[5].replace('$', '');
+
+            // Verifica si el producto ya está en el array
+            var productoExistente = productosSeleccionados.find(function(producto) {
+                return producto.id === idProducto;
+            });
+
+            if (productoExistente) {
+                // Si el producto ya está en el array, actualiza la cantidad
+                productoExistente.cantidad = cantidad;
+            } else {
+                // Si el producto no está en el array, lo agrega
+                var producto = {
+                    id: idProducto,
+                    cantidad: cantidad,
+                    nombre: nombreComercial,
+                    modo: nombreModo,
+                    marca: nombreMarca,
+                    tipo: nombreCategoria,
+                    color: nombreColor,
+                    precio: precio
+                };
+                productosSeleccionados.push(producto);
+            }
+
+            // Limpia el input de cantidad
+            document.getElementById('cantidad').value = '';
+
+            // Agrega los productos seleccionados a la tabla
             agregarProductosATabla(productosSeleccionados);
-        });
+
+            Actualizararray(productosSeleccionados);
+
+        }
+
+
+        // Agrega el evento click al botón
+        document.getElementById('agregarProducto').addEventListener('click', agregarProducto);
 
         function agregarProductosATabla(productos) {
             var tabla = document.getElementById('cuerpoTabla');
@@ -239,19 +212,25 @@
                 botonEliminar.addEventListener('click', function() {
                     // Obtiene el id de la fila a eliminar
                     let idFila = this.parentNode.parentNode.id;
+                    let indice = parseInt(idFila.split('_')[1]); // Obtiene el índice del producto en el array
+
+                    // Elimina el producto del array
+                    productosSeleccionados.splice(indice, 1);
+
                     // Elimina la fila correspondiente al botón "Eliminar" presionado
                     tabla.removeChild(document.getElementById(idFila));
-                    // Establece la cantidad del producto asociado a 0
 
+                    // Recalcula la suma total
                     recalcularSumaTotal();
-                    restablecerCantidad(producto.id);
+
+                    Actualizararray(productosSeleccionados)
+
                 });
                 celdaEliminar.appendChild(botonEliminar);
                 // Agrega la fila al cuerpo de la tabla
                 tabla.appendChild(fila);
 
             }
-
 
             // Obtiene el elemento y luego actualiza su contenido y estilo
             let sumaTotalElement = document.getElementById('sumaTotal');
@@ -260,6 +239,13 @@
             sumaTotalElement.style.fontSize = '1.5em'; // Hace el texto un 50% más grande
         }
 
+
+        function Actualizararray(productosSeleccionados) {
+
+            // Actualiza el valor del campo de entrada con los productos seleccionados
+            document.getElementById('inputProductosSeleccionados').value = JSON.stringify(
+                productosSeleccionados);
+        }
 
         function recalcularSumaTotal() {
             var tabla = document.getElementById('cuerpoTabla');
@@ -282,22 +268,6 @@
             sumaTotalElement.style.fontSize = '1.5em'; // Hace el texto un 50% más grande
             calcularCambio();
         }
-
-        function restablecerCantidad(idProducto) {
-
-            // Encuentra el input de cantidad basado en el id del producto
-            var inputCantidad = document.querySelector('#inputNumber_' + idProducto);
-            if (inputCantidad) {
-                // Restablece el valor del input a 0
-                inputCantidad.value = 0;
-                actualizarTotal();
-            } else {
-                console.error("No se encontró el input de cantidad para el producto con id " +
-                    idProducto);
-            }
-
-        }
-
 
         // Obtiene los elementos
         let pagaConElement = document.getElementById('pagaCon');
@@ -342,32 +312,6 @@
         });
 
 
-        // Obtén el modal
-        var modal = document.getElementById("myModal");
-
-        // Obtén el botón que abre el modal
-        var btn = document.getElementById("myBtn");
-
-        // Obtén el elemento <span> que cierra el modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // Cuando el usuario haga clic en el botón, abre el modal
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
-
-        // Cuando el usuario haga clic en <span> (x), cierra el modal
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        // Cuando el usuario haga clic en cualquier lugar fuera del modal, cierra el modal
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
 
 
         $('#mostrarNuevaDireccion').click(function(event) {
@@ -376,19 +320,49 @@
         });
 
 
+
         //este ayuda a buscar en datos en el select
         $(document).ready(function() {
             $('#txtcolonia').select2();
             $('#inputAtencion').select2();
             $('#inputCliente').select2();
+
+            function matchCustom(params, data) {
+                // Si no hay término de búsqueda, devuelve todos los datos
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+
+                // No devuelve el elemento si no hay 'text'
+                if (typeof data.text === 'undefined') {
+                    return null;
+                }
+
+                // `params.term` debe ser el término de búsqueda
+                // `data.text` es el texto que se muestra para la opción
+                if (data.text.replace(/\s/g, '').toLowerCase().indexOf(params.term.replace(/\s/g, '')
+                        .toLowerCase()) > -1) {
+                    return data;
+                }
+
+                // Devuelve `null` si el término no debe ser mostrado
+                return null;
+            }
+
+            $('#producto').select2({
+                matcher: matchCustom
+            });
         });
         //pasamos los valores recibidos a variables js
         var datosClientes = @json($listaClientes);
         var datosDirecciones = @json($listaDirecciones);
         let datosAtencion = @json($listaAtencion);
+        let datosHorarioTrabajo = @json($HorarioTrabajo);
 
-
+        let inputHorarioInicio = $('#horarioTrabajoInicio');
+        let inputHorarioFinal = $('#horarioTrabajoFinal');
         let selectAtencion = $('#inputAtiende');
+        let inputrecibe = $('#recibe');
         //el select de direcciones se lo damos a la variable selectDirecciones
         var selectDirecciones = $('#inputDirecciones');
         //esta funcion entra al momento de interactuar con el select de cliente
@@ -415,6 +389,11 @@
                     return atencion.id_cliente == clienteSeleccionado.id_cliente;
                 });
 
+                // Filtra los horarios para obtener solo los que pertenecen al cliente seleccionado
+                var HorarioTrabajo = datosHorarioTrabajo.filter(function(horario) {
+                    return horario.idCliente == clienteSeleccionado.id_cliente;
+                });
+
             }
 
             // Vacía los campos al incio
@@ -425,6 +404,19 @@
             $('#apellidoCliente').val('').prop('disabled', false);
             $('#inputDirecciones').empty();
             $('#inputNombreAtencion').val('').prop('disabled', false);
+            inputHorarioInicio.val('').prop('disabled', false);
+            inputHorarioFinal.val('').prop('disabled', false);
+            inputrecibe.val('');
+            //para formatear los dias de la semana
+            let dias = "Lunes,Martes,Miércoles,Miercoles,Jueves,Viernes,Sabado,Domingo"; // Tu cadena de días
+            let arrayDias = dias.split(","); // Convierte la cadena en un array
+            arrayDias.forEach(function(dia) {
+                // Selecciona el checkbox correspondiente y márcalo como seleccionado
+                let checkbox = document.querySelector(`input[name="dias[]"][value="${dia}"]`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
+            });
 
 
             // Vacía el select de atención
@@ -440,7 +432,23 @@
                 $('#nombreCliente').val(clienteSeleccionado.nombre_cliente).prop('disabled', true);
                 $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
 
+                //Esta parte es para filtrar el horario mas actual registrado y se lo damos a la variable
+                if (HorarioTrabajo.length > 0) {
+                    let ultimoHorario = HorarioTrabajo[HorarioTrabajo.length - 1];
+                    inputHorarioInicio.val(ultimoHorario.horaInicio);
+                    inputHorarioFinal.val(ultimoHorario.horaFinal);
 
+                    let arrayDias = ultimoHorario.dias.split(","); // Convierte la cadena en un array
+                    inputrecibe.val(ultimoHorario.recibe);
+                    arrayDias.forEach(function(dia) {
+                        // Selecciona el checkbox correspondiente y márcalo como seleccionado
+                        let checkbox = document.querySelector(`input[name="dias[]"][value="${dia}"]`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                        }
+                    });
+
+                }
 
                 selectAtencion.empty();
 
@@ -498,6 +506,20 @@
                 $('#nombreCliente').val('').prop('disabled', false);
                 $('#apellidoCliente').val('').prop('disabled', false);
                 $('#inputNombreAtencion').val('').prop('disabled', false);
+                inputHorarioInicio.val('').prop('disabled', false);
+                inputHorarioFinal.val('').prop('disabled', false);
+                inputrecibe.val('');
+
+                //para formatear los dias de la semana
+                let dias = "Lunes,Martes,Miércoles,Miercoles,Jueves,Viernes,Sabado,Domingo"; // Tu cadena de días
+                let arrayDias = dias.split(","); // Convierte la cadena en un array
+                arrayDias.forEach(function(dia) {
+                    // Selecciona el checkbox correspondiente y márcalo como seleccionado
+                    let checkbox = document.querySelector(`input[name="dias[]"][value="${dia}"]`);
+                    if (checkbox) {
+                        checkbox.checked = false;
+                    }
+                });
 
                 selectDirecciones.append(new Option('No hay direcciones disponibles', ''));
                 // Vacía el select de atención

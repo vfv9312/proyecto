@@ -117,7 +117,6 @@ class EmpleadosController extends Controller
     public function edit(empleados $empleado)
     {
 
-
         //conseguir al primer empleado que esta con estatus 1 y tengan el mismo id_empleado
         $persona = personas::where('id', $empleado->id_persona)
             ->where('estatus', 1)

@@ -90,7 +90,14 @@
         </div>
 
     </div>
-
+    <div>
+        <div class="flex flex-col w-full md:w-1/3">
+            <label>Recibe</label>
+            <input type="text"
+                class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="recibe" name="txtrecibe" placeholder="Nombre de la persona que recibe" required>
+        </div>
+    </div>
 
 
     <div class="flex flex-col w-full md:w-full mt-8">
@@ -109,6 +116,8 @@
 
     <h1 class="text-2xl
     text-center text-gray-600 mb-2">Agregar nueva direccion</h1>
+
+
 
     <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
 
