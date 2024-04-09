@@ -54,7 +54,6 @@ class OrdenEntregaController extends Controller
                 'modos.id as modo_id',
                 'modos.nombre as nombre_modo',
                 'marcas.nombre as nombre_marca',
-                'productos.fotografia',
                 'precios_productos.precio',
                 'marcas.id as marca_id',
                 'tipos.id as tipo_id'
@@ -576,6 +575,7 @@ class OrdenEntregaController extends Controller
                 'preventas.horario_trabajo_inicio as horarioTrabajoInicio',
                 'preventas.horario_trabajo_final as horarioTrabajoFinal',
                 'preventas.dia_semana as diaSemana',
+                'preventas.nombre_quien_recibe as recibe',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',

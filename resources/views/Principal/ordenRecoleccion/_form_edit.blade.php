@@ -195,8 +195,10 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
         </div>
 
         <div id="personaRecibe" style="display: none;" class="flex flex-col items-center">
-            <label for="recibe">Quien recibe:</label>
-            <input type="text" name="personaRecibe" placeholder="Nombre de la persona que recibe">
+            <label for="recibe">Observaciones:</label>
+            <input
+                class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                type="text" name="observaciones" placeholder="Obervaciones">
         </div>
 
     </div>

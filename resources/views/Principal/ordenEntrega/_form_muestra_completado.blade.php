@@ -1,5 +1,5 @@
 <div class="flex flex-wrap -mx-3 mt-16 px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Nombre del Cliente
         </label>
@@ -9,7 +9,7 @@
             value=" {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}" readonly>
     </div>
 
-    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Atencion
         </label>
@@ -18,7 +18,16 @@
             id="atencion" type="text" name="txtatencion" value="{{ $ordenRecoleccion->nombreAtencion }}" readonly>
     </div>
 
-    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Recibe
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="atencion" type="text" name="txtatencion" value="{{ $ordenRecoleccion->recibe }}" readonly>
+    </div>
+
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Empleado
         </label>
@@ -66,9 +75,8 @@
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="nombre_cliente" type="text" name="txtnombre_cliente"
             value="{{ $ordenRecoleccion->municipio }}, {{ $ordenRecoleccion->estado }};
-            Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
-            #{{ $ordenRecoleccion->num_exterior }} / numero interior
-            {{ $ordenRecoleccion->num_interior == null ? 'S/N' : $ordenRecoleccion->num_interior }}"
+            Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}#{{ $ordenRecoleccion->num_exterior }}
+            {{ $ordenRecoleccion->num_interior == null ? 'S/N' : '/ numero interior' . $ordenRecoleccion->num_interior }}"
             readonly>
     </div>
     <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -78,6 +86,15 @@
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="atencion" type="text" name="txtatencion" value="{{ $ordenRecoleccion->fechaCreacion }}" readonly>
+    </div>
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Referencia
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="nombre_cliente" type="text" name="txtnombre_cliente"
+            value="{{ $ordenRecoleccion->referencia == null ? 'S/D' : $ordenRecoleccion->referencia }}" readonly>
     </div>
 </div>
 

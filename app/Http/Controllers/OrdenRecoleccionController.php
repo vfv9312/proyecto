@@ -252,6 +252,7 @@ class OrdenRecoleccionController extends Controller
         $pagaCon = $request->input('txtpagoEfectivo');
 
         $recibe = $request->personaRecibe;
+        dd($request);
         // Recuperar el ID de la orden de recolección
         $ordenRecoleccion = $orden_recoleccion;
         $estatus = $request->miSelect;
