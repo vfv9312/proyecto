@@ -71,16 +71,20 @@
         }
     </style>
 </head>
+@php
+    $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
+    $fecha = $fechaHoraArray[0];
+    $hora = $fechaHoraArray[1];
+@endphp
 
 <body>
     <div class="ticket">
         <div class="header">
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-            <h1>Venta completada!</h1>
-            <p>{{ $ordenRecoleccion->horarioTrabajoInicio ? 'Horario de trabajo : ' . $ordenRecoleccion->horarioTrabajoInicio : '' }}
+            <h1>Orden de recolección procesada</h1>
+            <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
+            <p>Fecha recepcion: {{ $fecha }}</p>
 
-                {{ $ordenRecoleccion->horarioTrabajoFinal ? 'hasta las : ' . $ordenRecoleccion->horarioTrabajoFinal . '.' : '' }}
-                {{ $ordenRecoleccion->diaSemana ? 'Dias de la semana : ' . $ordenRecoleccion->diaSemana : '' }}</p>
         </div>
         <div class="body">
             <div class="datoscliente item">
@@ -95,6 +99,10 @@
                     {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
                 <p>CP :{{ $ordenRecoleccion->cp }}</p>
                 <p> Referencia : {{ $ordenRecoleccion->referencia }}</p>
+                <p>{{ $ordenRecoleccion->horarioTrabajoInicio ? 'Horario de trabajo : ' . $ordenRecoleccion->horarioTrabajoInicio : '' }}
+
+                    {{ $ordenRecoleccion->horarioTrabajoFinal ? 'hasta las : ' . $ordenRecoleccion->horarioTrabajoFinal . '.' : '' }}
+                    {{ $ordenRecoleccion->diaSemana ? 'Dias de la semana : ' . $ordenRecoleccion->diaSemana : '' }}</p>
             </div>
             <div class="item">
                 @php
@@ -130,18 +138,19 @@
 
     </div>
     <div class="footer item">
-        <p>Fecha recepcion: {{ $ordenRecoleccion->fechaCreacion }}</p>
         <p>Recepciono:</p>
         <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
-        <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
+        Hora de recepcion : {{ $hora }}
+        <p>{{ $ordenRecoleccion->recibe ? 'Recibe : ' . $ordenRecoleccion->recibe : '' }}</p>
         <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
         </p>
-        <p>Fecha de entrega </p>
-        <p>{{ $ordenRecoleccion->fechaVenta ? $ordenRecoleccion->fechaVenta : '' }}</p>
-        <p>{{ $ordenRecoleccion->recibe ? 'Recibio : ' . $ordenRecoleccion->recibe : '' }}</p>
+        <p>{{ $ordenRecoleccion->comentario ? 'Observaciones : ' . $ordenRecoleccion->comentario : '' }}</p>
     </div>
     <div class="ubicacion">
-        <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas; Tel: (961) 61.115.44 o 961.1777.992</p>
+        <p>4a. Av. Norte Poniente No. 867
+            Col. Centro - C.P. 29000
+            Tuxtla Gutierrez, Chiapas; Conmutador: (961) 61.115.44 extención de venta: 2,
+            WhatsApp : 9612401718</p>
     </div>
 </body>
 

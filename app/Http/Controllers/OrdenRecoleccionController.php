@@ -270,7 +270,6 @@ class OrdenRecoleccionController extends Controller
 
             return redirect()->route('generarpdf2.ordenentrega', ['id' => $orden_recoleccion->id, 'listaProductos' => $listaProductos]);
         } else if ($datosEnvio->estatusRecoleccion == 2) { //si ya es estatus 2 = entrega y no fue una orden de 4 servicio quiere decir que es una orden de 3 entrega
-
             return redirect()->route('generarpdf.ordenentrega', ['id' => $orden_recoleccion->id, 'listaProductos' => $listaProductos]);
         }
     }

@@ -51,13 +51,11 @@
                     </td>
 
                     <td>
-                        <form action="{{ route('ventas.show', $datosVenta->idVenta) }}" method="GET">
-                            @csrf
-                            <button
-                                class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
-                                <i class="fas fa-file-pdf"></i>
-                            </button>
-                        </form>
+                        <a href="{{ route('ventas.show', $datosVenta->idVenta) }}" target="_blank"
+                            class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
+                            <i class="fas fa-file-pdf"></i>
+
+                        </a>
                     </td>
                     <td>
                         <a href='{{ route('WhatsApp.enviar', ['id' => $datosVenta->idRecoleccion]) }}' target="_blank"

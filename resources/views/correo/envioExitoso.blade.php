@@ -11,7 +11,7 @@
         <p class="font-bold">
             {{ $error ? $error : '¡Correo enviado con éxito!' }}
         </p>
-        <p>El correo electrónico ha sido enviado con éxito a la dirección proporcionada.</p>
+        {{ $error ? $error : 'El correo electrónico ha sido enviado con éxito a la dirección proporcionada.' }}
         <hr class="my-2">
         @if ($error == false)
             @php
@@ -44,11 +44,16 @@
             {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
             <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
             </p>
+            @if ($ordenRecoleccion->estatusVenta)
+                <a href="https://administrativo.ecotonerdelsureste.com/ventas/{{ $ordenRecoleccion->idVenta }}">Descargue
+                    su folio del pedido</a>
+            @else
+                <a
+                    href="https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/{{ $ordenRecoleccion->idRecoleccion }}/generarpdf">Descargue
+                    su folio del pedido</a>
+            @endif
 
-            <a
-                href="https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/{{ $ordenRecoleccion->idRecoleccion }}/generarpdf">Descargue
-                su folio del pedido</a>
-
+        @endif
 
     </div>
 @stop

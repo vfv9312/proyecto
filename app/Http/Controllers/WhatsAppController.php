@@ -14,6 +14,7 @@ class WhatsAppController extends Controller
     {
 
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->leftjoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
@@ -23,6 +24,8 @@ class WhatsAppController extends Controller
             ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $id)
             ->select(
+                'ventas.estatus as estatusVenta',
+                'ventas.id as idVenta',
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
                 'preventas.metodo_pago as metodoPago',
@@ -50,8 +53,8 @@ class WhatsAppController extends Controller
             )
             ->first();
         //9612602898
-        if ($ordenRecoleccion->idRecoleccion == 1) {
-            $enlace = "https://administrativo.ecotonerdelsureste.com/ventas/$ordenRecoleccion->idRecoleccion";
+        if ($ordenRecoleccion->estatusVenta) {
+            $enlace = "https://administrativo.ecotonerdelsureste.com/ventas/$ordenRecoleccion->idVenta";
         } else {
             if ($ordenRecoleccion->estatusPreventa == 3) {
                 $enlace = "https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/$ordenRecoleccion->idRecoleccion/generarpdf";

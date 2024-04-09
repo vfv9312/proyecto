@@ -328,7 +328,7 @@ return [
             'label_color' => 'success',
         ],
         [
-            'text'       => 'Ventas',
+            'text'       => 'Ordenes procesadas',
             'icon' => 'fas fa-money-bill-wave',
             'icon_color' => 'green',
             'route'        => 'ventas.index',

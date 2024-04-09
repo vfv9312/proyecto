@@ -191,8 +191,10 @@ class VentasController extends Controller
                 ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
                 ->get();
         }
-        $Tiempo = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->first();
 
+        $fechaCreacion = \Carbon\Carbon::parse($ordenRecoleccion->fechaCreacion);
+
+        $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
 
         $largoDelTicket = 700; // Inicializa la variable
 

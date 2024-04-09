@@ -86,6 +86,7 @@ class EnviarCorreoController extends Controller
     {
 
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->leftJoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
@@ -96,6 +97,8 @@ class EnviarCorreoController extends Controller
             ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id',  $id)
             ->select(
+                'ventas.estatus as estatusVenta',
+                'ventas.id as idVenta',
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
                 'folios.letra_actual as letraActual',

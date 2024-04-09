@@ -81,7 +81,7 @@ Route::prefix('restablecer')->group(function () {
 Route::resource('TiempoAproximado', TiempoAproximadoController::class)->middleware(['auth', 'verified']);
 Route::get('enviar-correo/{id}/correo', [EnviarCorreoController::class, 'enviarCorreos'])->name('Correo.enviar');
 Route::get('enviar-correo/{error}/{id}/estatus', [EnviarCorreoController::class, 'vistaPrevia'])->name('Correo.vistaPrevia');
-Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMensaje'])->name('WhatsApp.enviar')->middleware(['auth', 'verified']);
+Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMensaje'])->name('WhatsApp.enviar');
 
 
 //estatus de las entregas
