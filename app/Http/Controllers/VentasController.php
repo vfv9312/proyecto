@@ -147,6 +147,7 @@ class VentasController extends Controller
                 'preventas.dia_semana as diaSemana',
                 'preventas.nombre_quien_recibe as recibe',
                 'preventas.estatus as estatusPreventa',
+                'preventas.comentario',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',

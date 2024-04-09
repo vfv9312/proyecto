@@ -7,12 +7,13 @@
             <td class="py-3 px-6 text-left border-r">Folio</td>
             <td class="py-3 px-6 text-left border-r">Nombre del cliente</td>
             <td class="py-3 px-6 text-left border-r">Direccion de servicio</td>
-            <td class="py-3 px-6 text-left border-r">Fecha del pedido</td>
+            <td class="py-3 px-6 text-left border-r">Fecha y hora del pedido</td>
             <td class="py-3 px-6 text-left border-r">Telefono del cliente</td>
+            <td class="py-3 px-6 text-left border-r">Hora de entrega compromiso</td>
             <td class="py-3 px-6 text-left border-r">Servicio/Entrega</td>
             <td class="py-3 px-6 text-left border-r">Estatus</td>
         </tr>
-        @foreach ($preventas as $pendiente)
+        @foreach ($preventas as $index => $pendiente)
             <tr class= " border-b border-gray-200 text-sm">
                 <td class="px-6 py-4">{{ $pendiente->letraActual }}{{ sprintf('%06d', $pendiente->ultimoValor) }}</td>
                 <td class="px-6 py-4">
@@ -27,6 +28,9 @@
                 </td>
                 <td class="px-6 py-4">
                     {{ $pendiente->telefono }}
+                </td>
+                <td class="px-6 py-4">
+                    {{ $datosEntregaCompromisos[$index]['horaEntregaCompromiso'] ? $datosEntregaCompromisos[$index]['horaEntregaCompromiso'] : 'No hay tiempo aproximado' }}
                 </td>
                 <td class="px-6 py-4">
                     @if ($pendiente->estatusPreventa == 3)

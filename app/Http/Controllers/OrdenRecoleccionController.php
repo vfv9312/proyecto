@@ -9,9 +9,12 @@ use App\Models\Orden_recoleccion;
 use App\Models\precios_productos;
 use App\Models\Preventa;
 use App\Models\Servicios_preventas;
+use App\Models\TiempoAproximado;
 use App\Models\ventas;
 use App\Models\ventas_productos;
 use Barryvdh\DomPDF\Facade\Pdf;
+use DateInterval;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -77,6 +80,7 @@ class OrdenRecoleccionController extends Controller
         }
         $preventas = $preventas->select(
             'orden_recoleccions.id as idRecoleccion',
+            'orden_recoleccions.created_at as fechaCreacion',
             'folios.letra_actual as letraActual',
             'folios.ultimo_valor as ultimoValor',
             'preventas.id as idPreventa',
@@ -95,7 +99,35 @@ class OrdenRecoleccionController extends Controller
         )
             ->orderBy('orden_recoleccions.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
-        return view('Principal.ordenRecoleccion.recolecciones', compact('preventas'));
+        foreach ($preventas as $preventa) {
+            $fechaCreacion = \Carbon\Carbon::parse($preventa->fechaCreacion);
+            $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
+            if ($Tiempo) {
+                $fechaHoraArray = explode(' ', $preventa->fechaCreacion);
+                $fecha = $fechaHoraArray[0];
+                $hora = $fechaHoraArray[1];
+                // Crear un objeto DateTime con la hora inicial
+                $horaInicial = new DateTime($hora);
+                // Sumar el intervalo de tiempo a la hora inicial
+                list($horas, $minutos, $segundos) = explode(':', $Tiempo->tiempo);
+                $intervalo = new DateInterval(sprintf('PT%dH%dM%dS', $horas, $minutos, $segundos));
+                $horaEntregaCompromiso = $horaInicial->add($intervalo);
+                // Aquí puedes hacer lo que necesites con $horaEntregaCompromiso
+                // Aquí puedes hacer lo que necesites con $horaEntregaCompromiso
+                $datosEntregaCompromisos[] = [
+                    'fecha' => $fecha,
+                    'hora' => $hora,
+                    'horaEntregaCompromiso' => $horaEntregaCompromiso->format('H:i:s'),
+                ];
+            } else {
+                $datosEntregaCompromisos[] = [
+                    'fecha' => null,
+                    'hora' => null,
+                    'horaEntregaCompromiso' => null,
+                ];
+            }
+        }
+        return view('Principal.ordenRecoleccion.recolecciones', compact('preventas', 'datosEntregaCompromisos'));
     }
 
     /**
@@ -251,8 +283,7 @@ class OrdenRecoleccionController extends Controller
         $costo_unitario = $request->input('costo_unitario');
         $pagaCon = $request->input('txtpagoEfectivo');
 
-        $recibe = $request->personaRecibe;
-        dd($request);
+        $comentario = $request->input('observaciones');
         // Recuperar el ID de la orden de recolección
         $ordenRecoleccion = $orden_recoleccion;
         $estatus = $request->miSelect;
@@ -316,7 +347,7 @@ class OrdenRecoleccionController extends Controller
                 ]);
 
                 $preventa->update([
-                    'nombre_quien_recibe' => $recibe,
+                    'comentario' => $comentario,
                 ]);
 
                 //actualizamos ventas

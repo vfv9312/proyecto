@@ -46,14 +46,14 @@
             <label>Nombre</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="nombreCliente" name="txtnombreCliente" placeholder="Nombre del cliente">
+                id="nombreCliente" name="txtnombreCliente" placeholder="Nombre del cliente" required>
         </div>
 
         <div class="flex flex-col w-full md:w-1/3">
             <label>Apellido</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="apellidoCliente" name="txtapellidoCliente" placeholder="Apellidos del cliente">
+                id="apellidoCliente" name="txtapellidoCliente" placeholder="Apellidos del cliente" required>
         </div>
         <div class="flex flex-col w-full md:w-1/3 md:mr-2">
             <label class="mr-4">Atención</label>
