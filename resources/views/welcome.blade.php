@@ -27,8 +27,10 @@
                         Secion</a>
 
                     @if (Route::has('register'))
-                        <a href="{{ route('register') }}"
-                            class="ml-4 font-extrabold  text-black hover:text-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Registrarse</a>
+                        <!-- este codigo enlace te permite hacer registros de nuevos usuarios descomentarlo
+                                        <a href="{{ route('register') }}"
+                                            class="ml-4 font-extrabold  text-black hover:text-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Registrarse</a>
+                                    -->
                     @endif
                 @endauth
             </div>

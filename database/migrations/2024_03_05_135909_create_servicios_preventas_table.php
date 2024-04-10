@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_preventa')->nullable();
             $table->unsignedBigInteger('id_producto_recepcion')->nullable();
+            $table->unsignedBigInteger('id_descuento')->nullable();
             $table->decimal('precio_unitario', 8, 2)->nullable();
             $table->integer('cantidad_total')->nullable();
             $table->Integer('cantidad_resuelto')->nullable();
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->tinyInteger('estatus')->default(2); //dos para mi es pendiente
             $table->foreign('id_preventa')->references('id')->on('preventas');
             $table->foreign('id_producto_recepcion')->references('id')->on('catalago_recepcions');
+            $table->foreign('id_descuento')->references('id')->on('descuentos');
         });
     }
 

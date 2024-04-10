@@ -399,6 +399,18 @@ return [
             'icon_color' => 'cyan',
             'route'        => 'productos.index',
         ],
+        [
+            'text'       => 'Servicios',
+            'icon' => 'fas fa-tools',
+            'icon_color' => 'purple',
+            'route'        => 'productos.index',
+        ],
+        [
+            'text'       => 'Descuentos',
+            'icon' => 'fas fa-percent',
+            'icon_color' => 'red',
+            'route'        => 'productos.index',
+        ],
 
     ],
 
