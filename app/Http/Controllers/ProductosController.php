@@ -35,7 +35,7 @@ class ProductosController extends Controller
                     ->orWhere('marcas.nombre', 'LIKE', "%{$busqueda}%")
                     ->orWhere('modos.nombre', 'LIKE', "%{$busqueda}%");
             })
-            ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'productos.fotografia', 'precios_productos.precio')
+            ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'precios_productos.precio')
             ->orderBy('productos.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
@@ -106,7 +106,7 @@ class ProductosController extends Controller
                 'id_modo' => $request->txtmodo,
                 'id_marca' => $request->txtmarca,
                 'descripcion' => $request->txtdescripcion,
-                'fotografia' => $url,
+                'fotografia' => null,
                 'estatus' => 1
             ]);
 

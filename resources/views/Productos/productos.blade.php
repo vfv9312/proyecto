@@ -108,14 +108,7 @@
                                 <input name="txtdescripcion" type="text"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Fotografia</span>
-                                <input name="file" type="file" accept="image/*"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                @error('file')
-                                    <small class=" text-danger">{{ $message }} </small>
-                                @enderror
-                            </label>
+
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Aceptar
@@ -146,7 +139,6 @@
                     <td class="py-3 px-6 text-left border-r">Marca</td>
                     <td class="py-3 px-6 text-left border-r">Categoria</td>
                     <td class="py-3 px-6 text-left border-r">Tipo </td>
-                    <td class="py-3 px-6 text-left border-r">Imagen</td>
                     <td class="py-3 px-6 text-left border-r">Precio</td>
                 </tr>
                 @foreach ($productos as $producto)
@@ -184,9 +176,6 @@
                         </td>
                         <td class="px-6 py-4">
                             {{ $producto->nombreModo }}
-                        </td>
-                        <td class="px-6 py-4 flex justify-center items-center">
-                            <img class=" w-20" src={{ $producto->fotografia }}>
                         </td>
                         <td class="px-6 py-4">
                             ${{ $producto->precio }}

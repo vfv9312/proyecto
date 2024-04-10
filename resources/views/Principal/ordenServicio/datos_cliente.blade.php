@@ -15,7 +15,7 @@
         @include('Principal.ordenServicio._form_cliente')
         <div class="mt-4 flex justify-center">
             <button type="submit" class="px-4 py-2  bg-green-500 text-white rounded hover:bg-green-700">
-                <i class="fas fa-save"></i> Guardar
+                <i class="fas fa-save"></i> Siguiente
             </button>
 
     </form>
