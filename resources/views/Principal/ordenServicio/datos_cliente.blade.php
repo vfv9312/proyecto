@@ -6,24 +6,17 @@
 @stop
 
 @section('content')
-    <!-- boton anadir producto-->
-    <!-- <button id="myBtn"
-            class=" mt-4 bg-gradient-to-r from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
-            <i class="fas fa-shopping-basket"></i> Añadir producto
-        </button> -->
+
 
     <form class="mt-8 flex flex-col justify-center " action="{{ route('orden_servicio.store') }}" method="POST"
         enctype="multipart/form-data">
         @csrf
 
         @include('Principal.ordenServicio._form_cliente')
-
-        <!-- <div id="myModal" class="modal">
-                    <div class="modal-content h-screen">
-                        <span class="close cursor-pointer mb-4"><i class="fas fa-times"></i></span>
-                        ('Principal.ordenServicio._form_producto')
-                    </div>
-                </div>-->
+        <div class="mt-4 flex justify-center">
+            <button type="submit" class="px-4 py-2  bg-green-500 text-white rounded hover:bg-green-700">
+                <i class="fas fa-save"></i> Guardar
+            </button>
 
     </form>
 @stop
@@ -174,32 +167,6 @@
                 $('#inputNombreAtencion').val('').prop('disabled', false);
                 // Vacía el select de atención
                 selectAtencion.append(new Option('Nueva persona en atencion', ''));
-            }
-        }
-
-        // Obtén el modal
-        var modal = document.getElementById("myModal");
-
-        // Obtén el botón que abre el modal
-        var btn = document.getElementById("myBtn");
-
-        // Obtén el elemento <span> que cierra el modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // Cuando el usuario haga clic en el botón, abre el modal
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
-
-        // Cuando el usuario haga clic en <span> (x), cierra el modal
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        // Cuando el usuario haga clic en cualquier lugar fuera del modal, cierra el modal
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
             }
         }
     </script>

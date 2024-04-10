@@ -93,51 +93,94 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
             readonly>
     </div>
 </div>
-<label class=" mt-7 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-    Productos
-</label>
-
-@foreach ($productos as $producto)
-    {{ $producto->nombre_comercial }} - {{ $producto->descripcion }} <br>
-    <input type="hidden" name="productos[]" value="{{ $producto->nombre_comercial }}">
-@endforeach
-
-<div class="flex flex-col items-center mt-3">
-
-
-    <div class="flex flex-col items-center mt-3">
-        <div class="flex flex-col items-center">
-            <label for="miSelect">Estatus:</label>
-            @if ($datosEnvio->estatusRecoleccion == 4)
-                <span>En recoleccion</span>
-            @elseif($datosEnvio->estatusRecoleccion == 3)
-                <span>En revision</span>
-            @elseif($datosEnvio->estatusRecoleccion == 2)
-                <span>En entrega</span>
-            @endif
+<div class="mt-7 flex flex-col">
+    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nombre Comercial
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cantidad Total
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Descripción
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Precio unitario
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach ($productos as $producto)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $producto->nombre_comercial }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $producto->cantidad }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    Color : {{ $producto->color }}, Marca : {{ $producto->marca }},
+                                    Categoria :
+                                    {{ $producto->tipo }}, Tipo : {{ $producto->nombreModo }}
+                                </td>
+                                <td>
+                                    ${{ $producto->precio }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div class="flex flex-col w-full">
-        <label class="" for="motivoCancelacion">Porque se cancela:</label>
-        <select name="txtcategoriaCancelacion" id="categoriaCancelacion"
-            class="w-1/3 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            <option value="">Selecciona un motivo</option>
-            @foreach ($cancelar as $cancelacion)
-                <option value="{{ $cancelacion->id }}">{{ $cancelacion->nombre }}</option>
-            @endforeach
-        </select>
-    </div>
-
-    <div class="flex flex-col w-full">
-        <label class="" for="miSelect">Porque se cancela:</label>
-        <textarea
-            class="w-full h-32 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="cancelado" name="txtcancelado" maxlength="255"></textarea>
-    </div>
+    <div class="flex flex-col items-center mt-3">
 
 
-    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 flex items-center mt-8">
-        <i class="fas fa-sync-alt mr-2"></i>
-        Cancelar
-    </button>
+        <div class="flex flex-col items-center mt-3">
+            <div class="flex flex-col items-center">
+                <label for="miSelect">Estatus:</label>
+                @if ($datosEnvio->estatusRecoleccion == 4)
+                    <span>En recoleccion</span>
+                @elseif($datosEnvio->estatusRecoleccion == 3)
+                    <span>En revision</span>
+                @elseif($datosEnvio->estatusRecoleccion == 2)
+                    <span>En entrega</span>
+                @endif
+            </div>
+        </div>
+
+        <div class="flex flex-col w-full">
+            <label class="" for="motivoCancelacion">Porque se cancela:</label>
+            <select name="txtcategoriaCancelacion" id="categoriaCancelacion"
+                class="w-1/3 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option value="">Selecciona un motivo</option>
+                @foreach ($cancelar as $cancelacion)
+                    <option value="{{ $cancelacion->id }}">{{ $cancelacion->nombre }}</option>
+                @endforeach
+            </select>
+        </div>
+
+
+        <div class="flex flex-col w-full">
+            <label class="" for="miSelect">Porque se cancela:</label>
+            <textarea
+                class="w-full h-32 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="cancelado" name="txtcancelado" maxlength="255"></textarea>
+        </div>
+
+
+        <button type="submit"
+            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 flex items-center mt-8">
+            <i class="fas fa-sync-alt mr-2"></i>
+            Cancelar
+        </button>

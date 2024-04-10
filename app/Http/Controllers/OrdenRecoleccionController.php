@@ -90,6 +90,7 @@ class OrdenRecoleccionController extends Controller
             'personas.nombre as nombreCliente',
             'personas.apellido as apellidoCliente',
             'personas.telefono',
+            'personas.email as correo',
             'clientes.comentario as rfc',
             'catalago_ubicaciones.localidad as colonia',
             'direcciones.calle',
@@ -127,6 +128,7 @@ class OrdenRecoleccionController extends Controller
                 ];
             }
         }
+
         return view('Principal.ordenRecoleccion.recolecciones', compact('preventas', 'datosEntregaCompromisos'));
     }
 
@@ -432,7 +434,7 @@ class OrdenRecoleccionController extends Controller
                 ->join('modos', 'modos.id', '=', 'productos.id_modo')
                 ->where('precios_productos.estatus', 1)
                 ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
+                ->select('productos.*', 'precios_productos.precio', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color', 'modos.nombre as nombreModo')
 
                 ->get();
         } else if ($datosEnvio->estatusPreventa == 4) { //leftjoin me devolvera null si no hay relaciones
