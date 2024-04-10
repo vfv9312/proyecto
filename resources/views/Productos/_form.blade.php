@@ -49,7 +49,7 @@
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>precio</span>
-    <input name="txtprecio" type="number"
+    <input name="txtprecio" type="number" step="any"
         class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
         value="{{ $precioProducto->precio }}" />
 </label>

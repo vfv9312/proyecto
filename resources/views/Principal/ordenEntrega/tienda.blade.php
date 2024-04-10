@@ -113,9 +113,9 @@
             var idProducto = selectProducto.value;
             let cantidadInput = document.getElementById('cantidad');
             let cantidad = cantidadInput.value;
-
+            console.log(cantidad);
             // Verificar si la cantidad es menor que 1
-            if (parseInt(cantidad) < 1 || isNaN(cantidad)) {
+            if (cantidad === '' || parseInt(cantidad) < 1 || isNaN(cantidad)) {
                 // Establecer un mensaje de error personalizado y marcar el campo como inválido
                 cantidadInput.setCustomValidity('La cantidad debe ser al menos 1.');
                 cantidadInput.reportValidity();
