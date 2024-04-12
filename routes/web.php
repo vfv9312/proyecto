@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\CancelacionesController;
 use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\DescuentosController;
 use App\Http\Controllers\DireccionesClientesController;
+use App\Http\Controllers\DireccionesController;
 use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\EnviarCorreoController;
 use App\Http\Controllers\OrdenEntregaController;
@@ -100,6 +102,7 @@ Route::get('/orden-servicio/{id}/vista-general', [OrdenServicioController::class
 Route::resource('cancelar', CancelacionesController::class)->middleware(['auth', 'verified']);
 Route::put('/cancelar/{id}/desactivar', [CancelacionesController::class, 'desactivar'])->name('cancelar.desactivar')->middleware(['auth', 'verified']);
 
+Route::resource('descuentos', DescuentosController::class)->middleware(['auth', 'verified']);
 
 
 // lista de las rotuas de producto productos
@@ -119,8 +122,8 @@ Route::resource('clientes', ClientesController::class)->middleware(['auth', 'ver
 Route::put('/clientes/{id}/desactivar', [ClientesController::class, 'desactivar'])->name('clientes.desactivar')->middleware(['auth', 'verified']);
 
 
-//Lista de direcciones
-Route::resource('direcciones', DireccionesClientesController::class)->middleware(['auth', 'verified']);
+//Direccion del ticket
+Route::resource('direcciones', DireccionesController::class)->middleware(['auth', 'verified']);
 
 //Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
 

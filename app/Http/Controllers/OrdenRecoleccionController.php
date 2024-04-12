@@ -32,7 +32,11 @@ class OrdenRecoleccionController extends Controller
         $fecha_fin = $request->query('fecha_fin');
         $filtroEstatus = $request->query('estatus');
         $palabras = explode(' ', $busqueda); // Divide la cadena de búsqueda en palabras
-
+        $datosEntregaCompromisos[] = [
+            'fecha' => null,
+            'hora' => null,
+            'horaEntregaCompromiso' => null,
+        ];
 
 
         $preventas = Preventa::join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
@@ -128,6 +132,7 @@ class OrdenRecoleccionController extends Controller
                 ];
             }
         }
+
 
         return view('Principal.ordenRecoleccion.recolecciones', compact('preventas', 'datosEntregaCompromisos'));
     }

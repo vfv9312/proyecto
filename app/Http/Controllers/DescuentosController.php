@@ -12,7 +12,7 @@ class DescuentosController extends Controller
      */
     public function index()
     {
-        //
+        return view('descuentos.index');
     }
 
     /**

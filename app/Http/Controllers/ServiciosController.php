@@ -16,15 +16,15 @@ class ServiciosController extends Controller
     public function index()
     {
 
-        $servicios = servicios::join('ventas', 'ventas.id', '=', 'servicios.id_venta')
+        /* $servicios = servicios::join('ventas', 'ventas.id', '=', 'servicios.id_venta')
             ->join('clientes', 'clientes.id', '=', 'ventas.id_cliente')
             ->join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->where('servicios.estatus', 1)
             ->where('ventas.estatus', 1)
             ->select('servicios.id_venta', 'servicios.tipo_de_proyecto', 'servicios.descripcion', 'servicios.modelo', 'servicios.color', 'servicios.cantidad', 'servicios.precio_unitario', 'personas.nombre as nombre_cliente', 'personas.apellido as apellido_cliente', 'ventas.created_at as fecha_creacion')
-            ->paginate(5);
+            ->paginate(5);*/
 
-        return view('servicios.index', compact('servicios'));
+        return view('servicios.index');
     }
 
     /**

@@ -375,6 +375,12 @@ return [
                     'icon_color' => 'red',
                     'route'      => 'cancelar.create',
                 ],
+                [
+                    'text'       => 'Descuentos',
+                    'icon' => 'fas fa-percent',
+                    'icon_color' => 'red',
+                    'route'        => 'descuentos.index',
+                ],
             ],
         ],
         [
@@ -403,13 +409,7 @@ return [
             'text'       => 'Servicios',
             'icon' => 'fas fa-tools',
             'icon_color' => 'purple',
-            'route'        => 'productos.index',
-        ],
-        [
-            'text'       => 'Descuentos',
-            'icon' => 'fas fa-percent',
-            'icon_color' => 'red',
-            'route'        => 'productos.index',
+            'route'        => 'servicios.index',
         ],
 
     ],

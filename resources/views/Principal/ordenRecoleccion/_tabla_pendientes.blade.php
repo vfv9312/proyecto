@@ -14,6 +14,9 @@
             <td class="py-3 px-6 text-left border-r">Estatus</td>
         </tr>
         @foreach ($preventas as $index => $pendiente)
+            @php
+                $index++;
+            @endphp
             <tr class= " border-b border-gray-200 text-sm">
                 <td class="px-6 py-4">{{ $pendiente->letraActual }}{{ sprintf('%06d', $pendiente->ultimoValor) }}</td>
                 <td class="px-6 py-4">
