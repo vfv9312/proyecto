@@ -12,8 +12,9 @@ class DescuentosController extends Controller
      */
     public function index()
     {
+        $descuentos = Descuentos::where('estatus', 1)->paginate(5);
 
-        return view('descuentos.index');
+        return view('descuentos.index', compact('descuentos'));
     }
 
     /**
@@ -29,7 +30,23 @@ class DescuentosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+
+            $nombre = $request->input('txtnombre');
+            $porcentaje = $request->input('txtporcentaje');
+
+            $descuentos = Descuentos::create([
+                'nombre' => $nombre,
+                'porcentaje' => $porcentaje
+            ]);
+        } catch (\Throwable $th) {
+            //return $th->getMessage();
+
+            session()->flash("incorrect", "Error al registrar el descuento");
+            return redirect()->route('descuentos.index');
+        }
+        session()->flash("correcto", "Descuento registrado correctamente");
+        return redirect()->route('descuentos.index');
     }
 
     /**
@@ -43,17 +60,49 @@ class DescuentosController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Descuentos $descuentos)
+    public function edit(Descuentos $descuento)
     {
-        //
+        return view('descuentos.edit', compact('descuento'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Descuentos $descuentos)
+    public function update(Request $request, Descuentos $descuento)
     {
-        //
+        $nombre = $request->input('nombre');
+        $porcentaje = $request->input('porcentaje');
+        try {
+            $descuento->update([
+                'nombre' => $nombre,
+                'porcentaje' => $porcentaje
+            ]);
+            $descuento->save();
+        } catch (\Throwable $th) {
+            //return $th->getMessage();
+
+            session()->flash("incorrect", "Error al actualizar el descuento");
+            return redirect()->route('descuentos.index');
+        }
+        session()->flash("correcto", "Descuento actualizado correctamente");
+        return redirect()->route('descuentos.index');
+    }
+
+    public function desactivar(Descuentos $descuento)
+    {
+        try {
+            $descuento->update([
+                'estatus' => 0,
+            ]);
+            $descuento->save();
+        } catch (\Throwable $th) {
+            //return $th->getMessage();
+
+            session()->flash("incorrect", "Error al eliminar el descuento");
+            return redirect()->route('descuentos.index');
+        }
+        session()->flash("correcto", "Descuento eliminado correctamente");
+        return redirect()->route('descuentos.index');
     }
 
     /**

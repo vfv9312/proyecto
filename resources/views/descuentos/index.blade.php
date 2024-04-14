@@ -25,7 +25,7 @@
         <!-- boton anadir producto-->
         <button id="abrirnModalRegisrarProducto"
             class=" mb-4 bg-gradient-to-r from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
-            Añadir producto
+            Añadir descuento
         </button>
         <!--Hacemos responsivo el modal-->
         <!-- Modal -->
@@ -44,64 +44,26 @@
                             Registrar Producto
                         </h3>
 
-                        <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data"
+                        <form method="POST" action="{{ route('descuentos.store') }}" enctype="multipart/form-data"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Nombre comercial</span>
+                                <span>Nombre del descuento</span>
                                 <input name="txtnombre"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Modelo</span>
-                                <input name="txtmodelo"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Color</span>
-                                <select name="txtcolor"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
-                                    <option value="">Selecciona un color</option>
-                                </select>
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Categoria</span>
-                                <select name="txttipo"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
-                                    <option value="">Selecciona una una categoria</option>
-                                </select>
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Tipo</span>
-                                <select name="txtmodo"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
-                                    <option value="">Selecciona un tipo</option>
-                                </select>
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Marca</span>
-                                <select name="txtmarca"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
-                                    <option value="">Selecciona una marca</option>
-
-
-                                </select>
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>precio</span>
-                                <input name="txtprecio" type="number" min="1"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
                                     required />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Descripcion</span>
-                                <input name="txtdescripcion" type="text"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                <span>Porcentaje</span>
+                                <input name="txtporcentaje"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                                    required />
                             </label>
+
 
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                                Aceptar
+                                Guardar
                             </button>
 
                         </form>
@@ -128,53 +90,47 @@
                     <td class="py-3 px-6 text-left border-r">Fecha de creación</td>
                     <td class="py-3 px-6 text-left border-r">Fecha de actualización</td>
                 </tr>
-                <tr class= " border-b border-gray-200 text-sm">
-                    <td class=" px-6 py-4">
-                    </td>
-                    <td class="px-6 py-4">
+                @foreach ($descuentos as $descuento)
+                    <tr class= " border-b border-gray-200 text-sm">
+                        <td class=" px-6 py-4">
+                            {{ $descuento->nombre }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $descuento->porcentaje }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $descuento->created_at }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $descuento->updated_at }}
+                        </td>
+                        <td>
 
-                    </td>
-                    <td class="px-6 py-4">
+                            <button onclick="location.href='{{ route('descuentos.edit', $descuento->id) }}';"
+                                class=" border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-sync"></i>
+                            </button>
 
-                    </td>
-                    <td class="px-6 py-4">
+                        </td>
+                        <td>
+                            <form action="{{ route('descuentos.desactivar', $descuento->id) }}" method="POST"
+                                onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
+                                @csrf
+                                @method('PUT')
+                                <button
+                                    class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
+                                    <i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
 
-                    </td>
-                    <td class="px-6 py-4">
-
-                    </td>
-                    <td class="px-6 py-4">
-
-                    </td>
-                    <td class="px-6 py-4">
-
-                    </td>
-                    <td>
-
-                        <button onclick="location.href='';"
-                            class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-sync"></i>
-                        </button>
-
-                    </td>
-                    <td>
-                        <form action="" method="POST"
-                            onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
-                            @csrf
-                            @method('PUT')
-                            <button
-                                class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                                <i class="fas fa-trash"></i></button>
-                        </form>
-                    </td>
-
-                </tr>
-                <!-- Aquí deberías mostrar otros datos del producto -->
-
+                    </tr>
+                    <!-- Aquí deberías mostrar otros datos del producto -->
+                @endforeach
             </table>
+
             <div class=" mt-3">
-                <p>Total de resultados: </p> <!--mostrar total de resultados-->
-                +<!-- Esto mostrará los enlaces de paginación -->
+                <p>Total de resultados: {{ $descuentos->total() }}</p> <!--mostrar total de resultados-->
+                {{ $descuentos->links() }} <!-- Esto mostrará los enlaces de paginación -->
             </div>
         </section>
     </main>

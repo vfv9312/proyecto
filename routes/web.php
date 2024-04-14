@@ -107,6 +107,7 @@ Route::resource('cancelar', CancelacionesController::class)->middleware(['auth',
 Route::put('/cancelar/{id}/desactivar', [CancelacionesController::class, 'desactivar'])->name('cancelar.desactivar')->middleware(['auth', 'verified']);
 
 Route::resource('descuentos', DescuentosController::class)->middleware(['auth', 'verified']);
+Route::put('/descuentos/{descuento}/desactivar', [DescuentosController::class, 'desactivar'])->name('descuentos.desactivar')->middleware(['auth', 'verified']);
 
 
 // lista de las rotuas de producto productos
