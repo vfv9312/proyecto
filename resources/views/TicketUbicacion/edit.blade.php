@@ -3,7 +3,7 @@
 @section('title', 'Agregar direccion')
 
 @section('content_header')
-    <h1 class=" text-center">Editar datos del ticket</h1>
+    <h1 class=" text-center">Editar datos contacto del negocio</h1>
 @stop
 
 @section('content')
