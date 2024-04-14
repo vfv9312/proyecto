@@ -13,7 +13,8 @@
     </label>
     <input
         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        id="porcentaje" type="number" name="porcentaje" value="{{ $descuento->porcentaje }}">
+        id="porcentaje" type="number" min="1" max="100" name="porcentaje"
+        value="{{ $descuento->porcentaje }}">
 </div>
 
 <div class="flex items-center justify-between">

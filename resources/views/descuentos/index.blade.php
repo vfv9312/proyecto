@@ -55,14 +55,14 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Porcentaje</span>
-                                <input name="txtporcentaje"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                                <input name="txtporcentaje" type="number" min="1" max="100"
+                                    class="border-2 px-10 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
                                     required />
                             </label>
 
 
                             <button type="submit" id="enviarmodal"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Guardar
                             </button>
 
@@ -104,14 +104,14 @@
                         <td class="px-6 py-4">
                             {{ $descuento->updated_at }}
                         </td>
-                        <td>
+                        {{-- descomentar si quieren actualizar sin embargo no es practico por que si actualizan podrian cambiar todos los ticket viejos con ese descuento <td>
 
                             <button onclick="location.href='{{ route('descuentos.edit', $descuento->id) }}';"
                                 class=" border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
                                 <i class="fas fa-sync"></i>
                             </button>
 
-                        </td>
+                        </td> --}}
                         <td>
                             <form action="{{ route('descuentos.desactivar', $descuento->id) }}" method="POST"
                                 onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
