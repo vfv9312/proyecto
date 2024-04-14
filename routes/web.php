@@ -7,6 +7,7 @@ use App\Http\Controllers\DireccionesClientesController;
 use App\Http\Controllers\DireccionesController;
 use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\EnviarCorreoController;
+use App\Http\Controllers\InfoTicketsController;
 use App\Http\Controllers\OrdenEntregaController;
 use App\Http\Controllers\OrdenRecoleccionController;
 use App\Http\Controllers\ordenServicioController;
@@ -15,15 +16,18 @@ use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RestablecerController;
 use App\Http\Controllers\ServiciosController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TiempoAproximadoController;
 use App\Http\Controllers\VentasController;
 use App\Http\Controllers\WhatsAppController;
 use App\Mail\correoMailable;
+use App\Models\Info_tickets;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use PhpParser\Node\Stmt\Return_;
+use PHPUnit\Framework\Attributes\Ticket;
 
 use function Laravel\Prompts\select;
 
@@ -123,7 +127,7 @@ Route::put('/clientes/{id}/desactivar', [ClientesController::class, 'desactivar'
 
 
 //Direccion del ticket
-Route::resource('direcciones', DireccionesController::class)->middleware(['auth', 'verified']);
+Route::resource('infoticket', InfoTicketsController::class)->middleware(['auth', 'verified']);
 
 //Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
 

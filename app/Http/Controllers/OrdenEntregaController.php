@@ -9,6 +9,7 @@ use App\Models\direcciones;
 use App\Models\direcciones_clientes;
 use App\Models\empleados;
 use App\Models\Folio;
+use App\Models\Info_tickets;
 use App\Models\Marcas;
 use App\Models\Modo;
 use App\Models\Orden_recoleccion;
@@ -18,7 +19,6 @@ use App\Models\Preventa;
 use App\Models\productos;
 use App\Models\TiempoAproximado;
 use App\Models\Tipo;
-use App\Models\ventas;
 use App\Models\ventas_productos;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -609,6 +609,8 @@ class OrdenEntregaController extends Controller
 
         $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
 
+        $DatosdelNegocio = Info_tickets::first();
+
         $largoDelTicket = 700; // Inicializa la variable
 
 
@@ -620,7 +622,8 @@ class OrdenEntregaController extends Controller
         $pdf = PDF::loadView('Principal.ordenEntrega.pdf', compact(
             'ordenRecoleccion',
             'listaProductos',
-            'Tiempo'
+            'Tiempo',
+            'DatosdelNegocio'
         ));
 
         // Establece el tamaño del papel a 80mm de ancho y 200mm de largo

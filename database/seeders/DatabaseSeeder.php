@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Cancelaciones;
 use App\Models\Catalago_ubicaciones;
 use App\Models\direcciones_clientes;
+use App\Models\Info_tickets;
 use App\Models\precios_productos;
 use App\Models\precios_servicios;
 use App\Models\Roles;
@@ -34,6 +35,7 @@ class DatabaseSeeder extends Seeder
             CancelacionesSeeder::class,
             ProductosSeeder::class,
             precios_productosSeeder::class,
+            Info_ticketSeeder::class,
         ]);
 
         //\App\Models\personas::factory(6)->create();

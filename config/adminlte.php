@@ -381,6 +381,12 @@ return [
                     'icon_color' => 'red',
                     'route'        => 'descuentos.index',
                 ],
+                [
+                    'text'       => 'Datos del ticket',
+                    'icon' => 'fas fa-file',
+                    'icon_color' => 'red',
+                    'route'        => 'infoticket.index',
+                ],
             ],
         ],
         [
@@ -411,7 +417,6 @@ return [
             'icon_color' => 'purple',
             'route'        => 'servicios.index',
         ],
-
     ],
 
     /*

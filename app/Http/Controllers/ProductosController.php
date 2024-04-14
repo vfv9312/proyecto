@@ -251,7 +251,7 @@ class ProductosController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
             /*si retorna un error de sql lo veremos en pantalla*/
-            return $th->getMessage();
+            // return $th->getMessage();
             //y que la ultima consulta sea false para mandar msj que salio mal la consulta
             $preciosProductoActualizado = false;
         }
