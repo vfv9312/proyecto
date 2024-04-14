@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Catalago_recepcion;
+use App\Models\Info_tickets;
 use App\Models\Orden_recoleccion;
 use App\Models\precios_productos;
 use App\Models\Preventa;
@@ -196,6 +197,8 @@ class VentasController extends Controller
 
         $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
 
+        $DatosdelNegocio = Info_tickets::first();
+
         $largoDelTicket = 700; // Inicializa la variable
 
 
@@ -207,7 +210,8 @@ class VentasController extends Controller
         $pdf = PDF::loadView('ventas.pdf', compact(
             'ordenRecoleccion',
             'listaProductos',
-            'Tiempo'
+            'Tiempo',
+            'DatosdelNegocio'
         ));
 
         // Establece el tamaño del papel a 80mm de ancho y 200mm de largo

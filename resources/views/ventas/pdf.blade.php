@@ -69,6 +69,10 @@
         .item p {
             margin: 0;
         }
+
+        #paginaweb {
+            text-align: center;
+        }
     </style>
 </head>
 @php
@@ -147,10 +151,9 @@
         <p>{{ $ordenRecoleccion->comentario ? 'Observaciones : ' . $ordenRecoleccion->comentario : '' }}</p>
     </div>
     <div class="ubicacion">
-        <p>4a. Av. Norte Poniente No. 867
-            Col. Centro - C.P. 29000
-            Tuxtla Gutierrez, Chiapas; Conmutador: (961) 61.115.44 extención de venta: 2,
-            WhatsApp : 9612401718</p>
+        <p>{{ $DatosdelNegocio->ubicaciones }}; Conmutador: {{ $DatosdelNegocio->telefono }},
+            WhatsApp : {{ $DatosdelNegocio->whatsapp }}</p>
+        <p id="paginaweb">{{ $DatosdelNegocio->pagina_web }}</p>
     </div>
 </body>
 

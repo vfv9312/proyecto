@@ -382,7 +382,7 @@ return [
                     'route'        => 'descuentos.index',
                 ],
                 [
-                    'text'       => 'Datos del ticket',
+                    'text'       => 'Datos de contacto',
                     'icon' => 'fas fa-file',
                     'icon_color' => 'red',
                     'route'        => 'infoticket.index',
