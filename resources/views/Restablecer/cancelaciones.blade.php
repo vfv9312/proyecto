@@ -39,7 +39,7 @@
                 @foreach ($datosEnvio as $dato)
                     <tr class= " border-b border-gray-200 text-sm">
                         <td class=" px-6 py-4">
-                            {{ $dato->idRecoleccion }}</td>
+                            {{ $dato->letraAcutal }}{{ sprintf('%06d', $dato->ultimoValor) }}</td>
                         <td class="px-6 py-4">
                             {{ $dato->nombreCliente }} {{ $dato->apellidoCliente }}
                         </td>

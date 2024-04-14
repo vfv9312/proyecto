@@ -553,6 +553,7 @@ class OrdenEntregaController extends Controller
     {
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftJoin('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
@@ -564,6 +565,8 @@ class OrdenEntregaController extends Controller
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
+                'orden_recoleccions.id_cancelacion as idCancelacion',
+                'orden_recoleccions.comentario as descripcionCancelacion',
                 'folios.letra_actual as letraActual',
                 'folios.ultimo_valor as ultimoValor',
                 'folios.created_at as fechaDelTiempoAproximado',
@@ -591,6 +594,7 @@ class OrdenEntregaController extends Controller
                 'personaEmpleado.apellido as apellidoEmpleado',
                 'personaEmpleado.telefono as telefonoEmpleado',
                 'roles.nombre as nombreRol',
+                'cancelaciones.nombre as nombreCancelacion'
             )
             ->first();
 

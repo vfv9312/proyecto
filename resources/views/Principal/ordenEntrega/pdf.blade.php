@@ -76,75 +76,94 @@
     </style>
 </head>
 
-<body>
-    @php
-        $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
-        $fecha = $fechaHoraArray[0];
-        $hora = $fechaHoraArray[1];
-    @endphp
-    <div class="ticket">
-        <div class="header">
-            <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-            <h1>Orden de Entrega!</h1>
-            <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
-            <p>Fecha recepcion: {{ $fecha }}</p>
-        </div>
-        <div class="body">
-            <div class="datoscliente item">
-                <h5> Datos del cliente </h5>
-                <p>Cliente : {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
-                <p>{{ $ordenRecoleccion->rfc ? 'RFC : ' . $ordenRecoleccion->rfc : '' }}</p>
-                <p>Atencion : {{ $ordenRecoleccion->nombreAtencion }}</p>
-                <p>Tel : {{ $ordenRecoleccion->telefonoCliente }}</p>
-                <p>{{ $ordenRecoleccion->correo ? 'Correo : ' . $ordenRecoleccion->correo : '' }}</p>
-                <p>Direccion : Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
-                    #{{ $ordenRecoleccion->num_exterior }},
-                    {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
-                <p>CP :{{ $ordenRecoleccion->cp }}</p>
-                <p> Referencia : {{ $ordenRecoleccion->referencia }}</p>
-                <p>Horario de trabajo : {{ $ordenRecoleccion->horarioTrabajoInicio }} hasta las:
-                    {{ $ordenRecoleccion->horarioTrabajoFinal }}. {{ $ordenRecoleccion->diaSemana }}</p>
-            </div>
-            <div class="item">
-                @php
-                    $total = 0;
-                @endphp
-                @foreach ($listaProductos as $producto)
-                    <p>Producto: {{ $producto->nombre_comercial }}</p>
-                    <p>Color : {{ $producto->nombreColor }}, Marca : {{ $producto->nombreMarca }}, Tipo :
-                        {{ $producto->nombreModo }}, Categoria : {{ $producto->nombreTipo }}, Cantidad:
-                        {{ $producto->cantidad }}</p>
-                    <p style="margin-bottom: 10px;">Precio unitario: ${{ $producto->precio }}</p>
-                    @php
-                        $total += $producto->precio * $producto->cantidad;
-                    @endphp
-                @endforeach
-                <h5> Datos del pago </h5>
-                <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
-                <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
-                Costo total : ${{ $total }}<br>
-                {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
-                <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
-                </p>
-            </div>
-            <!-- Agrega más items aquí -->
-        </div>
+@if ($ordenRecoleccion->idCancelacion)
 
-    </div>
-    <div class="footer item">
-        <p>Recepciono:</p>
-        <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
-        Hora de recepcion : {{ $hora }}
-        <p>Recibe : {{ $ordenRecoleccion->recibe }}</p>
-        <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
+    <body
+        style="background: url('cancelado.png') no-repeat center center;
+-webkit-background-size: 50% 50%;
+-moz-background-size: 50% 50%;
+-o-background-size: 50% 50%;
+background-size: 50% 50%;
+opacity: 0.5;">
+    @else
+
+        <body>
+@endif
+
+
+
+@php
+    $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
+    $fecha = $fechaHoraArray[0];
+    $hora = $fechaHoraArray[1];
+@endphp
+<div class="ticket">
+    <div class="header">
+        <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
+        <h1>Orden de Entrega!</h1>
+        <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
+        <p>Fecha recepcion: {{ $fecha }}</p>
+        <p>{{ $ordenRecoleccion->idCancelacion ? 'Motivo de cancelación : ' . $ordenRecoleccion->nombreCancelacion : '' }}
         </p>
+        <p>{{ $ordenRecoleccion->idCancelacion ? 'Descripcion de cancelacion : ' . $ordenRecoleccion->descripcionCancelacion : '' }}
+        </p>
+    </div>
+    <div class="body">
+        <div class="datoscliente item">
+            <h5> Datos del cliente </h5>
+            <p>Cliente : {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
+            <p>{{ $ordenRecoleccion->rfc ? 'RFC : ' . $ordenRecoleccion->rfc : '' }}</p>
+            <p>Atencion : {{ $ordenRecoleccion->nombreAtencion }}</p>
+            <p>Tel : {{ $ordenRecoleccion->telefonoCliente }}</p>
+            <p>{{ $ordenRecoleccion->correo ? 'Correo : ' . $ordenRecoleccion->correo : '' }}</p>
+            <p>Direccion : Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
+                #{{ $ordenRecoleccion->num_exterior }},
+                {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
+            <p>CP :{{ $ordenRecoleccion->cp }}</p>
+            <p> Referencia : {{ $ordenRecoleccion->referencia }}</p>
+            <p>Horario de trabajo : {{ $ordenRecoleccion->horarioTrabajoInicio }} hasta las:
+                {{ $ordenRecoleccion->horarioTrabajoFinal }}. {{ $ordenRecoleccion->diaSemana }}</p>
+        </div>
+        <div class="item">
+            @php
+                $total = 0;
+            @endphp
+            @foreach ($listaProductos as $producto)
+                <p>Producto: {{ $producto->nombre_comercial }}</p>
+                <p>Color : {{ $producto->nombreColor }}, Marca : {{ $producto->nombreMarca }}, Tipo :
+                    {{ $producto->nombreModo }}, Categoria : {{ $producto->nombreTipo }}, Cantidad:
+                    {{ $producto->cantidad }}</p>
+                <p style="margin-bottom: 10px;">Precio unitario: ${{ $producto->precio }}</p>
+                @php
+                    $total += $producto->precio * $producto->cantidad;
+                @endphp
+            @endforeach
+            <h5> Datos del pago </h5>
+            <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
+            <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
+            Costo total : ${{ $total }}<br>
+            {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
+            <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
+            </p>
+        </div>
+        <!-- Agrega más items aquí -->
+    </div>
 
-    </div>
-    <div class="ubicacion">
-        <p>{{ $DatosdelNegocio->ubicaciones }}; Conmutador: {{ $DatosdelNegocio->telefono }},
-            WhatsApp : {{ $DatosdelNegocio->whatsapp }}</p>
-        <p id="paginaweb">{{ $DatosdelNegocio->pagina_web }}</p>
-    </div>
+</div>
+<div class="footer item">
+    <p>Recepciono:</p>
+    <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
+    Hora de recepcion : {{ $hora }}
+    <p>Recibe : {{ $ordenRecoleccion->recibe }}</p>
+    <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
+    </p>
+
+</div>
+<div class="ubicacion">
+    <p>{{ $DatosdelNegocio->ubicaciones }}; Conmutador: {{ $DatosdelNegocio->telefono }},
+        WhatsApp : {{ $DatosdelNegocio->whatsapp }}</p>
+    <p id="paginaweb">{{ $DatosdelNegocio->pagina_web }}</p>
+</div>
 </body>
 
 </html>

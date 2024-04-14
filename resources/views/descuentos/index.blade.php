@@ -123,13 +123,10 @@
             <table class="min-w-full">
                 <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
                 <tr class="text-black uppercase text-xs  font-bold leading-normal">
-                    <td class="py-3 px-6 text-left border-r">Nombre comercial</td>
-                    <td class="py-3 px-6 text-left border-r">Modelo</td>
-                    <td class="py-3 px-6 text-left border-r">Color</td>
-                    <td class="py-3 px-6 text-left border-r">Marca</td>
-                    <td class="py-3 px-6 text-left border-r">Categoria</td>
-                    <td class="py-3 px-6 text-left border-r">Tipo </td>
-                    <td class="py-3 px-6 text-left border-r">Precio</td>
+                    <td class="py-3 px-6 text-left border-r">Clave del descuento</td>
+                    <td class="py-3 px-6 text-left border-r">Porcentaje</td>
+                    <td class="py-3 px-6 text-left border-r">Fecha de creación</td>
+                    <td class="py-3 px-6 text-left border-r">Fecha de actualización</td>
                 </tr>
                 <tr class= " border-b border-gray-200 text-sm">
                     <td class=" px-6 py-4">

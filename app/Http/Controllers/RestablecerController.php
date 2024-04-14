@@ -36,6 +36,7 @@ class RestablecerController extends Controller
         $fecha_fin = $request->query('fecha_fin');
         //
         $datosEnvio = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
@@ -59,6 +60,8 @@ class RestablecerController extends Controller
         }
         $datosEnvio = $datosEnvio->select(
             'orden_recoleccions.id as idRecoleccion',
+            'folios.letra_actual as letraAcutal',
+            'folios.ultimo_valor as ultimoValor',
             'personasClientes.nombre as nombreCliente',
             'personasClientes.apellido as apellidoCliente',
             'orden_recoleccions.created_at as fechaCreacion',
