@@ -117,6 +117,8 @@ Route::put('/productos/{id}/desactivar', [ProductosController::class, 'desactiva
 
 //Lista de las rutas de servicios
 Route::resource('servicios', ServiciosController::class)->middleware(['auth', 'verified']);
+Route::put('/servicios/{id}/desactivar', [ServiciosController::class, 'desactivar'])->name('servicios.desactivar')->middleware(['auth', 'verified']);
+
 
 //Lista de las rutas de empleados
 Route::resource('empleados', EmpleadosController::class)->middleware(['auth', 'verified']);

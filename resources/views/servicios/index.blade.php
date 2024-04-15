@@ -44,7 +44,7 @@
                             Registrar Producto
                         </h3>
 
-                        <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data"
+                        <form method="POST" action="{{ route('servicios.store') }}" enctype="multipart/form-data"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -62,13 +62,19 @@
                                 <select name="txtcolor"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona un color</option>
+                                    @foreach ($colores as $color)
+                                        <option value="{{ $color->id }}">{{ $color->nombre }}</option>
+                                    @endforeach
                                 </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Categoria</span>
                                 <select name="txttipo"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
-                                    <option value="">Selecciona una una categoria</option>
+                                    <option value="">Selecciona una categoria</option>
+                                    @foreach ($categorias as $categoria)
+                                        <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                    @endforeach
                                 </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -76,6 +82,9 @@
                                 <select name="txtmodo"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona un tipo</option>
+                                    @foreach ($modos as $modo)
+                                        <option value="{{ $modo->id }}">{{ $modo->nombre }}</option>
+                                    @endforeach
                                 </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -83,8 +92,9 @@
                                 <select name="txtmarca"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona una marca</option>
-
-
+                                    @foreach ($marcas as $marca)
+                                        <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
+                                    @endforeach
                                 </select>
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -131,53 +141,54 @@
                     <td class="py-3 px-6 text-left border-r">Tipo </td>
                     <td class="py-3 px-6 text-left border-r">Precio</td>
                 </tr>
-                <tr class= " border-b border-gray-200 text-sm">
-                    <td class=" px-6 py-4">
-                    </td>
-                    <td class="px-6 py-4">
+                @foreach ($productos as $producto)
+                    <tr class= " border-b border-gray-200 text-sm">
+                        <td class=" px-6 py-4">
+                            {{ $producto->nombre_comercial }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->modelo }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->nombreColor }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->nombreMarca }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->nombreTipo }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $producto->nombreModo }}
+                        </td>
+                        <td class="px-6 py-4">
+                            ${{ $producto->precio }}
+                        </td>
+                        <td>
+                            <button onclick="location.href='{{ route('servicios.edit', $producto->id) }}';"
+                                class=" border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-sync"></i>
+                            </button>
 
-                    </td>
-                    <td class="px-6 py-4">
+                        </td>
+                        <td>
+                            <form action="{{ route('servicios.desactivar', $producto->id) }}" method="POST"
+                                onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
+                                @csrf
+                                @method('PUT')
+                                <button
+                                    class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
+                                    <i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
 
-                    </td>
-                    <td class="px-6 py-4">
-
-                    </td>
-                    <td class="px-6 py-4">
-
-                    </td>
-                    <td class="px-6 py-4">
-
-                    </td>
-                    <td class="px-6 py-4">
-
-                    </td>
-                    <td>
-
-                        <button onclick="location.href='';"
-                            class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-sync"></i>
-                        </button>
-
-                    </td>
-                    <td>
-                        <form action="" method="POST"
-                            onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
-                            @csrf
-                            @method('PUT')
-                            <button
-                                class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out">
-                                <i class="fas fa-trash"></i></button>
-                        </form>
-                    </td>
-
-                </tr>
-                <!-- Aquí deberías mostrar otros datos del producto -->
-
+                    </tr>
+                    <!-- Aquí deberías mostrar otros datos del producto -->
+                @endforeach
             </table>
             <div class=" mt-3">
-                <p>Total de resultados: </p> <!--mostrar total de resultados-->
-                +<!-- Esto mostrará los enlaces de paginación -->
+                <p>Total de resultados: {{ $productos->total() }}</p> <!--mostrar total de resultados-->
+                {{ $productos->links() }} <!-- Esto mostrará los enlaces de paginación -->
             </div>
         </section>
     </main>
