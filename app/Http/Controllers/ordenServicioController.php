@@ -6,10 +6,12 @@ use App\Models\Catalago_recepcion;
 use App\Models\Catalago_ubicaciones;
 use App\Models\clientes;
 use App\Models\Color;
+use App\Models\Descuentos;
 use App\Models\direcciones;
 use App\Models\direcciones_clientes;
 use App\Models\empleados;
 use App\Models\Folio;
+use App\Models\Info_tickets;
 use App\Models\Marcas;
 use App\Models\Modo;
 use App\Models\Orden_recoleccion;
@@ -25,6 +27,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Dotenv\Util\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class ordenServicioController extends Controller
 {
@@ -82,8 +85,8 @@ class ordenServicioController extends Controller
             ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->join('colors', 'colors.id', '=', 'productos.id_color')
             ->join('modos', 'modos.id', '=', 'productos.id_modo')
-            ->where('productos.estatus', 1)
-            ->where('precios_productos.estatus', 1)
+            ->where('productos.estatus', 2)
+            ->where('precios_productos.estatus', 2)
             // ->where('marcas.id', 'LIKE', "%{$marca}%")
             // ->where('tipos.id', 'LIKE', "%{$tipo}%")
             ->select(
@@ -108,9 +111,16 @@ class ordenServicioController extends Controller
         $modos = Modo::orderBy('nombre')->get();
         $colores = Color::all();
 
+        $datosRecoleccion = Preventa::where('estatus', 4)
+            ->whereNotNull('nombre_quien_recibe')
+            ->select('id_cliente as idCliente', 'nombre_quien_recibe as recibe', 'nombre_quien_entrega as entrega')
+            ->orderBy('updated_at', 'asc')->get();
 
 
-        return view('Principal.ordenServicio.datos_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'marcas', 'modos', 'tipos', 'colores', 'listaAtencion', 'productos'));
+        $descuentos = Descuentos::select('*')->orderBy('nombre', 'asc')->get();
+
+
+        return view('Principal.ordenServicio.datos_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'marcas', 'modos', 'tipos', 'colores', 'listaAtencion', 'productos', 'datosRecoleccion', 'descuentos'));
     }
 
     /**
@@ -125,127 +135,256 @@ class ordenServicioController extends Controller
      */
     public function store(Request $request)
     {
+
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
+            // si fue seleccionado el cliente y la direccion tendremos estos datos del id
+            $idCliente = $request->input('cliente');
+            $idDireccion = $request->input('id_direccion');
 
-            $atiende = ucwords(strtolower($request->input('txtatencion')));
+            //si modificamos un dato del cliente podrian ser cualquiera de estos 3
+            $telefono = $request->input('txttelefono');
+            $rfc = $request->input('txtrfc');
+            $email = $request->input('txtemail');
+            $recibe = $request->input('txtrecibe');
+            $entrega = $request->input('txtentrega');
+
+            //si registramos un cliente nuevo recibiremos
+            $nuevoCliente = $request->input('txtnombreCliente');
+            $nuevoApeCliente = $request->input('txtapellidoCliente');
+
+            //datos que iran siempre
+            $atencion = $request->input('txtatencion');
+            $idEmpleado = $request->input('txtempleado');
+
+            //si no tenemos datos del id direccion entonces recibiremos
+            $idNuevacolonia = $request->input('nuevacolonia');
+            $nuevacalle = $request->input('nuevacalle');
+            $nuevonumInterior = $request->input('nuevonum_interior');
+            $nuevonumExterior = $request->input('nuevonum_exterior');
+            $nuevareferencia = $request->input('nuevareferencia');
+
+            //factura, metodo de pago y horario para entregar paquete
+            $factura = $request->input('factura');
+            $metodoPago = $request->input('metodoPago');
+            $pagaCon = $request->input('pagaCon');
+
+            // Decodifica la cadena JSON
+            $relacion = json_decode($request->input('inputProductosSeleccionados'), true);
 
 
-            //clienteSeleccionado es el id del cliente seleccionado si elegi uno ya registrado
-            $clienteSeleccionado = $request->input('cliente');
-            //id_direcciones es el id de la direccion seleccionada del cliente
-            $id_direcciones = $request->input('id_direccion');
-
-
-            //creamos una preventa con estatus a 3
-            $Preventa = Preventa::create([
-                'id_empleado' => $request->input('txtempleado'),
-                'estatus' => 2,
+            //crearemos una preventa con estatus 4
+            $preventa = Preventa::create([
+                'estatus' => 4
             ]);
-            //
+
+            // si Seleccionaron un cliente entonces entra
+
+            if (!is_null($idCliente) && is_numeric($idCliente)) {
+
+                //crearemos una preventa con estatus 4
+                $preventa->id_cliente = $idCliente;
+                $preventa->id_empleado = $idEmpleado;
+                $preventa->nombre_atencion = $atencion;
+                $preventa->metodo_pago = $metodoPago;
+                $preventa->factura = $factura === 'on' ? 1 : 0;
+                $preventa->pago_efectivo = $pagaCon;
+                $preventa->estatus = 4;
+                $preventa->nombre_quien_recibe = $recibe;
+                $preventa->nombre_quien_entrega = $entrega;
+
+                $preventa->save();
 
 
-
-            // si clienteSeleccionado es "1" o algun numero entrara por que seleccionaron uno ya registrado
-            if (!is_null($clienteSeleccionado) && is_numeric($clienteSeleccionado)) {
-
-                //si preventa esxite que si entonces entra
-                if ($Preventa) {
-                    //Actualizar los campos
-                    $Preventa->id_cliente = $clienteSeleccionado;
-                    $Preventa->nombre_atencion = $atiende;
-
-                    // Guardar el modelo
-                    $Preventa->save();
-
-                    //si el id_direccion existe eligieron una direccion del usuario entonces entra
-                    if (!is_null($id_direcciones) && is_numeric($clienteSeleccionado)) {
-                        $Preventa->id_direccion = $id_direcciones;
-                        // Guardar el modelo
-                        $Preventa->save();
-                    } else {
-                        //si no selecciono direccion creamos una nueva direccion con los datos de agregar direccion
-                        $nuevaDireccion = direcciones::firstOrCreate([
-                            'id_ubicacion' => $request->input('nuevacolonia'),
-                            'calle' => strtolower($request->input('nuevacalle')),
-                            'num_exterior' => $request->input('nuevonum_exterior'),
-                            'num_interior' => $request->input('nuevonum_interior'),
-                            'referencia' => strtolower($request->input('nuevareferencia')),
-
-                        ]);
-                        $ligarDireccionCliente = direcciones_clientes::firstOrCreate([
-                            'id_direccion' => $nuevaDireccion->id,
-                            'id_cliente' => $clienteSeleccionado,
-                            'estatus' => 1
-                        ]);
-                        //guardamos el id de la nueva direccion en preventa
-                        $Preventa->id_direccion = $nuevaDireccion->id;
-                        // Guardar el modelo
-                        $Preventa->save();
+                // iteramos en un forech para ir agregando los productos seleccionados en el pedido para agregarlos en ventas_productos
+                foreach ($relacion as $articulo) {
+                    //primero identificammos el precio del producto solicitado
+                    $producto_precio = precios_productos::where('id_producto', $articulo['id'])
+                        ->where('estatus', 2)
+                        ->first();
+                    //luego buscamos los datos del producto
+                    $producto = Productos::where('id', $articulo['id'])->first();
+                    //buscamos el descuento
+                    $descuento = Descuentos::where('porcentaje', $articulo['descuento'])->where('estatus', 1)->first();
+                    $descuento = Descuentos::where('porcentaje', $articulo['descuento'])->where('estatus', 1)->first();
+                    if ($descuento === null) {
+                        $descuento = new stdClass();
+                        $descuento->id = null;
                     }
+                    $descuentoDividido =  $articulo['descuento'] / 100;
+                    $cantidadUnitaria = (intval($articulo['cantidad']) * $producto_precio->precio) * (1 - $descuentoDividido);
+
+                    //ya una vez identificados le agregamos el id del precio actual y cantidad
+                    $producto_venta = Servicios_preventas::firstOrCreate([
+                        'id_precio_producto' => $producto_precio->id, //id del precio producto que esta relacionado con el producto
+                        'id_preventa' => $preventa->id, //le asignamos su nummero de preventa
+                        'id_descuento' => $descuento->id, //le asignamos el id del descuento
+                        'precio_unitario' => $cantidadUnitaria,
+                        'cantidad_total' => $articulo['cantidad'], //le asignamos su cantidad
+                        'estatus' => 1 //le asignamos estatus 1
+                    ]);
+                }
+
+                $cliente = Clientes::find($idCliente);
+                $ubicarpersona = personas::find($cliente->id_persona);
+                $cliente->update([
+                    'comentario' => strtoupper($rfc),
+                ]);
+
+                $ubicarpersona->update([
+                    'telefono' => $telefono,
+                    'email' => strtolower($email),
+                ]);
+
+
+                //si el id_direccion  eligieron una direccion del usuario encontes entra
+                if (!is_null($idDireccion) && is_numeric($idDireccion)) {
+                    $preventa->id_direccion = $idDireccion;
+                    // Guardar el modelo
+                    $preventa->save();
+                } else {
+
+                    $nuevaDireccion = direcciones::create([
+                        'id_ubicacion' => $idNuevacolonia,
+                        'calle' => $nuevacalle,
+                        'num_exterior' => $nuevonumExterior,
+                        'num_interior' => $nuevonumInterior,
+                        'referencia' => strtolower($nuevareferencia),
+                    ]);
+                    $ligarDireccionCliente = direcciones_clientes::create([
+                        'id_direccion' => $nuevaDireccion->id,
+                        'id_cliente' => $idCliente,
+                        'estatus' => 1
+                    ]);
+
+                    $preventa->id_direccion = $nuevaDireccion->id;
+                    // Guardar el modelo
+                    $preventa->save();
                 }
             } else {
-                //si no hay cliente seleccionado entonces crearemos uno
-                //firstOrCreate de Laravel. Este método intentará encontrar un registro en la base de datos que coincida con los valores de los atributos dados. Si no se encuentra un modelo existente, se creará una nueva instancia del modelo.
-                $clientePersona = personas::firstOrCreate([
-                    'nombre' => ucwords(strtolower($request->input('txtnombreCliente'))),
-                    'apellido' => ucwords(strtolower($request->input('txtapellidoCliente'))),
-                    'telefono' => $request->input('txttelefono'),
-                    'email' => strtolower($request->input('txtemail')),
+
+                $clientePersona = personas::create([
+                    'nombre' => ucwords(strtolower($nuevoCliente)),
+                    'apellido' => ucwords(strtolower($nuevoApeCliente)),
+                    'telefono' => $telefono,
+                    'email' => strtolower($email),
                     'estatus' => 1,
+                    // ...otros campos aquí...
                 ]);
 
 
-                //crearemos un cliente
-                $clienteNuevo = clientes::firstOrCreate([
+                $clienteNuevo = clientes::create([
                     'id_persona' => $clientePersona->id,
-                    'comentario' => strtoupper($request->input('txtrfc')),
+                    'comentario' => strtoupper($rfc),
                     'estatus' => 1,
                 ]);
-                //Preventa le asignamos el clienta nuevo
-                $Preventa->id_cliente = $clienteNuevo->id;
-                $Preventa->nombre_atencion = $atiende;
-                // Guardar el modelo
-                $Preventa->save();
 
-                //si tiene datos cliente con colonia y calles
-                if ($request->input('nuevacolonia') && $request->input('nuevacalle')) {
-                    //creamos una nueva direccion
-                    $nuevaDireccion = direcciones::create([
-                        'id_ubicacion' => $request->input('nuevacolonia'),
-                        'calle' => strtolower($request->input('nuevacalle')),
-                        'num_exterior' => $request->input('nuevonum_exterior'),
-                        'num_interior' => $request->input('nuevonum_interior'),
-                        'referencia' => $request->input('nuevareferencia'),
+                $preventa->id_cliente = $clienteNuevo->id;
+                $preventa->id_empleado = $idEmpleado;
+                $preventa->nombre_atencion = $atencion;
+
+                $preventa->metodo_pago = $metodoPago;
+                $preventa->factura = $factura === 'on' ? 1 : 0;
+                $preventa->pago_efectivo = $pagaCon;
+                $preventa->estatus = 4; // 4 servicio
+                $preventa->nombre_quien_recibe = $recibe;
+                $preventa->nombre_quien_entrega = $entrega;
+                // Guardar el modelo
+                $preventa->save();
+
+                // iteramos en un forech para ir agregando los productos seleccionados en el pedido para agregarlos en ventas_productos
+                // iteramos en un forech para ir agregando los productos seleccionados en el pedido para agregarlos en ventas_productos
+                foreach ($relacion as $articulo) {
+                    //primero identificammos el precio del producto solicitado
+                    $producto_precio = precios_productos::where('id_producto', $articulo['id'])
+                        ->where('estatus', 2)
+                        ->first();
+                    //luego buscamos los datos del producto
+                    $producto = Productos::where('id', $articulo['id'])->first();
+                    //buscamos el descuento
+                    $descuento = Descuentos::where('porcentaje', $articulo['descuento'])->where('estatus', 1)->first();
+                    if ($descuento === null) {
+                        $descuento = new stdClass();
+                        $descuento->id = null;
+                    }
+                    $descuentoDividido =  $articulo['descuento'] / 100;
+                    $cantidadUnitaria = (intval($articulo['cantidad']) * $producto_precio->precio) * (1 - $descuentoDividido);
+
+                    //ya una vez identificados le agregamos el id del precio actual y cantidad
+                    $producto_venta = Servicios_preventas::firstOrCreate([
+                        'id_precio_producto' => $producto_precio->id, //id del precio producto que esta relacionado con el producto
+                        'id_preventa' => $preventa->id, //le asignamos su nummero de preventa
+                        'id_descuento' => $descuento->id, //le asignamos el id del descuento
+                        'precio_unitario' => $cantidadUnitaria,
+                        'cantidad_total' => $articulo['cantidad'], //le asignamos su cantidad
+                        'estatus' => 1 //le asignamos estatus 1
                     ]);
-                    //le asignamos la nueva direccion al cliente
-                    $direccionNuevaCliente = direcciones_clientes::firstOrCreate([
+                }
+
+                if ($request->input('nuevacolonia') && $request->input('nuevacalle')) {
+
+                    $nuevaDireccion = direcciones::create([
+                        'id_ubicacion' => $idNuevacolonia,
+                        'calle' => $nuevacalle,
+                        'num_exterior' => $nuevonumExterior,
+                        'num_interior' => $nuevonumInterior,
+                        'referencia' => strtolower($nuevareferencia),
+                    ]);
+
+
+                    $direccionNuevaCliente = direcciones_clientes::create([
                         'id_direccion' => $nuevaDireccion->id,
                         'id_cliente' => $clienteNuevo->id,
                         'estatus' => 1
 
                     ]);
-                    //y le asignamos la direccion a la preventa
-                    $Preventa->id_direccion = $nuevaDireccion->id;
+
+                    $preventa->id_direccion = $nuevaDireccion->id;
                     // Guardar el modelo
-                    $Preventa->save();
+                    $preventa->save();
                 }
             }
 
-            $marcas = Marcas::orderBy('nombre')->get();
-            $modos = Tipo::orderBy('nombre')->get();
-            $tipos = Modo::all();
-            $colores = Color::all();
+            $ultimoFolio = Folio::orderBy('id', 'desc')->first();
+            $letra = $ultimoFolio ? $ultimoFolio->letra_actual : 'A';
+            $valor = $ultimoFolio ? $ultimoFolio->ultimo_valor + 1 : 1;
+            //999999
+            if ($valor > 999999) {
+                // Incrementa la letra
+                $letra = chr(ord($letra) + 1);
+                $valor = 1;
+            }
+
+            $folio = Folio::create([
+                'letra_actual' => $letra,
+                'ultimo_valor' => $valor,
+            ]);
+
+
+            $folio->update([
+                'letra_actual' => $letra,
+                'ultimo_valor' => $valor,
+            ]);
+
+            $Ordenderecoleccion = Orden_recoleccion::create([
+                'id_preventa' => $preventa->id,
+                'id_folio' => $folio->id,
+                'estatus' => 4 //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
+            ]);
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
 
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            //return $th->getMessage();
+            return $th->getMessage();
+            session()->flash("incorrect", "Error al procesar los productos, posiblemente no registro algun dato");
+            return redirect()->route('orden_servicio.index');
         }
-        return view('Principal.ordenServicio.datos_producto', compact('Preventa', 'marcas', 'modos', 'colores', 'tipos'));
+        // Redirecciona al usuario a una página de vista de resumen o éxito
+        return redirect()->route('ordenServicio.vistaGeneral', ['id' => $Ordenderecoleccion->id]); // Reemplaza 'ruta.nombre' con el nombre real de la ruta a la que deseas redirigir
+
     }
 
     /**
@@ -256,7 +395,6 @@ class ordenServicioController extends Controller
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         $cantidades = $request->query('cantidad');
-
         try {
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
 
@@ -300,7 +438,6 @@ class ordenServicioController extends Controller
                 'ultimo_valor' => $valor,
             ]);
 
-
             $recoleccion = Orden_recoleccion::firstOrCreate([
                 'id_preventa' => $preventa->id,
                 'id_folio' => $folio->id,
@@ -315,6 +452,7 @@ class ordenServicioController extends Controller
     }
     public function vistaGeneral(Orden_recoleccion $id)
     {
+
 
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
@@ -331,19 +469,18 @@ class ordenServicioController extends Controller
                 'orden_recoleccions.created_at as fechaCreacion',
                 'folios.letra_actual as letraActual',
                 'folios.ultimo_valor as ultimoValor',
-                'folios.created_at as fechaDelTiempoAproximado',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
                 'preventas.pago_efectivo as pagoEfectivo',
                 'preventas.nombre_atencion as nombreAtencion',
-                'preventas.horario_trabajo_inicio as horarioTrabajoInicio',
-                'preventas.horario_trabajo_final as horarioTrabajoFinal',
-                'preventas.dia_semana as diaSemana',
+                'preventas.nombre_quien_recibe as recibe',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
                 'direcciones.referencia',
+                'catalago_ubicaciones.municipio',
+                'catalago_ubicaciones.estado',
                 'catalago_ubicaciones.cp',
                 'catalago_ubicaciones.localidad',
                 'clientes.comentario as rfc',
@@ -358,30 +495,20 @@ class ordenServicioController extends Controller
             )
             ->first();
 
-        $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
-            ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+
+        $listaProductos = precios_productos::join('servicios_preventas', 'servicios_preventas.id_precio_producto', '=', 'precios_productos.id')
+            ->leftJoin('descuentos', 'descuentos.id', '=', 'servicios_preventas.id_descuento')
             ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
-            ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
-            ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
-            ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
-            ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
-            ->where('preventas.id', $id->id_preventa)
-            ->where('servicios_preventas.estatus', 2)
-            ->select(
-                'productos.id',
-                'productos.nombre_comercial',
-                'marcas.nombre as marca',
-                'tipos.nombre as tipo',
-                'colors.nombre as color',
-                'modos.nombre as modo',
-                'servicios_preventas.cantidad_total',
-                'servicios_preventas.precio_unitario as precio',
-                'productos.descripcion',
-            )
+            ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+            ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->join('colors', 'colors.id', '=', 'productos.id_color')
+            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->join('modos', 'modos.id', '=', 'productos.id_modo')
+            ->where('preventas.id', $ordenRecoleccion->idPreventa)
+            ->select('productos.nombre_comercial', 'servicios_preventas.precio_unitario as precio', 'servicios_preventas.cantidad_total as cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo', 'descuentos.porcentaje')
             ->get();
 
-
-        return view('Principal.ordenServicio.orden_completada', compact('productos', 'ordenRecoleccion'));
+        return view('Principal.ordenServicio.orden_completada', compact('listaProductos', 'ordenRecoleccion'));
     }
 
     /**
@@ -513,6 +640,8 @@ class ordenServicioController extends Controller
                 'preventas.factura',
                 'preventas.pago_efectivo as pagoEfectivo',
                 'preventas.nombre_atencion as nombreAtencion',
+                'preventas.nombre_quien_recibe as nombreRecibe',
+                'preventas.nombre_quien_entrega as nombreEntrega',
                 'preventas.horario_trabajo_inicio as horarioTrabajoInicio',
                 'preventas.horario_trabajo_final as horarioTrabajoFinal',
                 'preventas.dia_semana as diaSemana',
@@ -534,15 +663,14 @@ class ordenServicioController extends Controller
             )
             ->first();
 
-        $listaProductos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
-            ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+        $listaProductos = Servicios_preventas::join('precios_productos', 'precios_productos.id', '=', 'servicios_preventas.id_precio_producto')
             ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+            ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
             ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
             ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
-            ->where('servicios_preventas.estatus', 2)
             ->select(
                 'productos.nombre_comercial',
                 'productos.descripcion',
@@ -560,6 +688,9 @@ class ordenServicioController extends Controller
 
         $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
 
+        $DatosdelNegocio = Info_tickets::first();
+
+
         $largoDelTicket = 700; // Inicializa la variable
 
 
@@ -568,7 +699,7 @@ class ordenServicioController extends Controller
             $largoDelTicket += $extra * 50;
         }
 
-        $pdf = PDF::loadView('Principal.ordenServicio.pdf', compact('listaProductos', 'ordenRecoleccion', 'Tiempo'));
+        $pdf = PDF::loadView('Principal.ordenServicio.pdf', compact('listaProductos', 'ordenRecoleccion', 'Tiempo', 'DatosdelNegocio'));
 
         // Establece el tamaño del papel a 80mm de ancho y 200mm de largo
         $pdf->setPaper([0, 0, 226.77, $largoDelTicket], 'portrait'); // 80mm x 200mm en puntos

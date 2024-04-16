@@ -69,14 +69,30 @@
         .item p {
             margin: 0;
         }
+
+        #paginaweb {
+            text-align: center;
+        }
     </style>
 </head>
+
+@php
+    $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
+    $fecha = $fechaHoraArray[0];
+    $hora = $fechaHoraArray[1];
+@endphp
 
 <body>
     <div class="ticket">
         <div class="header">
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
             <h1>Orden de Servicio!</h1>
+            <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
+            <p>Fecha recepcion: {{ $fecha }}</p>
+            <p>{{ $ordenRecoleccion->idCancelacion ? 'Motivo de cancelación : ' . $ordenRecoleccion->nombreCancelacion : '' }}
+            </p>
+            <p>{{ $ordenRecoleccion->idCancelacion ? 'Descripcion de cancelacion : ' . $ordenRecoleccion->descripcionCancelacion : '' }}
+            </p>
         </div>
         <div class="body">
             <div class="datoscliente item">
@@ -103,20 +119,20 @@
                         {{ $producto->cantidad }},
                         {{ $producto->descripcion ? 'Descripcion : ' . $producto->descripcion : '' }}
                     </p>
-                    <p style="margin-bottom: 10px;">
+                    {{--   <p style="margin-bottom: 10px;">
                         {{ $producto->precio ? 'Precio unitario: $' . $producto->precio : '' }}</p>
                     @php
                         $total += $producto->precio * $producto->cantidad;
-                    @endphp
+                    @endphp --}}
                 @endforeach
                 <h5> Datos del pago </h5>
                 @if ($ordenRecoleccion->metodoPago)
                     <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
                     <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
-                    Costo total : ${{ $total }}<br>
+                    {{-- Costo total : ${{ $total }}<br>
                     {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
                     <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
-                    </p>
+                    </p> --}}
                 @else
                     <p class=" text-center">Se espera revision para determinar costo del servicio</p>
                 @endif
@@ -126,15 +142,18 @@
 
     </div>
     <div class="footer item">
-        <p>Fecha recepcion: {{ $ordenRecoleccion->fechaCreacion }}</p>
         <p>Recepciono:</p>
         <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
-        <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
+        Hora de recepcion : {{ $hora }}
+        <p>Recibe : {{ $ordenRecoleccion->nombreRecibe }}</p>
+        <p>Entrega : {{ $ordenRecoleccion->nombreEntrega }}</p>
         <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
         </p>
     </div>
     <div class="ubicacion">
-        <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas; Tel: (961) 61.115.44 o 961.1777.992</p>
+        <p>{{ $DatosdelNegocio->ubicaciones }}; Conmutador: {{ $DatosdelNegocio->telefono }},
+            WhatsApp : {{ $DatosdelNegocio->whatsapp }}</p>
+        <p id="paginaweb">{{ $DatosdelNegocio->pagina_web }}</p>
     </div>
 </body>
 
