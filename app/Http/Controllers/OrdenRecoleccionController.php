@@ -206,14 +206,26 @@ class OrdenRecoleccionController extends Controller
 
                 ->get();
         } else if ($datosEnvio->estatusPreventa == 4) { //leftjoin me devolvera null si no hay relaciones
-            $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
-                ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+            $productos = Servicios_preventas::join('precios_productos', 'precios_productos.id', '=', 'servicios_preventas.id_precio_producto')
+                ->leftJoin('descuentos', 'descuentos.id', '=', 'servicios_preventas.precio_unitario')
                 ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+                ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
                 ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
                 ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
                 ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+                ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
                 ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color', 'servicios_preventas.cantidad_total as cantidad', 'servicios_preventas.precio_unitario')
+                ->select(
+                    'productos.nombre_comercial',
+                    'productos.descripcion',
+                    'modos.nombre as nombreModo',
+                    'servicios_preventas.cantidad_total as cantidad',
+                    'marcas.nombre as marca',
+                    'tipos.nombre as tipo',
+                    'colors.nombre as color',
+                    'servicios_preventas.precio_unitario',
+                    'descuentos.porcentaje'
+                )
                 ->get();
         }
 
@@ -297,8 +309,9 @@ class OrdenRecoleccionController extends Controller
             ->whereIn('estatus', [2, 3, 4])
             ->first();
 
-        $serviciosPreventas = Servicios_preventas::join('catalago_recepcions', 'catalago_recepcions.id', '=', 'servicios_preventas.id_producto_recepcion')
-            ->whereIn('catalago_recepcions.id_producto', array_keys($costo_unitario))->get();
+        $serviciosPreventas = Servicios_preventas::join('precios_productos', 'precios_productos.id', '=', 'servicios_preventas.id_precio_producto')
+            ->where('servicios_preventas.id_preventa', $ordenRecoleccion->id_preventa)->get();
+
 
 
 
@@ -324,12 +337,12 @@ class OrdenRecoleccionController extends Controller
 
                 if ($preventa->estatus == 4) {
 
-                    foreach ($serviciosPreventas as $servicioPreventa) {
+                    foreach ($serviciosPreventas as $index => $servicioPreventa) {
                         // Obtén el costo unitario correspondiente a este servicio preventa
-                        $costo = $costo_unitario[$servicioPreventa->id_producto];
+
 
                         // Actualiza el servicio preventa con el nuevo costo unitario
-                        $servicioPreventa->update(['precio_unitario' => $costo]);
+                        $servicioPreventa->update(['precio_unitario' => $costo_unitario[$index]]);
                     }
 
                     $preventa->update([

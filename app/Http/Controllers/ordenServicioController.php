@@ -632,6 +632,7 @@ class ordenServicioController extends Controller
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
+                'orden_recoleccions.estatus',
                 'folios.letra_actual as letraActual',
                 'folios.ultimo_valor as ultimoValor',
                 'folios.created_at as fechaDelTiempoAproximado',
@@ -664,6 +665,7 @@ class ordenServicioController extends Controller
             ->first();
 
         $listaProductos = Servicios_preventas::join('precios_productos', 'precios_productos.id', '=', 'servicios_preventas.id_precio_producto')
+            ->leftJoin('descuentos', 'descuentos.id', '=', 'servicios_preventas.id_descuento')
             ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
             ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
@@ -679,7 +681,8 @@ class ordenServicioController extends Controller
                 'marcas.nombre as nombreMarca',
                 'tipos.nombre as nombreTipo',
                 'colors.nombre as nombreColor',
-                'servicios_preventas.precio_unitario as precio'
+                'servicios_preventas.precio_unitario as precio',
+                'descuentos.porcentaje'
             )
             ->get();
 
@@ -722,6 +725,7 @@ class ordenServicioController extends Controller
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
+                'orden_recoleccions.estatus',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
@@ -741,7 +745,6 @@ class ordenServicioController extends Controller
                 'personaEmpleado.apellido as apellidoEmpleado',
             )
             ->first();
-
         $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
             ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
             ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')

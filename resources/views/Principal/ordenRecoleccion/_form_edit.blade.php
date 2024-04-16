@@ -113,7 +113,12 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Descripción
                             </th>
-                            <th>Costo unitario</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Precio</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Descuento</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -137,8 +142,17 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                     <input type="number" name="costo_unitario[{{ $producto->id }}]"
                                         data-cantidad="{{ $producto->cantidad }}" step="0.01"
                                         class="form-input mt-1 block w-full" placeholder="Costo unitario"
-                                        value="{{ $producto->precio_unitario }}" readonly>
+                                        value="{{ $producto->precio_unitario * $producto->cantidad }}" readonly>
                                 </td>
+                                @if ($producto->porcentaje === null)
+                                    <td>
+                                        Sin descuento
+                                    </td>
+                                @else
+                                    <td>
+                                        {{ $producto->porcentaje }}%
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>

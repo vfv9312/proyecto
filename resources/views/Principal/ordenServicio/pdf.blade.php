@@ -119,20 +119,27 @@
                         {{ $producto->cantidad }},
                         {{ $producto->descripcion ? 'Descripcion : ' . $producto->descripcion : '' }}
                     </p>
-                    {{--   <p style="margin-bottom: 10px;">
-                        {{ $producto->precio ? 'Precio unitario: $' . $producto->precio : '' }}</p>
-                    @php
-                        $total += $producto->precio * $producto->cantidad;
-                    @endphp --}}
+                    @if ($producto->porcentaje !== null)
+                        <p>Aplica descuento : {{ $producto->porcentaje }}%</p>
+                    @endif
+                    @if ($ordenRecoleccion->estatus === 2)
+                        <p style="margin-bottom: 10px;">
+                            {{ $producto->precio ? 'Precio unitario: $' . $producto->precio : '' }}</p>
+                        @php
+                            $total += $producto->precio * $producto->cantidad;
+                        @endphp
+                    @endif
                 @endforeach
                 <h5> Datos del pago </h5>
                 @if ($ordenRecoleccion->metodoPago)
                     <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
                     <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
-                    {{-- Costo total : ${{ $total }}<br>
-                    {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
-                    <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
-                    </p> --}}
+                    @if ($ordenRecoleccion->estatus === 2)
+                        Costo total : ${{ $total }}<br>
+                        {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
+                        <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
+                        </p>
+                    @endif
                 @else
                     <p class=" text-center">Se espera revision para determinar costo del servicio</p>
                 @endif
