@@ -1,13 +1,11 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'empleados')
+@section('title', 'Empleados')
 
 @section('content_header')
-    <h1>Empleados</h1>
-@stop
 
 @section('content')
-    <main class="w-full h-3/4">
+    <main class=" w-full h-3/4">
         <!-- mensaje de aviso que se registro el producto-->
         @if (session('correcto'))
             <div class=" flex justify-center">
@@ -62,6 +60,12 @@
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Correo Electronico</span>
+                                <input name="txtemail"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                            </label>
+
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Rol del empleado</span>
                                 <select name="txtrol"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
@@ -72,21 +76,21 @@
                             </label>
                             <!---Si el cliente cambia de opinion y quiere agregar datos  quitar comentario-->
                             <!-- tipos de ordenes : Orden de Servicio (Recepción), Orden de Pedido a Domicilio, Orden de Venta, Orden de Recolección <label class="text-sm text-gray-500 flex flex-col items-start">
-                                                                                                                                                <span>Correo Electronico</span>
-                                                                                                                                                <input name="txtemail"
-                                                                                                                                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                                                                                                                            </label>
-                                                                                                                                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                                                                                                                                <span>Fecha de nacimiento</span>
-                                                                                                                                                <input name="txtfecha_nacimiento" type="date"
-                                                                                                                                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                                                                                                                            </label>
+                                                                                                                                                                                                                                    <span>Correo Electronico</span>
+                                                                                                                                                                                                                                    <input name="txtemail"
+                                                                                                                                                                                                                                        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                                                                                                                                                                                                                </label>
+                                                                                                                                                                                                                                <label class="text-sm text-gray-500 flex flex-col items-start">
+                                                                                                                                                                                                                                    <span>Fecha de nacimiento</span>
+                                                                                                                                                                                                                                    <input name="txtfecha_nacimiento" type="date"
+                                                                                                                                                                                                                                        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                                                                                                                                                                                                                </label>
 
-                                                                                                                                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                                                                                                                                <span>Fotografia</span>
-                                                                                                                                                <input type="file" name="file" accept="image/*"
-                                                                                                                                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                                                                                                                            </label>-->
+                                                                                                                                                                                                                                <label class="text-sm text-gray-500 flex flex-col items-start">
+                                                                                                                                                                                                                                    <span>Fotografia</span>
+                                                                                                                                                                                                                                    <input type="file" name="file" accept="image/*"
+                                                                                                                                                                                                                                        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                                                                                                                                                                                                                </label>-->
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Guardar empleado
@@ -116,8 +120,8 @@
                     <td class="py-3 px-6 text-left border-r">Telefono</td>
                     <!--El dueño no quiere correo o imagen-->
                     <!--
-                                                                                            <td class="py-3 px-6 text-left border-r">Correo electronico</td>
-                                                                                            <td class="py-3 px-6 text-left border-r">Imagen</td>-->
+                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Correo electronico</td>
+                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Imagen</td>-->
                 </tr>
                 @foreach ($empleados as $empleado)
                     <tr class= " border-b border-gray-200 text-sm">
@@ -132,13 +136,13 @@
                         <input type="hidden" name="miDato" value="{{ $empleado->id_rol }}">
                         <!--el dueño no queria foto y email, pero si cambia de opinion aqui esta-->
                         <!--
-                                                                                                    <td class="px-6 py-4">
-                                                                                                         $empleado->email
-                                                                                                    </td>
-                                                                                                    <td class="px-6 py-4 flex justify-center items-center">
-                                                                                                        <img class=" w-20" src= $empleado->fotografia >
-                                                                                                    </td>
-                                                                                                -->
+                                                                                                                                                                                        <td class="px-6 py-4">
+                                                                                                                                                                                             $empleado->email
+                                                                                                                                                                                        </td>
+                                                                                                                                                                                        <td class="px-6 py-4 flex justify-center items-center">
+                                                                                                                                                                                            <img class=" w-20" src= $empleado->fotografia >
+                                                                                                                                                                                        </td>
+                                                                                                                                                                                    -->
 
                         <td class="flex">
                             <button onclick="location.href='{{ route('empleados.edit', $empleado->id) }}';"
@@ -167,17 +171,17 @@
                 {{ $empleados->links() }} <!-- Esto mostrará los enlaces de paginación -->
             </div>
     </main>
-@stop
+@endsection
 
-@section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
+
+@push('css')
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script>
         //Oculta los elementos de alerta despues de 3 segundos
         window.setTimeout(function() {
@@ -204,4 +208,4 @@
             modalRegistrarEmpleado.classList.add('hidden');
         });
     </script>
-@stop
+@endpush

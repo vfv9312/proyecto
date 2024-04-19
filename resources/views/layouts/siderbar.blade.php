@@ -103,7 +103,7 @@
                     <span class="flex-1 ms-3 whitespace-nowrap">Clientes</span>
                 </a>
             </li>
-            @if (Auth::user()->id_rol === 1)
+            @if (Auth::user()->id_rol == 1)
                 <li>
                     <a href="{{ route('empleados.index') }}"
                         class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">

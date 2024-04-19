@@ -5,7 +5,7 @@
                 <img src="{{ asset('logo_ecotoner.png') }}" class=" h-14" alt="Flowbite Logo" />
             </a>
         </div>
-        <div class="flex lg:justify-center items-center ml-auto mr-auto">
+        <div class="lg:flex lg:justify-center items-center ml-auto mr-auto hidden sm:block">
             <strong class="mr-2">Bienvenido :</strong> <strong
                 class=" text-green-500">{{ Auth::user()->name }}</strong>
             <strong class="mx-2">Rol :</strong>

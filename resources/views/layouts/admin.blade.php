@@ -28,7 +28,7 @@
 
 
         <!-- Page Content -->
-        <main>
+        <main class=" lg:pl-64">
             @yield('content')
         </main>
     </div>
