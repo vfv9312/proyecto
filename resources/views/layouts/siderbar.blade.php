@@ -1,7 +1,12 @@
 <aside id="default-sidebar" aria-hidden="true"
-    class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 lg:mt-16"
+    class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
     aria-label="Sidebar">
     <div class="h-full px-3 py-4 overflow-y-auto bg-gray-600 dark:bg-gray-800">
+        <div class=" lg:justify-start">
+            <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="{{ asset('logo_ecotoner.png') }}" class=" h-14" alt="Flowbite Logo" />
+            </a>
+        </div>
         <ul class="space-y-2 font-medium">
             <li>
                 <a href="#"

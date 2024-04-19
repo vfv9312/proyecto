@@ -1,12 +1,10 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Orden de entrega')
-
-@section('content_header')
-
-@stop
+@section('title', 'Inicio')
 
 @section('content')
+
+    <h1 class=" text-center">Registro de Orden de Entrega</h1>
     <!-- mensaje de aviso que se registro el producto-->
     @if (session('correcto'))
         <div class=" flex justify-center">
@@ -21,7 +19,8 @@
         </div>
     @endif
 
-    <form id="formulario" class="mt-8 flex flex-col justify-center" action="{{ route('orden_entrega.store') }}" method="POST">
+    <form id="formulario" class="mt-8 lg:ml-4 flex flex-col justify-center" action="{{ route('orden_entrega.store') }}"
+        method="POST">
         @csrf
 
         @include('Principal.ordenEntrega._form_orden')
@@ -35,9 +34,9 @@
             </button>
         </div>
     </form>
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome para los iconos-->
@@ -45,10 +44,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+@endpush
 
-@stop
-
-@section('js')
+@push('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -560,4 +558,4 @@
             }
         }
     </script>
-@stop
+@endpush
