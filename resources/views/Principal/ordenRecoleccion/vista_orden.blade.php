@@ -1,10 +1,6 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Orden de recoleccion')
-
-@section('content_header')
-    <h1>Ordenes</h1>
-@stop
+@section('title', 'Inicio')
 
 @section('content')
 
@@ -37,18 +33,18 @@
         </button>
     </div>
 
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome para los iconos-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script>
         console.log('Hi!');
     </script>
-@stop
+@endpush

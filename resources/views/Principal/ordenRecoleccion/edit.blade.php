@@ -1,28 +1,27 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'estatus')
+@section('title', 'Estatus')
 
-@section('content_header')
-    <h1>Estatus</h1>
-@stop
+
 
 @section('content')
+    <h1 class="mb-8">Estatus</h1>
     <form class=""
         action="{{ route('orden_recoleccion.edit', ['orden_recoleccion' => $datosEnvio->idOrden_recoleccions]) }}"
         method="GET">
         @csrf
         @include('Principal.ordenRecoleccion._form_edit');
     </form>
-@stop
+@endsection
 
-@section('css')
+@push('css')
     {{-- Add here extra stylesheets --}}
     {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script>
         var servicio = {!! json_encode($datosEnvio->estatusPreventa) !!};
 
@@ -90,4 +89,4 @@
             }
         });
     </script>
-@stop
+@endpush

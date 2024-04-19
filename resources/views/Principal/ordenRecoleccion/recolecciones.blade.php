@@ -1,12 +1,9 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Ordenes de recoleccion')
-
-@section('content_header')
-    <h1 class=" text-center mb-5">Ultimos ordenes de Entrega/Servicio</h1>
-@stop
+@section('title', 'Inicio')
 
 @section('content')
+    <h1 class=" text-center mb-5">Ultimos ordenes de Entrega/Servicio</h1>
     <!-- mensaje de aviso que se registro el producto-->
     @if (session('correcto'))
         <div class=" flex justify-center">
@@ -22,19 +19,18 @@
     @endif
     @include('Principal.ordenRecoleccion._filtros')
     @include('Principal.ordenRecoleccion._tabla_pendientes')
+@endsection('content')
 
-@stop
-
-@section('css')
+@push('css')
     {{-- Add here extra stylesheets --}}
     {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome para los iconos-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script>
         //Oculta los elementos de alerta despues de 3 segundos
         window.setTimeout(function() {
@@ -44,4 +40,4 @@
             if (alertIncorrect) alertIncorrect.style.display = 'none';
         }, 3000);
     </script>
-@stop
+@endpush
