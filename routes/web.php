@@ -132,6 +132,9 @@ Route::put('/clientes/{id}/desactivar', [ClientesController::class, 'desactivar'
 //Direccion del ticket
 Route::resource('infoticket', InfoTicketsController::class)->middleware(['auth', 'verified']);
 
+//Direcciones
+Route::resource('direcciones', DireccionesClientesController::class)->middleware(['auth', 'verifield']);
+
 //Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
 
 Route::resource('ventas', VentasController::class)->middleware(['auth', 'verified']);

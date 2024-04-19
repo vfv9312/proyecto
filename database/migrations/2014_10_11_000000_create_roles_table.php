@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->tinyInteger('permisos')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(1);

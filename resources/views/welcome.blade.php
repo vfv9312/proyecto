@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Laravel</title>
+    <title>Ecotoner</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -27,10 +27,8 @@
                         Secion</a>
 
                     @if (Route::has('register'))
-                        <!-- este codigo enlace te permite hacer registros de nuevos usuarios descomentarlo
-                                        <a href="{{ route('register') }}"
-                                            class="ml-4 font-extrabold  text-black hover:text-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Registrarse</a>
-                                    -->
+                        <a href="{{ route('register') }}"
+                            class="ml-4 font-extrabold  text-black hover:text-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Registrarse</a>
                     @endif
                 @endauth
             </div>

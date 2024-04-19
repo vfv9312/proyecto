@@ -18,6 +18,16 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- rol -->
+        <div class="mt-4">
+
+            <select name="rol" id="rol">
+                @foreach ($roles as $rol)
+                    <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
+                @endforeach
+            </select>
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Contraseña')" />
