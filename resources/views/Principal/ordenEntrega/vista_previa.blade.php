@@ -1,10 +1,6 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'vista previa')
-
-@section('content_header')
-
-@stop
+@section('title', 'Vista Previa')
 
 @section('content')
 
@@ -69,15 +65,15 @@
             </div>
         </div>
     </body>
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script></script>
-@stop
+@endpush

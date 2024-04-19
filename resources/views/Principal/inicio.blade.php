@@ -28,7 +28,6 @@
         @include('Principal._orden_servicio')
         @include('Principal._orden_entrega')
     </div>
-
 @endsection
 
 @push('css')

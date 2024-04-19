@@ -1,10 +1,6 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Envio por correo')
-
-@section('content_header')
-    <h1>Envío de correo</h1>
-@stop
+@section('title', 'Envio Correo')
 
 @section('content')
     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4" role="alert">
@@ -52,17 +48,16 @@
                     href="https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/{{ $ordenRecoleccion->idRecoleccion }}/generarpdf">Descargue
                     su folio del pedido</a>
             @endif
-
         @endif
 
     </div>
-@stop
+@endsection
 
-@section('css')
+@push('css')
     {{-- Add here extra stylesheets --}}
     {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script></script>
-@stop
+@endpush

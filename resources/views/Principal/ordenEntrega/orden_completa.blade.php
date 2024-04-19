@@ -1,13 +1,11 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Orden de recoleccion')
+@section('title', 'Orden de Entrega')
 
-@section('content_header')
-    <h1 class=" text-center">Orden de Entrega {{ $ordenRecoleccion->letraActual }}
-        {{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</h1>
-@stop
 
 @section('content')
+    <h1 class=" text-center lg:mb-8">Orden de Entrega {{ $ordenRecoleccion->letraActual }}
+        {{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</h1>
 
     @include('Principal.ordenEntrega._form_muestra_completado')
 
@@ -38,19 +36,16 @@
             Enviar por whatsapp
         </a>
     </div>
+@endsection
 
-@stop
-
-@section('css')
+@push('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome para los iconos-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-@stop
+@endpush
 
-@section('js')
-    <script>
-        console.log('Hi!');
-    </script>
-@stop
+@push('js')
+    <script></script>
+@endpush
