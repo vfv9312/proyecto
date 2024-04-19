@@ -9,7 +9,7 @@
         </div>
         <ul class="space-y-2 font-medium">
             <li>
-                <a href="#"
+                <a href="{{ route('inicio.index') }}"
                     class="flex items-center p-2 text-white rounded-lg dark:text-black hover:bg-black dark:hover:bg-gray-700 group">
                     <i class=" fas fa-home"></i>
                     <span class="ms-3">Inicio</span>
