@@ -1,12 +1,10 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'opcion')
-
-@section('content_header')
-    <h1 class=" text-center">Agregar motivos de cancelación</h1>
-@stop
+@section('title', 'Restablecer')
 
 @section('content')
+    <h1 class=" text-center">Agregar motivos de cancelación</h1>
+
     <main class="w-full h-3/4">
         <!-- mensaje de aviso que se registro el producto-->
         @if (session('correcto'))
@@ -123,18 +121,16 @@
         </section>
     </main>
 
-@stop
+@endsection
 
-@section('css')
-
+@push('css')
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!--Font Awesome-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+@endpush
 
-@stop
-
-@section('js')
+@push('js')
     <script>
         //Oculta los elementos de alerta despues de 3 segundos
         window.setTimeout(function() {
@@ -186,4 +182,4 @@
             }
         });
     </script>
-@stop
+@endpush

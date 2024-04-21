@@ -1,24 +1,27 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Cancelacion')
+@section('title', 'Cancelación')
 
-@section('content_header')
-    <h1 class=" text-center ">Cancelaciones</h1>
-@stop
+
 
 @section('content')
+
+@section('content')
+    <h1 class=" text-center ">Cancelaciones</h1>
     @include('cancelaciones._filtros_cancelaciones')
     @include('cancelaciones._tabla_cancelaciones')
 
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-@stop
+    <!--Font Awesome para los iconos-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+@endpush
 
-@section('js')
+@push('js')
     <script>
         //Oculta los elementos de alerta despues de 3 segundos
         window.setTimeout(function() {
@@ -62,4 +65,4 @@
             modalEditarRegistro.classList.add('hidden');
         });
     </script>
-@stop
+@endpush

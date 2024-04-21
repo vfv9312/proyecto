@@ -1,12 +1,10 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Cliente')
-
-@section('content_header')
-    <h1>Clientes</h1>
-@stop
+@section('title', 'Clientes')
 
 @section('content')
+    <h1>Clientes</h1>
+
     <main class="w-full h-3/4">
         <!-- mensaje de aviso que se registro el producto-->
         @if (session('correcto'))
@@ -222,12 +220,13 @@
                 {{ $clientes->links() }} <!-- Esto mostrará los enlaces de paginación -->
             </div>
     </main>
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Incluye jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -236,9 +235,9 @@
 
     <!-- Incluye Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script>
         //Oculta los elementos de alerta despues de 3 segundos
         window.setTimeout(function() {
@@ -269,4 +268,4 @@
             $('#coloniaSelect').select2();
         });
     </script>
-@stop
+@endpush

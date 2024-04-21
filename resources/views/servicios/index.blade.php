@@ -1,12 +1,9 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'servicio')
-
-@section('content_header')
-    <h1 class=" text-center">Servicios</h1>
-@stop
+@section('title', 'Servicio')
 
 @section('content')
+    <h1 class=" text-center">Servicios</h1>
 
     <main class="w-full h-3/4">
         <!-- mensaje de aviso que se registro el producto-->
@@ -194,15 +191,17 @@
     </main>
 
 
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-@stop
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+@endpush
 
-@section('js')
+@push('js')
     <script>
         //Oculta los elementos de alerta despues de 3 segundos
         window.setTimeout(function() {
@@ -254,4 +253,4 @@
             }
         });
     </script>
-@stop
+@endpush

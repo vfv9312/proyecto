@@ -1,13 +1,10 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Orden de entrega')
-
-@section('content_header')
-    <h1 class=" text-center"> Puede ingresar el tiempo aproximado de espera del servicio del dia de hoy {{ date('d/m/Y') }}
-    </h1>
-@stop
+@section('title', 'Tiempo aproximado')
 
 @section('content')
+    <h1 class=" text-center"> Puede ingresar el tiempo aproximado de espera del servicio del dia de hoy {{ date('d/m/Y') }}
+    </h1>
     <section>
         <div>
             @if ($errors->any())
@@ -40,17 +37,19 @@
             </form>
         </div>
     </section>
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!--Font Awesome para los iconos-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script>
         setTimeout(function() {
             const errorAlert = document.getElementById('error-alert');
@@ -59,4 +58,4 @@
             }
         }, 2000); // 5000 milisegundos = 5 segundos
     </script>
-@stop
+@endpush

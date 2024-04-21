@@ -50,7 +50,7 @@ Route::get('/', function () {
 
 
 
-Route::get('/inicio', function () {
+Route::get('/dashboard', function () {
     return view('Principal.inicio');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
