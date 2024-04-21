@@ -1,6 +1,6 @@
 <div class="flex flex-col md:flex-row">
 
-    <div class="flex flex-col w-full md:w-1/3 md:mr-2">
+    <div class="flex flex-col w-full md:w-1/2 md:mr-2">
         <label class="">Cliente</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -13,7 +13,7 @@
         </select>
     </div>
 
-    <div class="flex flex-col w-full md:w-1/3 md:mr-2">
+    <div class="flex flex-col w-full md:w-1/2 md:mr-2">
         <label class="mr-4">Atención</label>
         <select
             class="w-full px-3 py-1 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -21,8 +21,8 @@
         </select>
     </div>
 
-    <div class="flex flex-col w-full md:w-1/3 ">
-        <label class="">Empleado</label>
+    <input class="hidden" type="text" name="txtempleado" value="{{ Auth::user()->id }}">
+    {{--  <label class="">Empleado</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="inputAtencion" name="txtempleado" required
@@ -33,8 +33,8 @@
                 <option value="{{ $empleado->id }}">{{ $empleado->nombre_empleado }} {{ $empleado->apellido }}-
                     {{ $empleado->nombre_rol }}</option>
             @endforeach
-        </select>
-    </div>
+        </select> --}}
+
 
 </div>
 <section class=" border-4 mt-8 px-3 pb-3">
@@ -143,17 +143,18 @@
     </div>
     <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
         <div class="flex flex-col w-full md:w-1/2">
-            <label class="mr-4">Numero Interior</label>
-            <input type="text"
-                class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="num_interior" name="nuevonum_interior" placeholder="b15">
-        </div>
-
-        <div class="flex flex-col w-full md:w-1/2">
             <label class="mr-4">Numero Exterior</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="num_exterior" name="nuevonum_exterior" placeholder="1000">
+        </div>
+
+
+        <div class="flex flex-col w-full md:w-1/2">
+            <label class="mr-4">Numero Interior</label>
+            <input type="text"
+                class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="num_interior" name="nuevonum_interior" placeholder="b15">
         </div>
     </div>
 

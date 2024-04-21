@@ -2,7 +2,7 @@
     <div class="max-w-screen-3xl flex flex-wrap items-center justify-between mx-auto p-4">
         <div class=" lg:justify-start">
             <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
-                <img src="{{ asset('logo_ecotoner.png') }}" class=" h-14" alt="Flowbite Logo" />
+                <img src="{{ asset('logo_ecotoner.png') }}" class=" h-11" alt="Flowbite Logo" />
             </a>
         </div>
         <div class="lg:flex lg:justify-center items-center ml-auto mr-auto hidden sm:block">

@@ -26,6 +26,7 @@
         @include('Principal.ordenEntrega._form_orden')
         @include('Principal.ordenEntrega._Lista_Productos')
         @include('Principal.ordenEntrega._carro_campras')
+        @include('Principal.ordenEntrega._horario_trabajo')
 
         <div class="mt-4 flex justify-center">
             <button type="submit" class="px-4 py-2  bg-green-500 text-white rounded hover:bg-green-700">
@@ -555,6 +556,16 @@
                 );
             } else {
                 input.setCustomValidity('');
+            }
+        }
+
+
+        function mostrarHorario(checkbox) {
+            var horario = document.getElementById(checkbox.value + '-horario');
+            if (checkbox.checked) {
+                horario.style.display = 'block';
+            } else {
+                horario.style.display = 'none';
             }
         }
     </script>
