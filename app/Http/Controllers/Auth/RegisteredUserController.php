@@ -10,6 +10,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
@@ -30,26 +31,36 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'rol' => 'required|integer|exists:roles,id',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        DB::beginTransaction();
+        try {
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'id_rol' => $request->rol,
-            'password' => Hash::make($request->password),
-        ]);
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+                'rol' => 'required|integer|exists:roles,id',
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            ]);
 
-        event(new Registered($user));
+            $user = User::create([
+                'name' => ucwords(strtolower($request->name)),
+                'email' => strtolower($request->email),
+                'id_rol' => $request->rol,
+                'password' => Hash::make($request->password),
+            ]);
 
-        Auth::login($user);
+            event(new Registered($user));
 
-        return redirect(RouteServiceProvider::HOME);
+            // Auth::login($user);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            session()->flash("incorrect", "Error al registrar");
+            return redirect()->route('empleados.index');
+        }
+
+        session()->flash("correcto", "Producto registrado correctamente");
+        return redirect()->route('empleados.index');
     }
 }

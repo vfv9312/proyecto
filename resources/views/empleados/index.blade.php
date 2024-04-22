@@ -6,6 +6,7 @@
 
 @section('content')
     <main class=" w-full h-3/4">
+        <h1 class=" mb-10 text-center font-bold ">Añadir empleado</h1>
         <!-- mensaje de aviso que se registro el producto-->
         @if (session('correcto'))
             <div class=" flex justify-center">
@@ -21,7 +22,7 @@
         @endif
         <!-- boton anadir producto-->
         <button id="abrirnModalRegisrarEmpleado"
-            class=" mb-4 bg-gradient-to-r  from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
+            class=" ml-10 mb-4 bg-gradient-to-r  from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
             Añadir empleado
         </button>
         <!-- Modal -->
@@ -40,57 +41,54 @@
                             Registrar empleado
                         </h3>
 
-                        <form method="POST" action="{{ route('empleados.store') }}" enctype="multipart/form-data"
-                            class=" mt-8 flex flex-col items-center">
+                        <form method="POST" action="{{ route('user.register') }}" class=" mt-8 flex flex-col items-center">
                             @csrf
+                            <!-- Nombre-->
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Nombre</span>
-                                <input name="txtnombre"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                <span>Nombre Completo</span>
+                                <input name="name" :value="old('name')" required autofocus autocomplete="name"
+                                    type="text"
+                                    class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
+                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
                             </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Apellido</span>
-                                <input name="txtapellido"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>telefono</span>
-                                <input name="txttelefono" pattern="\d{10}"
-                                    title="Por favor ingresa exactamente 10 dígitos del numero telefonico"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Correo Electronico</span>
-                                <input name="txtemail"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                            <!-- Roles-->
+                            <label class="text-sm text-gray-500 flex flex-col items-start mb-4">
                                 <span>Rol del empleado</span>
-                                <select name="txtrol"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                                <select name="rol"
+                                    class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none w-full h-14">
                                     @foreach ($roles as $rol)
                                         <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
                                     @endforeach
                                 </select>
                             </label>
+                            <!-- Correo Electronico-->
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Correo Electronico</span>
+                                <input name="email" :value="old('email')" required autocomplete="username" type="email"
+                                    class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
+                                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                            </label>
+                            <!-- Password -->
+                            <label class="text-sm text-gray-500 flex flex-col items-start mb-4">
+                                <span> Contraseña</span>
+                                <input type="password" name="password" required autocomplete="new-password"
+                                    class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
+                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                            </label>
+                            <!--Confirmar Contraseña-->
+                            <label class="text-sm text-gray-500 flex flex-col items-start mb-10">
+                                <span>Confirmar Contraseña</span>
+                                <input id="password_confirmation" type="password" name="password_confirmation" required
+                                    autocomplete="new-password"
+                                    class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
+                                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                            </label>
+
+
                             <!---Si el cliente cambia de opinion y quiere agregar datos  quitar comentario-->
                             <!-- tipos de ordenes : Orden de Servicio (Recepción), Orden de Pedido a Domicilio, Orden de Venta, Orden de Recolección <label class="text-sm text-gray-500 flex flex-col items-start">
-                                                                                                                                                                                                                                    <span>Correo Electronico</span>
-                                                                                                                                                                                                                                    <input name="txtemail"
-                                                                                                                                                                                                                                        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                                                                                                                                                                                                                </label>
-                                                                                                                                                                                                                                <label class="text-sm text-gray-500 flex flex-col items-start">
-                                                                                                                                                                                                                                    <span>Fecha de nacimiento</span>
-                                                                                                                                                                                                                                    <input name="txtfecha_nacimiento" type="date"
-                                                                                                                                                                                                                                        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                                                                                                                                                                                                                </label>
 
-                                                                                                                                                                                                                                <label class="text-sm text-gray-500 flex flex-col items-start">
-                                                                                                                                                                                                                                    <span>Fotografia</span>
-                                                                                                                                                                                                                                    <input type="file" name="file" accept="image/*"
-                                                                                                                                                                                                                                        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                                                                                                                                                                                                                                </label>-->
+                                                                                                                                                                                                                                                                            </label>-->
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Guardar empleado
@@ -108,69 +106,65 @@
                 </div>
             </div>
         </div>
-
-        <!--tabla-->
-        <section class="overflow-x-auto">
-            <!--La clase overflow-x-auto hace que el div tenga un desplazamiento horizontal si su contenido es demasiado ancho para caber en la pantalla-->
-            <table class="min-w-full">
-                <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
-                <tr class=" text-black uppercase text-xs  font-bold leading-normal">
-                    <td class="py-3 px-6 text-left border-r">Nombre</td>
-                    <td class="py-3 px-6 text-left border-r">Rol</td>
-                    <td class="py-3 px-6 text-left border-r">Telefono</td>
-                    <!--El dueño no quiere correo o imagen-->
-                    <!--
-                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Correo electronico</td>
-                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Imagen</td>-->
-                </tr>
-                @foreach ($empleados as $empleado)
-                    <tr class= " border-b border-gray-200 text-sm">
-                        <td class=" px-6 py-4">
-                            {{ $empleado->nombre }} {{ $empleado->apellido }}</td>
-                        <td class="px-6 py-4">
-                            {{ $empleado->nombreRol }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ $empleado->telefono }}
-                        </td>
-                        <input type="hidden" name="miDato" value="{{ $empleado->id_rol }}">
-                        <!--el dueño no queria foto y email, pero si cambia de opinion aqui esta-->
-                        <!--
-                                                                                                                                                                                        <td class="px-6 py-4">
-                                                                                                                                                                                             $empleado->email
-                                                                                                                                                                                        </td>
-                                                                                                                                                                                        <td class="px-6 py-4 flex justify-center items-center">
-                                                                                                                                                                                            <img class=" w-20" src= $empleado->fotografia >
-                                                                                                                                                                                        </td>
-                                                                                                                                                                                    -->
-
-                        <td class="flex">
-                            <button onclick="location.href='{{ route('empleados.edit', $empleado->id) }}';"
-                                class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out mr-3"
-                                title="Editar empleado">
-                                <i class="fas fa-sync"></i>
-                            </button>
-
-                            <form action="{{ route('empleados.desactivar', $empleado->id) }}" method="POST"
-                                onsubmit="return confirm('¿Estás seguro de que quieres eliminar este empleado?');">
-                                @csrf
-                                @method('PUT')
-                                <button
-                                    class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out"
-                                    title="Eliminar empleado">
-                                    <i class="fas fa-trash"></i></button>
-                            </form>
-                        </td>
-
-                    </tr>
-                    <!-- Aquí deberías mostrar otros datos del producto -->
-                @endforeach
-            </table>
-            <div class=" mt-3">
-                <p>Total de resultados: {{ $empleados->total() }}</p>
-                {{ $empleados->links() }} <!-- Esto mostrará los enlaces de paginación -->
-            </div>
     </main>
+
+    <!--tabla-->
+    <section class="overflow-x-auto">
+
+        <!--La clase overflow-x-auto hace que el div tenga un desplazamiento horizontal si su contenido es demasiado ancho para caber en la pantalla-->
+        <table class="min-w-full ml-10">
+            <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
+            <tr class=" text-black uppercase text-xs  font-bold leading-normal">
+                <td class="py-3 px-6 text-left border-r">Nombre</td>
+                <td class="py-3 px-6 text-left border-r">Rol</td>
+                <td class="py-3 px-6 text-left border-r">Correo Electronico</td>
+                <!--El dueño no quiere correo o imagen-->
+                <!--
+                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Correo electronico</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Imagen</td>-->
+            </tr>
+            @foreach ($empleados as $empleado)
+                <tr class= " border-b border-gray-200 text-sm">
+                    <td class=" px-6 py-4">
+                        {{ $empleado->nombre }}</td>
+                    <td class="px-6 py-4">
+                        {{ $empleado->nombreRol }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ $empleado->email }}
+                    </td>
+                    <input type="hidden" name="miDato" value="{{ $empleado->id_rol }}">
+                    <!--el dueño no queria foto y email, pero si cambia de opinion aqui esta-->
+                    <!--</td> -->
+
+                    <td class="flex">
+                        <button onclick="location.href='{{ route('empleados.edit', $empleado->id) }}';"
+                            class="border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out mr-3"
+                            title="Editar empleado">
+                            <i class="fas fa-sync"></i>
+                        </button>
+
+                        <form action="{{ route('empleados.destroy', $empleado->id) }}" method="POST"
+                            onsubmit="return confirm('¿Estás seguro de que quieres eliminar este empleado?');">
+                            @csrf
+                            @method('DELETE')
+                            <button
+                                class="border rounded px-6 py-4 bg-red-500 text-white cursor-pointer hover:bg-red-700 transition duration-200 ease-in-out"
+                                title="Eliminar empleado">
+                                <i class="fas fa-trash"></i></button>
+                        </form>
+                    </td>
+
+                </tr>
+                <!-- Aquí deberías mostrar otros datos del producto -->
+            @endforeach
+        </table>
+        <div class=" mt-3">
+            <p>Total de resultados: {{ $empleados->total() }}</p>
+            {{ $empleados->links() }} <!-- Esto mostrará los enlaces de paginación -->
+        </div>
+    </section>
+
 @endsection
 
 
