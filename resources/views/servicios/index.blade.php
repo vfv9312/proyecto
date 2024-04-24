@@ -93,26 +93,27 @@
                                         <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
                                     @endforeach
                                 </select>
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>precio</span>
-                                <input name="txtprecio" type="number" min="1"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-                                    required />
-                            </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Descripcion</span>
-                                <input name="txtdescripcion" type="text"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
-                            </label>
-
-                            <button type="submit" id="enviarmodal"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                                Aceptar
-                            </button>
-
-                        </form>
+                                <label class="text-sm text-gray-500 flex flex-col items-start">
+                                    <span>precio</span>
+                                    <input name="txtprecio" type="text" pattern="^\d*(\.\d{0,2})?$"
+                                        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                                        required />
+                                </label>
+                                <label class="text-sm text-gray-500 flex flex-col items-start">
+                                    <span>Descripcion</span>
+                                    <input name="txtdescripcion" type="text"
+                                        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                </label>
                     </div>
+                    <div class="flex justify-center">
+                        <button type="submit" id="enviarmodal"
+                            class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-greens-500 sm:ml-3 sm:w-auto sm:text-sm">
+                            Guardar
+                        </button>
+                    </div>
+
+                    </form>
+
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
 
                         <button type="button"

@@ -22,6 +22,7 @@ use App\Models\Tipo;
 use App\Models\ventas_productos;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class OrdenEntregaController extends Controller
@@ -173,7 +174,7 @@ class OrdenEntregaController extends Controller
      */
     public function store(Request $request)
     {
-
+        $nombreEmpleado = Auth::user()->name;
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
@@ -193,7 +194,6 @@ class OrdenEntregaController extends Controller
 
             //datos que iran siempre
             $atencion = $request->input('txtatencion');
-            $idEmpleado = $request->input('txtempleado');
 
             //si no tenemos datos del id direccion entonces recibiremos
             $idNuevacolonia = $request->input('nuevacolonia');
@@ -224,7 +224,7 @@ class OrdenEntregaController extends Controller
 
                 //crearemos una preventa con estatus 3
                 $preventa->id_cliente = $idCliente;
-                $preventa->id_empleado = $idEmpleado;
+                $preventa->nombre_empleado = $nombreEmpleado;
                 $preventa->nombre_atencion = $atencion;
                 $preventa->horario_trabajo_inicio = $horarioTrabajoInicio;
                 $preventa->horario_trabajo_final = $horarioTrabajoFinal;
@@ -311,7 +311,7 @@ class OrdenEntregaController extends Controller
                 ]);
 
                 $preventa->id_cliente = $clienteNuevo->id;
-                $preventa->id_empleado = $idEmpleado;
+                $preventa->nombre_empleado = $nombreEmpleado;
                 $preventa->nombre_atencion = $atencion;
                 $preventa->horario_trabajo_inicio = $horarioTrabajoInicio;
                 $preventa->horario_trabajo_final = $horarioTrabajoFinal;
@@ -416,11 +416,8 @@ class OrdenEntregaController extends Controller
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $Ordenderecoleccion->id)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
@@ -446,10 +443,7 @@ class OrdenEntregaController extends Controller
                 'personaClientes.apellido as apellidoCliente',
                 'personaClientes.telefono as telefonoCliente',
                 'personaClientes.email as correo',
-                'personaEmpleado.nombre as nombreEmpleado',
-                'personaEmpleado.apellido as apellidoEmpleado',
-                'personaEmpleado.telefono as telefonoEmpleado',
-                'roles.nombre as nombreRol',
+                'preventas.nombre_empleado as nombreEmpleado',
             )
             ->first();
 
@@ -556,11 +550,8 @@ class OrdenEntregaController extends Controller
             ->leftJoin('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $id)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
@@ -579,6 +570,7 @@ class OrdenEntregaController extends Controller
                 'preventas.horario_trabajo_final as horarioTrabajoFinal',
                 'preventas.dia_semana as diaSemana',
                 'preventas.nombre_quien_recibe as recibe',
+                'preventas.nombre_empleado as nombreEmpleado',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
@@ -590,14 +582,9 @@ class OrdenEntregaController extends Controller
                 'personaClientes.apellido as apellidoCliente',
                 'personaClientes.telefono as telefonoCliente',
                 'personaClientes.email as correo',
-                'personaEmpleado.nombre as nombreEmpleado',
-                'personaEmpleado.apellido as apellidoEmpleado',
-                'personaEmpleado.telefono as telefonoEmpleado',
-                'roles.nombre as nombreRol',
                 'cancelaciones.nombre as nombreCancelacion'
             )
             ->first();
-
 
         $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
             ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')

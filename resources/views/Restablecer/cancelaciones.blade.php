@@ -1,12 +1,10 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Dashboard')
-
-@section('content_header')
-    <h1 class=" text-center">Lista de cancelaciones</h1>
-@stop
+@section('title', 'Cancelaciones')
 
 @section('content')
+    <h1 class=" font-bold text-center mb-8">Lista de cancelaciones</h1>
+
     <main class="w-full h-3/4">
         <!-- mensaje de aviso que se registro el producto-->
         @if (session('correcto'))
@@ -85,15 +83,17 @@
         </section>
     </main>
 
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-@stop
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+@endpush
 
-@section('js')
+@push('js')
     <script>
         console.log("Hi, I'm using the Laravel-AdminLTE package!");
     </script>
-@stop
+@endpush

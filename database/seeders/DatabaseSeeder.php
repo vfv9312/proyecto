@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         //\App\Models\personas::factory(6)->create();
-        \App\Models\empleados::factory(5)->create();
+        //\App\Models\empleados::factory(5)->create();
         \App\Models\clientes::factory(3)->create();
         \App\Models\User::factory(1)->create();
         /*

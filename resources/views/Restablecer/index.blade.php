@@ -6,11 +6,11 @@
 
     <h1 class=" text-center">Elija la opcion a recuperar</h1>
 
-    <section class=" w-full flex flex-col">
+    <section class=" w-full flex flex-col lg:p-4">
         @include('Restablecer._opcionCancelacion')
         @include('Restablecer._opcionClientes')
         @include('Restablecer._opcionProducto')
-        @include('Restablecer._opcionEmpleado')
+        @include('Restablecer._opcionServicio')
     </section>
 @endsection
 

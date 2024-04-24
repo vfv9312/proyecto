@@ -152,7 +152,7 @@ opacity: 0.5;">
 </div>
 <div class="footer item">
     <p>Recepciono:</p>
-    <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
+    <p>{{ $ordenRecoleccion->nombreEmpleado }} </p>
     Hora de recepcion : {{ $hora }}
     <p>Recibe : {{ $ordenRecoleccion->recibe }}</p>
     <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}

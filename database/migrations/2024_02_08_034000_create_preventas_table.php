@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('preventas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_empleado')->nullable();
             $table->unsignedBigInteger('id_cliente')->nullable();
             $table->unsignedBigInteger('id_direccion')->nullable();
+            $table->string('nombre_empleado')->nullable();
             $table->string('nombre_atencion')->nullable();
             $table->string('nombre_quien_recibe')->nullable();
             $table->string('nombre_quien_entrega')->nullable();
@@ -32,7 +32,6 @@ return new class extends Migration
             $table->tinyInteger('estatus')->default(2); //3 entrega, 4 servicios,
             $table->foreign('id_cliente')->references('id')->on('clientes');
             $table->foreign('id_direccion')->references('id')->on('direcciones');
-            $table->foreign('id_empleado')->references('id')->on('empleados');
         });
     }
 

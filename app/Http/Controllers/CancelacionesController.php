@@ -24,10 +24,8 @@ class CancelacionesController extends Controller
             ->join('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personasClientes', 'personasClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personasEmpleado', 'personasEmpleado.id', '=', 'empleados.id_persona')
             ->where(function ($query) use ($busqueda) {
                 $query->where('personasClientes.telefono', 'LIKE', "%{$busqueda}%")
                     ->orWhere('personasClientes.nombre', 'LIKE', "%{$busqueda}%")
@@ -44,6 +42,9 @@ class CancelacionesController extends Controller
         }
         $datosEnvio = $datosEnvio->select(
             'orden_recoleccions.id as idRecoleccion',
+            'preventas.nombre_empleado as nombreEmpleado',
+            'preventas.nombre_atencion as nombreAtencion',
+            'preventas.nombre_quien_recibe as nombreRecibe',
             'folios.letra_actual as letraAcutal',
             'folios.ultimo_valor as ultimoValor',
             'personasClientes.nombre as nombreCliente',

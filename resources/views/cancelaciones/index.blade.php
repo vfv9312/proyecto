@@ -2,8 +2,6 @@
 
 @section('title', 'Cancelación')
 
-
-
 @section('content')
 
 @section('content')

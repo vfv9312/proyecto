@@ -43,7 +43,6 @@ class OrdenRecoleccionController extends Controller
             ->join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('orden_recoleccions', 'orden_recoleccions.id_preventa', '=', 'preventas.id')
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
@@ -89,6 +88,7 @@ class OrdenRecoleccionController extends Controller
             'folios.ultimo_valor as ultimoValor',
             'preventas.id as idPreventa',
             'preventas.estatus as estatusPreventa',
+            'preventas.nombre_empleado as nombreEmpleado',
             'orden_recoleccions.estatus', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
             'orden_recoleccions.created_at',
             'personas.nombre as nombreCliente',
@@ -133,7 +133,6 @@ class OrdenRecoleccionController extends Controller
             }
         }
 
-
         return view('Principal.ordenRecoleccion.recolecciones', compact('preventas', 'datosEntregaCompromisos'));
     }
 
@@ -154,12 +153,9 @@ class OrdenRecoleccionController extends Controller
         return $datosEnvio[0]->preventas; */
 
         $datosEnvio = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
-            ->join('personas as empleadoPersona', 'empleadoPersona.id', '=', 'empleados.id_persona')
             ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->whereIn('preventas.estatus', [3, 4]) //3 entrega, 4 servicios, 2 inconcluso,
             ->where('orden_recoleccions.id', $id_recoleccion)
@@ -167,6 +163,9 @@ class OrdenRecoleccionController extends Controller
                 'orden_recoleccions.id as idRecoleccion',
                 'preventas.id as idPreventa',
                 'preventas.estatus as estatusPreventa',
+                'preventas.nombre_empleado as nombreEmpleado',
+                'preventas.nombre_atencion as nombreAtencion',
+                'preventas.nombre_quien_recibe as nombreRecibe',
                 'orden_recoleccions.id as idOrden_recoleccions',
                 'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
                 'orden_recoleccions.Fecha_entrega as fechaEntrega',
@@ -174,16 +173,12 @@ class OrdenRecoleccionController extends Controller
                 'orden_recoleccions.id as id_recoleccion',
                 'orden_recoleccions.estatus as estatusRecoleccion', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo
                 'orden_recoleccions.created_at',
-                'empleadoPersona.nombre as nombreEmpleado',
-                'empleadoPersona.apellido as apellidoEmpleado',
-                'empleadoPersona.telefono as telefonoEmpleado',
                 'clientePersona.nombre as nombreCliente',
                 'clientePersona.apellido as apellidoCliente',
                 'clientePersona.telefono as telefonoCliente',
                 'clientePersona.email as emailCliente',
                 'clientes.comentario as rfc',
                 'catalago_ubicaciones.localidad as colonia',
-                'roles.nombre as nombre_rol',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
@@ -228,7 +223,6 @@ class OrdenRecoleccionController extends Controller
                 )
                 ->get();
         }
-
         return view('Principal.ordenRecoleccion.edit', compact('productos', 'datosEnvio'));
     }
 
@@ -404,12 +398,9 @@ class OrdenRecoleccionController extends Controller
         $id_recoleccion = $id;
 
         $datosEnvio = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
-            ->join('personas as empleadoPersona', 'empleadoPersona.id', '=', 'empleados.id_persona')
             ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->whereIn('preventas.estatus', [3, 4]) //3 entrega, 4 servicios, 2 inconcluso, 0 eliminado
             ->where('orden_recoleccions.id', $id_recoleccion)
@@ -417,6 +408,9 @@ class OrdenRecoleccionController extends Controller
                 'orden_recoleccions.id as idRecoleccion',
                 'preventas.id as idPreventa',
                 'preventas.estatus as estatusPreventa',
+                'preventas.nombre_empleado as nombreEmpleado',
+                'preventas.nombre_atencion as nombreAtencion',
+                'preventas.nombre_quien_recibe as nombreRecibe',
                 'orden_recoleccions.id as idOrden_recoleccions',
                 'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
                 'orden_recoleccions.Fecha_entrega as fechaEntrega',
@@ -424,16 +418,12 @@ class OrdenRecoleccionController extends Controller
                 'orden_recoleccions.id as id_recoleccion',
                 'orden_recoleccions.estatus as estatusRecoleccion', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
                 'orden_recoleccions.created_at',
-                'empleadoPersona.nombre as nombreEmpleado',
-                'empleadoPersona.apellido as apellidoEmpleado',
-                'empleadoPersona.telefono as telefonoEmpleado',
                 'clientePersona.nombre as nombreCliente',
                 'clientePersona.apellido as apellidoCliente',
                 'clientePersona.telefono as telefonoCliente',
                 'clientePersona.email as emailCliente',
                 'clientes.comentario as rfc',
                 'catalago_ubicaciones.localidad as colonia',
-                'roles.nombre as nombre_rol',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',

@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 
-@section('title', 'Productos')
+@section('title', 'Servicios')
 
 @section('content')
-    <h1 class=" font-bold text-center mb-8">Productos</h1>
+    <h1 class=" font-bold text-center mb-8">Servicios</h1>
 
 
     <main class="w-full h-3/4">
@@ -37,9 +37,10 @@
                     <td class="py-3 px-6 text-left border-r">Precio</td>
                 </tr>
                 @foreach ($productos as $producto)
-                    <tr class= " border-b border-gray-200 text-sm">
+                    <tr class=" border-b border-gray-200 text-sm">
                         <td class=" px-6 py-4">
-                            {{ $producto->nombre_comercial }}</td>
+                            {{ $producto->nombre_comercial }}
+                        </td>
                         <td class="px-6 py-4">
                             {{ $producto->modelo }}
                         </td>
@@ -81,7 +82,7 @@
                         </td>
 
                         <td>
-                            <form action="{{ route('Restablecer.actualizarProducto', $producto->id) }}" method="POST"
+                            <form action="{{ route('Restablecer.actualizarServicio', $producto->id) }}" method="POST"
                                 onsubmit="return confirm('¿Estás seguro de que quieres restaurar este producto?');">
                                 @csrf
                                 @method('PUT')

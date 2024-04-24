@@ -1,12 +1,10 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Cliente')
-
-@section('content_header')
-    <h1 class=" text-center">Clientes</h1>
-@stop
+@section('title', 'Clientes')
 
 @section('content')
+    <h1 class=" font-bold text-center mb-8">Clientes</h1>
+
     <main class="w-full h-3/4">
         <!-- mensaje de aviso que se registro el producto-->
         @if (session('correcto'))
@@ -31,6 +29,7 @@
                 <tr class="text-black uppercase text-xs  font-bold leading-normal">
                     <td class="py-3 px-6 text-left border-r">Nombre</td>
                     <td class="py-3 px-6 text-left border-r">Telefono</td>
+                    <td class="py-3 px-6 text-left border-r">Fecha de eliminación</td>
                     <td class="py-3 px-6 text-left border-r">Correo electronico</td>
                     <td class="py-3 px-6 text-left border-r">RFC</td>
                     <td class="py-3 px-6 text-left border-r">Direccion</td>
@@ -45,6 +44,7 @@
                         <td class="px-6 py-4">
                             {{ $cliente->telefono }}
                         </td>
+                        <td>{{ $cliente->deleted_at }}</td>
 
                         <td class="px-6 py-4">
                             {{ $cliente->email }}
@@ -106,11 +106,12 @@
                 {{ $clientes->links() }} <!-- Esto mostrará los enlaces de paginación -->
             </div>
     </main>
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!--Font Awesome-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
     <!-- Incluye jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -120,9 +121,9 @@
 
     <!-- Incluye Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script>
         //Oculta los elementos de alerta despues de 3 segundos
         window.setTimeout(function() {
@@ -138,4 +139,4 @@
             $('#coloniaSelect').select2();
         });
     </script>
-@stop
+@endpush

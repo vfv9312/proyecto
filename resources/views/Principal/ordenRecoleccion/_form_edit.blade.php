@@ -1,5 +1,5 @@
 <div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
-    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Nombre del Cliente
         </label>
@@ -8,15 +8,29 @@
             id="nombre_cliente" type="text" name="txtnombre_cliente"
             value="{{ $datosEnvio->nombreCliente }} {{ $datosEnvio->apellidoCliente }}" readonly>
     </div>
-    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Atendido por
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="atencion" type="text" name="txtatencion"
-            value="{{ $datosEnvio->nombreEmpleado }} {{ $datosEnvio->apellidoEmpleado }} - {{ $datosEnvio->nombre_rol }}"
-            readonly>
+            id="atencion" type="text" name="txtatencion" value="{{ $datosEnvio->nombreAtencion }}" readonly>
+    </div>
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Recibe
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="recibe" type="text" name="txtrecibe" value="{{ $datosEnvio->nombreRecibe }}" readonly>
+    </div>
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Recepcionó
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="recepciono" type="text" name="txtrecepciono" value="{{ $datosEnvio->nombreEmpleado }}" readonly>
     </div>
 </div>
 

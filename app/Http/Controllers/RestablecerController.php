@@ -40,10 +40,8 @@ class RestablecerController extends Controller
             ->join('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personasClientes', 'personasClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personasEmpleado', 'personasEmpleado.id', '=', 'empleados.id_persona')
             ->where(function ($query) use ($busqueda) {
                 $query->where('personasClientes.telefono', 'LIKE', "%{$busqueda}%")
                     ->orWhere('personasClientes.nombre', 'LIKE', "%{$busqueda}%")
@@ -116,7 +114,7 @@ class RestablecerController extends Controller
                     ->orWhere('personas.apellido', 'LIKE', "%{$busqueda}%")
                     ->orWhere(DB::raw("CONCAT(personas.nombre, ' ', personas.apellido)"), 'LIKE', "%{$busqueda}%");
             })
-            ->select('clientes.id', 'clientes.comentario', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento')
+            ->select('clientes.id', 'clientes.comentario', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento', 'clientes.deleted_at')
             ->orderBy('clientes.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
@@ -157,56 +155,65 @@ class RestablecerController extends Controller
     }
 
 
-    public function empleados(Request $request)
+    public function servicios(Request $request)
     {
         $busqueda = $request->query('adminlteSearch');
         //
-        $empleados = empleados::join('personas', 'personas.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
-            ->where('empleados.estatus', 0)
-            ->where('personas.estatus', 0)
+        $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
+            ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->join('modos', 'modos.id', '=', 'productos.id_modo')
+            ->join('colors', 'colors.id', '=', 'productos.id_color')
+            ->where('productos.estatus', 3)
+            ->where('precios_productos.estatus', 3)
             ->where(function ($query) use ($busqueda) {
-                $query->where('personas.telefono', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('personas.nombre', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('personas.apellido', 'LIKE', "%{$busqueda}%");
+                $query->where('productos.nombre_comercial', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('marcas.nombre', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('modos.nombre', 'LIKE', "%{$busqueda}%");
             })
-            ->select('empleados.id', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento', 'empleados.id_rol', 'roles.nombre as nombreRol', 'empleados.fotografia')
-            ->orderBy('empleados.updated_at', 'desc')
+            ->select('productos.id', 'productos.nombre_comercial', 'productos.deleted_at', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'precios_productos.precio')
+            ->orderBy('productos.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
-        return view('Restablecer.empleados', compact('empleados'));
+        $marcas = Marcas::orderBy('nombre')->get();
+        $categorias = Tipo::orderBy('nombre')->get();
+        $modos = Modo::orderBy('nombre')->get();
+        $colores = Color::all();
+
+
+        return view('Restablecer.servicios', compact('productos', 'marcas', 'categorias', 'modos', 'colores'));
     }
-    public function actualizarEmpleado(empleados $id)
+    public function actualizarServicio(productos $id)
     {
         DB::beginTransaction();
         try {
-            $empleados = $id;
+            $producto = $id;
 
-            $persona = personas::where('id', $empleados->id_persona)
-                ->where('estatus', 0)
+            $precioProducto = precios_productos::where('id_producto', $producto->id)
+                ->where('estatus', 3)
+                ->orderBy('deleted_at', 'desc')
                 ->first();
 
-            $empleados->update([
-                'estatus' => 1
+            $producto->update([
+                'estatus' => 2
             ]);
 
-            $persona->update([
-                'estatus' => 1
+            $precioProducto->update([
+                'estatus' => 2
             ]);
 
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollback();
-            //return $th->getMessage();
-
             // Redirigir al usuario a una página después de la actualización
             session()->flash("incorrect", "Error al restaurar el registro");
 
-            return redirect()->route('empleados.index');
+            return redirect()->route('servicios.index');
         }
         session()->flash("correcto", "Restaurado correctamente");
-        return redirect()->route('empleados.index');
+        return redirect()->route('servicios.index');
     }
+
     public function productos(Request $request)
     {
         $busqueda = $request->query('adminlteSearch');
@@ -223,7 +230,7 @@ class RestablecerController extends Controller
                     ->orWhere('marcas.nombre', 'LIKE', "%{$busqueda}%")
                     ->orWhere('modos.nombre', 'LIKE', "%{$busqueda}%");
             })
-            ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'productos.fotografia', 'precios_productos.precio')
+            ->select('productos.id', 'productos.nombre_comercial', 'productos.deleted_at', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'precios_productos.precio')
             ->orderBy('productos.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
