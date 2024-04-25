@@ -24,6 +24,8 @@
         @csrf
 
         @include('Principal.ordenEntrega._form_orden')
+        @include('Principal.ordenEntrega._modal')
+        @include('Principal.ordenEntrega._modal_Descuentos')
         @include('Principal.ordenEntrega._Lista_Productos')
         @include('Principal.ordenEntrega._carro_campras')
         @include('Principal.ordenEntrega._horario_trabajo')
@@ -50,6 +52,7 @@
 @push('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
+        //Direccion funcion para seleccionar direcciones
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('#formulario').addEventListener('submit', function(event) {
                 let inputDirecciones = document.querySelector('#inputDirecciones');
@@ -98,21 +101,37 @@
             document.querySelector('#inputDirecciones').addEventListener('input', function() {
                 this.setCustomValidity('');
             });
+        }); //Finaliza la funcion para las direcciones
+
+
+
+        const modalDescuentos = document.querySelector('#modalDescuentos')
+        const cancelarModalDescuento = document.querySelector('.cerrarmodalDescuento');
+        // Agrega el evento click al botón para que al darle aceptar al modal de descuento ya agregue a un array los productos
+        document.getElementById('agregarProducto').addEventListener('click', botonAgregar);
+
+        //este boton es del modal para verificar si tiene algun descuento
+        document.querySelector('#botonAgregar').addEventListener('click', function() {
+            // Aquí puedes obtener los valores que quieres pasar a la función
+            var selectProducto = document.getElementById('producto');
+            var idProducto = selectProducto.value;
+            let cantidadInput = document.getElementById('cantidad');
+            let cantidad = cantidadInput.value;
+
+            // Luego los pasas a la función
+            agregarProducto(selectProducto, idProducto, cantidadInput, cantidad);
+            // Oculta el modal
+            modalDescuentos.classList.add('hidden');
         });
 
-
-
-
-        // Inicializa el array
-        var productosSeleccionados = [];
-        // Función para manejar el evento click del botón
-        function agregarProducto() {
+        function botonAgregar() {
             // Obtiene los valores del select y del input
             var selectProducto = document.getElementById('producto');
             var idProducto = selectProducto.value;
             let cantidadInput = document.getElementById('cantidad');
             let cantidad = cantidadInput.value;
-            console.log(cantidad);
+
+
             // Verificar si la cantidad es menor que 1
             if (cantidad === '' || parseInt(cantidad) < 1 || isNaN(cantidad)) {
                 // Establecer un mensaje de error personalizado y marcar el campo como inválido
@@ -122,7 +141,48 @@
             } else {
                 // Si el campo es válido, limpiar cualquier mensaje de error anterior
                 cantidadInput.setCustomValidity('');
+
+                //Abre el modal de los descuentos
+                modalDescuentos.classList.remove('hidden');
+
+                // Escucha el evento de click en el botón cancelar Modal de registro
+                cancelarModalDescuento.addEventListener('click', function() {
+                    // Oculta el modal
+                    modalDescuentos.classList.add('hidden');
+                });
+
+                document.getElementById('elejirdescuento').addEventListener('change', function() {
+                    // Obtén el valor seleccionado
+                    var seleccion = this.value;
+
+                    // Obtén los divs
+                    var descuentoCantidad = document.getElementById('descuentoCantidad');
+                    var descuentoPorcentaje = document.getElementById('descuentoPorcentaje');
+
+
+
+                    // Muestra el div correspondiente
+                    if (seleccion == '2') {
+                        descuentoCantidad.classList.remove('hidden');
+                        descuentoPorcentaje.classList.add('hidden');
+
+                    } else if (seleccion == '3') {
+                        descuentoCantidad.classList.add('hidden');
+                        descuentoPorcentaje.classList.remove('hidden');
+                    } else if (seleccion == '1') {
+                        // Oculta ambos divs
+                        descuentoCantidad.classList.add('hidden');
+                        descuentoPorcentaje.classList.add('hidden');
+                    }
+                });
             }
+
+        }
+
+        // Inicializa el array
+        var productosSeleccionados = [];
+        // Función para manejar el evento click del botón para agregar productos cuando le de click
+        function agregarProducto(selectProducto, idProducto, cantidadInput, cantidad) {
 
 
             // Obtiene los datos del producto seleccionado
@@ -165,12 +225,13 @@
 
             Actualizararray(productosSeleccionados);
 
-        }
+        } //hasta aqui agrega los datos de los productos a un array
 
 
-        // Agrega el evento click al botón
-        document.getElementById('agregarProducto').addEventListener('click', agregarProducto);
 
+
+
+        //funcion para mostrar en una tabla todos los productos del array
         function agregarProductosATabla(productos) {
             var tabla = document.getElementById('cuerpoTabla');
             var totalCosto = 0;
@@ -236,16 +297,17 @@
             sumaTotalElement.textContent = totalCosto.toFixed(2);
             sumaTotalElement.style.fontWeight = 'bold'; // Hace el texto en negrita
             sumaTotalElement.style.fontSize = '1.5em'; // Hace el texto un 50% más grande
-        }
+        } //Finaliza la impresion en la tabla
 
 
-        function Actualizararray(productosSeleccionados) {
+        function Actualizararray(productosSeleccionados) { //actualizamoms el array de los productos
 
             // Actualiza el valor del campo de entrada con los productos seleccionados
             document.getElementById('inputProductosSeleccionados').value = JSON.stringify(
                 productosSeleccionados);
         }
 
+        //funcion para carlular los costos etc
         function recalcularSumaTotal() {
             var tabla = document.getElementById('cuerpoTabla');
             var totalCosto = 0;
@@ -297,9 +359,10 @@
 
             // Muestra el resultado en el input cambioInput
             cambioInput.value = cambio.toFixed(2);
-        }
+        } //finaliza el calculo de los costos
 
 
+        //funcion para mostrar o ocultar las vistas del efectivo
         document.getElementById('metodoPago').addEventListener('change', function() {
             if (this.value === 'Efectivo') {
                 document.getElementById('pagoEfectivo').style.display = 'block';
@@ -568,5 +631,56 @@
                 horario.style.display = 'none';
             }
         }
+
+        //botones y funciones para mostrar y ocultar modal
+        // Obtén los elementos del DOM
+        const modalRegistrarProducto = document.querySelector('#modalRegistrarProducto')
+        const abrirnModalRegisrarProducto = document.querySelector('#Detalle');
+        const cancelarModal = document.querySelector('.cerrarmodal');
+
+
+        //Abre el modal para registrar un producto
+        abrirnModalRegisrarProducto.addEventListener('click', function() {
+            modalRegistrarProducto.classList.remove('hidden');
+        });
+
+        // Escucha el evento de click en el botón cancelar Modal de registro
+        cancelarModal.addEventListener('click', function() {
+            // Oculta el modal
+            modalRegistrarProducto.classList.add('hidden');
+        });
+
+        //mmostrar los datos de detalles del modal
+        document.getElementById('Detalle').addEventListener('click', function() {
+            let productoSeleccionado = document.getElementById('producto').value;
+            let datosProductos = @json($productos);
+            let titulo = document.querySelector('#tituloDetalle');
+            let categoria = document.querySelector('#CategoriaDetalle');
+            let modelo = document.querySelector('#ModeloDetalle');
+            let tipo = document.querySelector('#TipoDetalle');
+            let color = document.querySelector('#ColorDetalle');
+            let marca = document.querySelector('#MarcaDetalle');
+            let precio = document.querySelector('#PrecioDetalle');
+            let descripcion = document.querySelector('#descripcionDetalle');
+
+            datosProductos.forEach(element => {
+                if (productoSeleccionado == element.id) {
+
+                    titulo.innerText = element.nombre_comercial;
+                    categoria.innerText = 'Categoria : ' + element.nombre_categoria;
+                    modelo.innerText = 'Modelo : ' + element.modelo;
+                    tipo.innerText = 'Tipo : ' + element.nombre_modo;
+                    color.innerText = 'Color : ' + element.nombre_color;
+                    marca.innerText = 'Marca : ' + element.nombre_marca;
+                    precio.innerText = 'Precio : $' + element.precio;
+                    descripcion.innerText = 'Descripcion : ' + element.descripcion;
+
+
+                } else if (productoSeleccionado == null) {
+                    titulo.innerText = 'Seleccione un producto';
+                }
+            });
+
+        });
     </script>
 @endpush

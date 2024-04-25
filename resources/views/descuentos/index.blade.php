@@ -38,7 +38,7 @@
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <h3 class=" text-center text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Registrar Producto
+                            Registrar Descuento
                         </h3>
 
                         <form method="POST" action="{{ route('descuentos.store') }}" enctype="multipart/form-data"
@@ -85,7 +85,6 @@
                     <td class="py-3 px-6 text-left border-r">Clave del descuento</td>
                     <td class="py-3 px-6 text-left border-r">Porcentaje</td>
                     <td class="py-3 px-6 text-left border-r">Fecha de creación</td>
-                    <td class="py-3 px-6 text-left border-r">Fecha de actualización</td>
                 </tr>
                 @foreach ($descuentos as $descuento)
                     <tr class= " border-b border-gray-200 text-sm">
@@ -98,9 +97,7 @@
                         <td class="px-6 py-4">
                             {{ $descuento->created_at }}
                         </td>
-                        <td class="px-6 py-4">
-                            {{ $descuento->updated_at }}
-                        </td>
+
                         {{-- descomentar si quieren actualizar sin embargo no es practico por que si actualizan podrian cambiar todos los ticket viejos con ese descuento <td>
 
                             <button onclick="location.href='{{ route('descuentos.edit', $descuento->id) }}';"

@@ -6,13 +6,13 @@
             <label class="mr-4">De :</label>
             <input type="time"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="horarioTrabajoInicio" name="horarioTrabajoInicio" required>
+                id="horarioTrabajoInicio" name="horarioTrabajoInicio">
         </div>
         <div class="flex flex-col w-full md:w-1/2">
             <label class="mr-4">Hasta :</label>
             <input type="time"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="horarioTrabajoFinal" name="horarioTrabajoFinal" required>
+                id="horarioTrabajoFinal" name="horarioTrabajoFinal">
         </div>
     </div>
     <div class="flex flex-wrap justify-center">
