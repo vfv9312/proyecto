@@ -366,6 +366,7 @@
 
             // Recorre todas las filas de la tabla y suma los costos de los productos
             for (var i = 0; i < tabla.rows.length; i++) {
+                //recordar que se se mueve las celdas se tendra que modificar para que calcule las celtas que tienen los costos
                 var costo = parseFloat(tabla.rows[i].cells[8].textContent);
                 totalCosto += costo;
             }
