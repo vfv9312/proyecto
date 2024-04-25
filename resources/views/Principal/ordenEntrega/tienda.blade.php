@@ -742,12 +742,12 @@
 
         });
 
-        document.getElementById('botonGuardar').addEventListener('click', function() {
-            this.disabled = true;
+        /*  document.getElementById('botonGuardar').addEventListener('click', function() {
+              this.disabled = true;
 
-            setTimeout(() => {
-                this.disabled = false;
-            }, 3000); // Desbloquea el botón después de 3 segundos
-        });
+              setTimeout(() => {
+                  this.disabled = false;
+              }, 3000); // Desbloquea el botón después de 3 segundos
+          });*/
     </script>
 @endpush

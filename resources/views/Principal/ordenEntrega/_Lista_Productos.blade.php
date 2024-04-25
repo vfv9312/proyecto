@@ -3,7 +3,6 @@
     <div class=" flex flex-col  lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
         <select name="producto" id="producto"
             class="lg:w-1/2 w-full px-3 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            <option value="null">Seleccione un producto</option>
             @foreach ($productos as $producto)
                 <option value="{{ $producto->id }}">
                     {{ $producto->nombre_comercial }}_{{ $producto->nombre_modo }}_{{ $producto->nombre_marca }}_{{ $producto->nombre_categoria }}_{{ $producto->nombre_color }}_${{ $producto->precio }}

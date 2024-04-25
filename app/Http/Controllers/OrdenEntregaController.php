@@ -177,6 +177,17 @@ class OrdenEntregaController extends Controller
      */
     public function store(Request $request)
     {
+
+        /* $request->validate([
+            'txtnombreCliente' => 'required',
+            // otras reglas de validación...
+        ], [
+            'txtnombreCliente.required' => 'El nombre del cliente es obligatorio.',
+            // otros mensajes personalizados...
+        ]);*/
+
+        dd($request);
+
         $nombreEmpleado = Auth::user()->name;
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 

@@ -28,13 +28,13 @@
                                 <label for="descuento" class="block text-sm font-medium text-gray-700">Descuento por
                                     cantidad :</label>
                                 <input type="number" id="Cantidaddescuento" name="descuento" step="any"
-                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md mb-4">
                             </div>
                             <div class="mt-4 hidden" id="descuentoPorcentaje">
                                 <label for="descuentoPorcentaje"
                                     class="block text-sm font-medium text-gray-700">Descuento por porcentaje:</label>
                                 <select name="descuentoPorcentaje" id="porcentaje"
-                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md mb-4">
                                     <option value="">Selecciona un porcentaje</option>
                                     @foreach ($descuentos as $descuento)
                                         <option value="{{ $descuento->porcentaje }}">{{ $descuento->nombre }}</option>

@@ -47,6 +47,9 @@
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="nombreCliente" name="txtnombreCliente" placeholder="Nombre del cliente" required>
+            {{--  @error('txtnombreCliente')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror --}}
         </div>
 
         <div class="flex flex-col w-full md:w-1/3">
