@@ -281,14 +281,23 @@
                 let fila = tabla.insertRow(-1);
                 fila.id = 'filaProducto_' + i; // Asigna un identificador único a la fila
                 let celdaNombre = fila.insertCell(0);
+                celdaNombre.style.textAlign = "center";
                 let celdaMarca = fila.insertCell(1);
+                celdaMarca.style.textAlign = "center";
                 let celdaTipo = fila.insertCell(2);
+                celdaTipo.style.textAlign = "center";
                 let celdaModo = fila.insertCell(3);
+                celdaModo.style.textAlign = "center";
                 let celdaColor = fila.insertCell(4);
+                celdaColor.style.textAlign = "center";
                 let celdaCantidad = fila.insertCell(5);
+                celdaCantidad.style.textAlign = "center";
                 let celdaPrecio = fila.insertCell(6);
+                celdaPrecio.style.textAlign = "center";
                 let celdaDescuento = fila.insertCell(7);
+                celdaDescuento.style.textAlign = "center";
                 let celdaCosto = fila.insertCell(8);
+                celdaCosto.style.textAlign = "center";
                 let celdaEliminar = fila.insertCell(9); // Nueva celda para el botón "Eliminar"
                 celdaNombre.textContent = producto.nombre;
                 celdaMarca.textContent = producto.marca;
@@ -317,6 +326,7 @@
                 let botonEliminar = document.createElement('button');
                 botonEliminar.textContent = 'Eliminar';
                 botonEliminar.style.color = 'red'; // Cambia el color del texto a rojo
+                botonEliminar.style.textAlign = "center";
                 botonEliminar.addEventListener('click', function() {
                     // Obtiene el id de la fila a eliminar
                     let idFila = this.parentNode.parentNode.id;
@@ -732,9 +742,12 @@
 
         });
 
-        //evitamos el doble click para que no envie dos veces el formulario
         document.getElementById('botonGuardar').addEventListener('click', function() {
             this.disabled = true;
+
+            setTimeout(() => {
+                this.disabled = false;
+            }, 3000); // Desbloquea el botón después de 3 segundos
         });
     </script>
 @endpush

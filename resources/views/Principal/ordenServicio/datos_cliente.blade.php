@@ -280,8 +280,6 @@
             var precio = productoSeleccionado[5].replace('$', '');
 
 
-
-
             // Verifica si el producto ya está en el array
             var productoExistente = productosSeleccionados.find(function(producto) {
                 return producto.id === idProducto;
@@ -293,7 +291,6 @@
                 productoExistente.descuento = descuento;
             } else {
                 // Si el producto no está en el array, lo agrega
-
 
                 var producto = {
                     id: idProducto,

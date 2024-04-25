@@ -1,4 +1,4 @@
-<section class=" w-full border-4 mt-8 px-3 pb-3">
+{{-- <section class=" w-full border-4 mt-8 px-3 pb-3">
     <h1 class="text-2xl
     text-center text-gray-600 mb-2">Horario de Trabajo</h1>
     <div class=" flex w-full">
@@ -86,7 +86,7 @@
             </label>
         </div>
     </div>
-</section>
+</section> --}}
 {{--
 <section class=" flex lg:flex-row flex-col justify-center w-full border-4 mt-8 px-3 pb-3">
     @php
@@ -94,7 +94,7 @@
     @endphp
 
     @foreach ($dias as $dia)
-<div class="mb-4">
+        <div class="mb-4">
             <label class="inline-flex items-center mr-3 ">
                 <input type="checkbox" name="dias[]" value="{{ $dia }}" onclick="mostrarHorario(this)">
                 <span class="ml-2">{{ $dia }}</span>
@@ -110,5 +110,32 @@
                 </div>
             </div>
         </div>
-@endforeach
+    @endforeach
 </section> --}}
+
+<section class=" w-full border-4 mt-8 px-3 pb-3">
+    <div>
+        <h1 class="text-2xl
+    text-center text-gray-600 mb-2">Horario de Trabajo</h1>
+    </div>
+    <div class=" flex lg:flex-row flex-col justify-center">
+
+        @foreach (['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'] as $dia)
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2 mr-3" for="{{ $dia }}_entrada">
+                    {{ $dia }} - Hora de entrada
+                </label>
+                <input
+                    class="shadow appearance-none border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="{{ $dia }}_entrada" type="time" name="{{ $dia }}_entrada">
+
+                <label class="block text-gray-700 text-sm font-bold mb-2 mt-4" for="{{ $dia }}_salida">
+                    {{ $dia }} - Hora de salida
+                </label>
+                <input
+                    class="shadow appearance-none border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="{{ $dia }}_salida" type="time" name="{{ $dia }}_salida">
+            </div>
+        @endforeach
+    </div>
+</section>
