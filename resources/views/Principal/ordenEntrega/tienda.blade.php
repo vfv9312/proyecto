@@ -31,7 +31,7 @@
         @include('Principal.ordenEntrega._horario_trabajo')
 
         <div class="mt-4 flex justify-center">
-            <button type="submit" class="px-4 py-2  bg-green-500 text-white rounded hover:bg-green-700">
+            <button id="botonGuardar" type="submit" class="px-4 py-2  bg-green-500 text-white rounded hover:bg-green-700">
                 <i class="fas fa-save mr-2"></i>
                 Guardar
             </button>
@@ -140,7 +140,7 @@
             modalDescuentos.classList.add('hidden');
 
         });
-
+        //aqui verifico que tenga datos cantidad antes de abrir un mmodal y preguntar si requiere un descuento
         function botonAgregar() {
             // Obtiene los valores del select y del input
             var selectProducto = document.getElementById('producto');
@@ -216,7 +216,7 @@
             }
 
 
-            // Obtiene los datos del producto seleccionado separamos las variables
+            // Obtiene los datos del productoSeleccionado separamos las variables
             var productoSeleccionado = selectProducto.options[selectProducto.selectedIndex].text.split('_');
             var nombreComercial = productoSeleccionado[0];
             var nombreModo = productoSeleccionado[1];
@@ -366,7 +366,7 @@
 
             // Recorre todas las filas de la tabla y suma los costos de los productos
             for (var i = 0; i < tabla.rows.length; i++) {
-                var costo = parseFloat(tabla.rows[i].cells[7].textContent);
+                var costo = parseFloat(tabla.rows[i].cells[8].textContent);
                 totalCosto += costo;
             }
 
@@ -729,6 +729,11 @@
                 }
             });
 
+        });
+
+        //evitamos el doble click para que no envie dos veces el formulario
+        document.getElementById('botonGuardar').addEventListener('click', function() {
+            this.disabled = true;
         });
     </script>
 @endpush
