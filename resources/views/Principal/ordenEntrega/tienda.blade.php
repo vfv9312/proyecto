@@ -117,11 +117,28 @@
             var idProducto = selectProducto.value;
             let cantidadInput = document.getElementById('cantidad');
             let cantidad = cantidadInput.value;
+            let valorDescuentoCantidad = document.querySelector('#Cantidaddescuento').value;
+            let valorDescuentoPorcentaje = document.querySelector('#porcentaje').value;
+
 
             // Luego los pasas a la función
-            agregarProducto(selectProducto, idProducto, cantidadInput, cantidad);
+            agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
+                valorDescuentoPorcentaje);
+
+            // Oculta ambos divs
+            descuentoCantidad.classList.add('hidden');
+            descuentoPorcentaje.classList.add('hidden');
+
+            //restauramos el select del modal a sin descuento
+            document.getElementById('elejirdescuento').value = '1';
+            //restauramos el valor delos descuentos
+            document.querySelector('#Cantidaddescuento').value = '';
+            document.querySelector('#porcentaje').value = '';
+
+
             // Oculta el modal
             modalDescuentos.classList.add('hidden');
+
         });
 
         function botonAgregar() {
@@ -155,24 +172,26 @@
                     // Obtén el valor seleccionado
                     var seleccion = this.value;
 
-                    // Obtén los divs
-                    var descuentoCantidad = document.getElementById('descuentoCantidad');
-                    var descuentoPorcentaje = document.getElementById('descuentoPorcentaje');
-
-
-
                     // Muestra el div correspondiente
                     if (seleccion == '2') {
                         descuentoCantidad.classList.remove('hidden');
                         descuentoPorcentaje.classList.add('hidden');
+                        //restauramos el valor de porcentaje por si cambia de vista se borre lo que pusiera en porcentaje
+                        document.querySelector('#porcentaje').value = '';
 
                     } else if (seleccion == '3') {
                         descuentoCantidad.classList.add('hidden');
                         descuentoPorcentaje.classList.remove('hidden');
+                        //restauramos el valor del descuento por cantidad por si cambia por porcentaje
+                        document.querySelector('#Cantidaddescuento').value = '';
+
                     } else if (seleccion == '1') {
                         // Oculta ambos divs
                         descuentoCantidad.classList.add('hidden');
                         descuentoPorcentaje.classList.add('hidden');
+                        //restauramos el valor delos descuentos por si pone datos y despues decide no poner descuentos
+                        document.querySelector('#Cantidaddescuento').value = '';
+                        document.querySelector('#porcentaje').value = '';
                     }
                 });
             }
@@ -182,10 +201,22 @@
         // Inicializa el array
         var productosSeleccionados = [];
         // Función para manejar el evento click del botón para agregar productos cuando le de click
-        function agregarProducto(selectProducto, idProducto, cantidadInput, cantidad) {
+        function agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
+            valorDescuentoPorcentaje) {
+            let tipoDescuento;
+            let valorDescuento;
+
+            //verificar que descuento fue positivo o ninguno
+            if (valorDescuentoCantidad) {
+                tipoDescuento = 'cantidad';
+                valorDescuento = valorDescuentoCantidad;
+            } else if (valorDescuentoPorcentaje) {
+                tipoDescuento = 'Porcentaje';
+                valorDescuento = valorDescuentoPorcentaje;
+            }
 
 
-            // Obtiene los datos del producto seleccionado
+            // Obtiene los datos del producto seleccionado separamos las variables
             var productoSeleccionado = selectProducto.options[selectProducto.selectedIndex].text.split('_');
             var nombreComercial = productoSeleccionado[0];
             var nombreModo = productoSeleccionado[1];
@@ -212,13 +243,17 @@
                     marca: nombreMarca,
                     tipo: nombreCategoria,
                     color: nombreColor,
-                    precio: precio
+                    precio: precio,
+                    descuento: valorDescuento,
+                    tipoDescuento: tipoDescuento
                 };
                 productosSeleccionados.push(producto);
             }
 
             // Limpia el input de cantidad
             document.getElementById('cantidad').value = '';
+
+            console.log(productosSeleccionados);
 
             // Agrega los productos seleccionados a la tabla
             agregarProductosATabla(productosSeleccionados);
@@ -231,7 +266,7 @@
 
 
 
-        //funcion para mostrar en una tabla todos los productos del array
+        //funcion para mostrar en una tabla todos los productos del array recibimos el array de objetos de productosSeleccionados y lo renombramos como productos
         function agregarProductosATabla(productos) {
             var tabla = document.getElementById('cuerpoTabla');
             var totalCosto = 0;
@@ -240,7 +275,7 @@
             while (tabla.firstChild) {
                 tabla.removeChild(tabla.firstChild);
             }
-
+            //creamos las celdas y le ponemos el valor segun la cantidad de array
             for (var i = 0; i < productos.length; i++) {
                 let producto = productos[i];
                 let fila = tabla.insertRow(-1);
@@ -252,8 +287,9 @@
                 let celdaColor = fila.insertCell(4);
                 let celdaCantidad = fila.insertCell(5);
                 let celdaPrecio = fila.insertCell(6);
-                let celdaCosto = fila.insertCell(7);
-                let celdaEliminar = fila.insertCell(8); // Nueva celda para el botón "Eliminar"
+                let celdaDescuento = fila.insertCell(7);
+                let celdaCosto = fila.insertCell(8);
+                let celdaEliminar = fila.insertCell(9); // Nueva celda para el botón "Eliminar"
                 celdaNombre.textContent = producto.nombre;
                 celdaMarca.textContent = producto.marca;
                 celdaTipo.textContent = producto.tipo;
@@ -262,8 +298,20 @@
                 celdaCantidad.textContent = producto.cantidad;
                 celdaPrecio.textContent = producto.precio;
                 let costo = producto.precio * producto.cantidad;
+                if (producto.tipoDescuento == 'cantidad') {
+                    celdaDescuento.textContent = '$' + producto.descuento;
+                    costo = costo - producto.descuento;
+                } else if (producto.tipoDescuento == 'Porcentaje') {
+                    celdaDescuento.textContent = producto.descuento + '%';
+                    let descuentoAplicado = costo * (producto.descuento / 100);
+                    costo = costo - descuentoAplicado;
+                } else {
+                    celdaDescuento.textContent = 'Sin descuentos'
+                }
+
                 celdaCosto.textContent = costo.toFixed(2);
                 totalCosto += costo;
+
 
                 // Agrega el botón "Eliminar" a la celda
                 let botonEliminar = document.createElement('button');

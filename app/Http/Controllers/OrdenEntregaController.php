@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Catalago_ubicaciones;
 use App\Models\clientes;
 use App\Models\Color;
+use App\Models\Descuentos;
 use App\Models\direcciones;
 use App\Models\direcciones_clientes;
 use App\Models\empleados;
@@ -118,8 +119,9 @@ class OrdenEntregaController extends Controller
             ->select('id_cliente as idCliente', 'horario_trabajo_inicio as horaInicio', 'horario_trabajo_final as horaFinal', 'dia_semana as dias', 'nombre_quien_recibe as recibe')
             ->orderBy('updated_at', 'asc')->get();
 
+        $descuentos = Descuentos::select('*')->orderBy('nombre', 'asc')->get();
 
-        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores', 'listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion', 'HorarioTrabajo'));
+        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores', 'listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion', 'HorarioTrabajo', 'descuentos'));
     }
 
     /**

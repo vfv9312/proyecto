@@ -11,6 +11,7 @@
                 <th>Color</th>
                 <th>Cantidad</th>
                 <th>Precio</th>
+                <th>Descuento</th>
                 <th>Costo</th>
                 <!-- Agrega el resto de los encabezados de las columnas aquí -->
             </tr>
@@ -20,7 +21,7 @@
         </tbody>
         <tfoot>
             <tr id="filaSuma">
-                <td colspan="7">Total</td>
+                <td colspan="8">Total</td>
                 <td id="sumaTotal"></td>
             </tr>
         </tfoot>

@@ -27,22 +27,18 @@
                             <div class="mt-4 hidden" id="descuentoCantidad">
                                 <label for="descuento" class="block text-sm font-medium text-gray-700">Descuento por
                                     cantidad :</label>
-                                <input type="number" id="descuento" name="descuento" step="any"
+                                <input type="number" id="Cantidaddescuento" name="descuento" step="any"
                                     class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
                             <div class="mt-4 hidden" id="descuentoPorcentaje">
                                 <label for="descuentoPorcentaje"
                                     class="block text-sm font-medium text-gray-700">Descuento por porcentaje:</label>
-                                <select name="descuentoPorcentaje"
+                                <select name="descuentoPorcentaje" id="porcentaje"
                                     class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
                                     <option value="">Selecciona un porcentaje</option>
-                                    <option value="5">5%</option>
-                                    <option value="10">10%</option>
-                                    <option value="15">15%</option>
-                                    <option value="20">20%</option>
-                                    <option value="25">25%</option>
-                                    <option value="30">30%</option>
-                                    <!-- Agrega más opciones según sea necesario -->
+                                    @foreach ($descuentos as $descuento)
+                                        <option value="{{ $descuento->porcentaje }}">{{ $descuento->nombre }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <button type="button" id="botonAgregar"
