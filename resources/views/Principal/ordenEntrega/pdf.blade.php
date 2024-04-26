@@ -73,6 +73,10 @@
         #paginaweb {
             text-align: center;
         }
+
+        .dias {
+            padding-right: 10px;
+        }
     </style>
 </head>
 
@@ -96,6 +100,11 @@ opacity: 0.5;">
     $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
     $fecha = $fechaHoraArray[0];
     $hora = $fechaHoraArray[1];
+
+    $horariosInicio = explode(',', $ordenRecoleccion->horarioTrabajoInicio);
+    $horariosFinal = explode(',', $ordenRecoleccion->horarioTrabajoFinal);
+    $dias = explode(',', $ordenRecoleccion->diaSemana);
+
 @endphp
 <div class="ticket">
     <div class="header">
@@ -121,8 +130,30 @@ opacity: 0.5;">
                 {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
             <p>CP :{{ $ordenRecoleccion->cp }}</p>
             <p> Referencia : {{ $ordenRecoleccion->referencia }}</p>
-            <p>Horario de trabajo : {{ $ordenRecoleccion->horarioTrabajoInicio }} hasta las:
-                {{ $ordenRecoleccion->horarioTrabajoFinal }}. {{ $ordenRecoleccion->diaSemana }}</p>
+            <p>Horario de trabajo
+            <table>
+                <tr>
+                    @foreach ($dias as $index => $dia)
+                        <td class="dias">
+                            @if ($dia == 'Lunes' || $dia == 'Martes' || $dia == 'Miercoles' || $dia == 'Jueves' || $dia == 'Viernes')
+                                {{ $dia }} {{ $horariosInicio[$index] }} - {{ $horariosFinal[$index] }}
+                            @endif
+                        </td>
+                    @endforeach
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    @foreach ($dias as $index => $dia)
+                        <td class="dias">
+                            @if ($dia == 'Sabado' || $dia == 'Domingo')
+                                {{ $dia }} {{ $horariosInicio[$index] }} - {{ $horariosFinal[$index] }}
+                            @endif
+                        </td>
+                    @endforeach
+                </tr>
+            </table>
+            </p>
         </div>
         <div class="item">
             @php
