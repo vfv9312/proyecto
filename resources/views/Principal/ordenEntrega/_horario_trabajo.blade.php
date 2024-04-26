@@ -120,7 +120,7 @@
     </div>
     <div class=" flex lg:flex-row flex-col justify-center">
 
-        @foreach (['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'] as $dia)
+        @foreach (['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'] as $dia)
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2 mr-3" for="{{ $dia }}_entrada">
                     {{ $dia }} - Hora de entrada
@@ -129,7 +129,7 @@
                     class="shadow appearance-none border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="{{ $dia }}_entrada" type="time" name="{{ $dia }}_entrada">
 
-                <label class="block text-gray-700 text-sm font-bold mb-2 mt-4" for="{{ $dia }}_salida">
+                <label class="block text-gray-700 text-sm font-bold mb-2 mt-4 mr-3" for="{{ $dia }}_salida">
                     {{ $dia }} - Hora de salida
                 </label>
                 <input
@@ -137,5 +137,9 @@
                     id="{{ $dia }}_salida" type="time" name="{{ $dia }}_salida">
             </div>
         @endforeach
+    </div>
+    <div class="text-center mt-4">
+        <button type="button" id="resetButton" class="px-4 py-2 bg-blue-500 text-white rounded">Restablecer
+            horarios</button>
     </div>
 </section>

@@ -69,13 +69,6 @@ class OrdenEntregaController extends Controller
         $colores = Color::all();
 
         // clientes
-
-        $listaEmpleados = empleados::join('roles', 'roles.id', '=', 'empleados.id_rol')
-            ->join('personas', 'personas.id', '=', 'empleados.id_persona')
-            ->where('empleados.estatus', 1)
-            ->select('empleados.id', 'roles.nombre as nombre_rol', 'personas.nombre as nombre_empleado', 'personas.apellido')
-            ->get();
-
         $listaClientes = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->where('clientes.estatus', 1)
             ->select(
@@ -119,9 +112,10 @@ class OrdenEntregaController extends Controller
             ->select('id_cliente as idCliente', 'horario_trabajo_inicio as horaInicio', 'horario_trabajo_final as horaFinal', 'dia_semana as dias', 'nombre_quien_recibe as recibe')
             ->orderBy('updated_at', 'asc')->get();
 
+
         $descuentos = Descuentos::select('*')->orderBy('nombre', 'asc')->get();
 
-        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores', 'listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion', 'HorarioTrabajo', 'descuentos'));
+        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion', 'HorarioTrabajo', 'descuentos'));
     }
 
     /**
@@ -186,45 +180,92 @@ class OrdenEntregaController extends Controller
             // otros mensajes personalizados...
         ]);*/
 
-        dd($request);
 
         $nombreEmpleado = Auth::user()->name;
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
+
             // si fue seleccionado el cliente y la direccion tendremos estos datos del id
-            $idCliente = $request->input('cliente');
+            $idCliente = $request->input('cliente'); //id del cliente
             $idDireccion = $request->input('id_direccion');
 
             //si modificamos un dato del cliente podrian ser cualquiera de estos 3
-            $telefono = $request->input('txttelefono');
-            $rfc = $request->input('txtrfc');
-            $email = $request->input('txtemail');
-            $recibe = $request->input('txtrecibe');
+            $telefono = $request->input('txttelefono'); //telefono del cliente
+            $rfc = $request->input('txtrfc'); //rfc del cliente
+            $email = $request->input('txtemail'); //correo electronico del cliente
+            $recibe = $request->input('txtrecibe'); // persona que recibira el pedido
 
             //si registramos un cliente nuevo recibiremos
-            $nuevoCliente = $request->input('txtnombreCliente');
-            $nuevoApeCliente = $request->input('txtapellidoCliente');
+            $nuevoCliente = $request->input('txtnombreCliente'); //nombre del cliente
+            $nuevoApeCliente = $request->input('txtapellidoCliente'); // apellido del cliente
 
             //datos que iran siempre
-            $atencion = $request->input('txtatencion');
+            $atencion = $request->input('txtatencion'); //persona que atendera cuando llegue el motociclista
 
             //si no tenemos datos del id direccion entonces recibiremos
-            $idNuevacolonia = $request->input('nuevacolonia');
-            $nuevacalle = $request->input('nuevacalle');
-            $nuevonumInterior = $request->input('nuevonum_interior');
-            $nuevonumExterior = $request->input('nuevonum_exterior');
-            $nuevareferencia = $request->input('nuevareferencia');
+            $idNuevacolonia = $request->input('nuevacolonia'); // el id de la colonia
+            $nuevacalle = $request->input('nuevacalle'); //calles de la colonia
+            $nuevonumInterior = $request->input('nuevonum_interior'); // numero interior del domicilio
+            $nuevonumExterior = $request->input('nuevonum_exterior'); // numero exterior del domicilio
+            $nuevareferencia = $request->input('nuevareferencia'); //referencia del docimicilio
 
             //factura, metodo de pago y horario para entregar paquete
-            $factura = $request->input('factura');
-            $metodoPago = $request->input('metodoPago');
-            $pagaCon = $request->input('pagaCon');
-            $horarioTrabajoInicio = $request->input('horarioTrabajoInicio');
-            $horarioTrabajoFinal = $request->input('horarioTrabajoFinal');
-            $diasHorarioTrabajo = $request->input('dias');
+            $factura = $request->input('factura'); //es el checkbox por si queremos factura
+            $metodoPago = $request->input('metodoPago'); //metodo de pago
+            $pagaCon = $request->input('pagaCon'); //paga con
+            $LunesEntrada = $request->input('Lunes_entrada');
+            $LunesSalida = $request->input('Lunes_salida');
+            $MartesEntrada = $request->input('Martes_entrada');
+            $MartesSalida = $request->input('Martes_salida');
+            $MiercolesEntrada = $request->input('Miércoles_entrada');
+            $MiercolesSalida = $request->input('Miércoles_salida');
+            $JuevesEntrada = $request->input('Jueves_entrada');
+            $JuevesSalida = $request->input('Jueves_salida');
+            $ViernesEntrada = $request->input('Viernes_entrada');
+            $ViernesSalida = $request->input('Viernes_salida');
+            $SabadoEntrada = $request->input('Sábado_entrada');
+            $SabadoSalida = $request->input('Sábado_salida');
+            $DomingoEntrada = $request->input('Domingo_entrada');
+            $DomingoSalida = $request->input('Domingo_salida');
+
+            $horarioTrabajoInicio = $LunesEntrada . ',' . $MartesEntrada . ',' . $MiercolesEntrada . ',' . $JuevesEntrada . ',' . $ViernesEntrada . ',' . $SabadoEntrada . ',' . $DomingoEntrada;
+            $horarioTrabajoFinal = $LunesSalida . ',' . $MartesSalida . ',' . $MiercolesSalida . ',' . $JuevesSalida . ',' . $ViernesSalida . ',' . $SabadoSalida . ',' . $DomingoSalida;
+
+
+            $diasConDatos = '';
+
+            if (!empty($LunesEntrada)) {
+                $diasConDatos .= 'Lunes,';
+            }
+            if (!empty($MartesEntrada)) {
+                $diasConDatos .= 'Martes,';
+            }
+            if (!empty($MiercolesEntrada)) {
+                $diasConDatos .= 'Miércoles,';
+            }
+            if (!empty($JuevesEntrada)) {
+                $diasConDatos .= 'Jueves,';
+            }
+            if (!empty($ViernesEntrada)) {
+                $diasConDatos .= 'Viernes,';
+            }
+            if (!empty($SabadoEntrada)) {
+                $diasConDatos .= 'Sábado,';
+            }
+            if (!empty($DomingoEntrada)) {
+                $diasConDatos .= 'Domingo,';
+            }
+
+            // Eliminar la última coma
+            $diasConDatos = rtrim($diasConDatos, ',');
+
+
+
             // Decodifica la cadena JSON
             $relacion = json_decode($request->input('inputProductosSeleccionados'), true);
+
+
 
 
             //crearemos una preventa con estatus 2
@@ -242,7 +283,7 @@ class OrdenEntregaController extends Controller
                 $preventa->nombre_atencion = $atencion;
                 $preventa->horario_trabajo_inicio = $horarioTrabajoInicio;
                 $preventa->horario_trabajo_final = $horarioTrabajoFinal;
-                $preventa->dia_semana = implode(',', $diasHorarioTrabajo);
+                $preventa->dia_semana = $diasConDatos;
                 $preventa->metodo_pago = $metodoPago;
                 $preventa->factura = $factura === 'on' ? 1 : 0;
                 $preventa->pago_efectivo = $pagaCon;
@@ -329,7 +370,7 @@ class OrdenEntregaController extends Controller
                 $preventa->nombre_atencion = $atencion;
                 $preventa->horario_trabajo_inicio = $horarioTrabajoInicio;
                 $preventa->horario_trabajo_final = $horarioTrabajoFinal;
-                $preventa->dia_semana = implode(',', $diasHorarioTrabajo);
+                $preventa->dia_semana = $diasConDatos;
                 $preventa->metodo_pago = $metodoPago;
                 $preventa->factura = $factura === 'on' ? 1 : 0;
                 $preventa->pago_efectivo = $pagaCon;

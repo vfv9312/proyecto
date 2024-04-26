@@ -31,7 +31,9 @@
         @include('Principal.ordenEntrega._horario_trabajo')
 
         <div class="mt-4 flex justify-center">
-            <button id="botonGuardar" type="submit" class="px-4 py-2  bg-green-500 text-white rounded hover:bg-green-700">
+            <button id="botonGuardar" type="submit"
+                class="px-4 py-2 bg-green-500
+                text-white rounded hover:bg-green-700">
                 <i class="fas fa-save mr-2"></i>
                 Guardar
             </button>
@@ -52,7 +54,7 @@
 @push('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
-        //Direccion funcion para seleccionar direcciones
+        //Direccion funcion para validar si hay alguna direccion y si el cambio es menor a 0
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('#formulario').addEventListener('submit', function(event) {
                 let inputDirecciones = document.querySelector('#inputDirecciones');
@@ -152,8 +154,15 @@
             // Verificar si la cantidad es menor que 1
             if (cantidad === '' || parseInt(cantidad) < 1 || isNaN(cantidad)) {
                 // Establecer un mensaje de error personalizado y marcar el campo como inválido
+
                 cantidadInput.setCustomValidity('La cantidad debe ser al menos 1.');
                 cantidadInput.reportValidity();
+
+                //tuve que limpiar despues de dos segundos para que me permita enviar el formulario debido que igual marcaba error si jugaban con el input
+                setTimeout(() => {
+                    // Si el campo es válido, limpiar cualquier mensaje de error anterior
+                    cantidadInput.setCustomValidity('');
+                }, 2000); // Desbloquea el botón después de 2 segundos
                 return; // Salir de la función
             } else {
                 // Si el campo es válido, limpiar cualquier mensaje de error anterior
@@ -167,6 +176,7 @@
                     // Oculta el modal
                     modalDescuentos.classList.add('hidden');
                 });
+
 
                 document.getElementById('elejirdescuento').addEventListener('change', function() {
                     // Obtén el valor seleccionado
@@ -198,6 +208,7 @@
 
         }
 
+
         // Inicializa el array
         var productosSeleccionados = [];
         // Función para manejar el evento click del botón para agregar productos cuando le de click
@@ -213,6 +224,9 @@
             } else if (valorDescuentoPorcentaje) {
                 tipoDescuento = 'Porcentaje';
                 valorDescuento = valorDescuentoPorcentaje;
+            } else {
+                tipoDescuento = 'null';
+                valorDescuento = 'null';
             }
 
 
@@ -230,9 +244,14 @@
                 return producto.id === idProducto;
             });
 
+
             if (productoExistente) {
-                // Si el producto ya está en el array, actualiza la cantidad
+                // Si el producto ya está en el array, actualiza la cantidad y el descuento
+
                 productoExistente.cantidad = cantidad;
+                productoExistente.descuento = valorDescuento;
+                productoExistente.tipoDescuento = tipoDescuento;
+
             } else {
                 // Si el producto no está en el array, lo agrega
                 var producto = {
@@ -253,7 +272,6 @@
             // Limpia el input de cantidad
             document.getElementById('cantidad').value = '';
 
-            console.log(productosSeleccionados);
 
             // Agrega los productos seleccionados a la tabla
             agregarProductosATabla(productosSeleccionados);
@@ -480,6 +498,20 @@
         let datosAtencion = @json($listaAtencion);
         let datosHorarioTrabajo = @json($HorarioTrabajo);
 
+        let inputLunesEntrada = $('#Lunes_entrada');
+        let inputLunesSalida = $('#Lunes_salida');
+        let inputMartesEntrada = $('#Martes_entrada');
+        let inputMartesSalida = $('#Martes_salida');
+        let inputMiercolesEntrada = $('#Miercoles_entrada');
+        let inputMiercolesSalida = $('#Miercoles_salida');
+        let inputJuevesEntrada = $('#Jueves_entrada');
+        let inputJuevesSalida = $('#Jueves_salida');
+        let inputViernesEntrada = $('#Viernes_entrada');
+        let inputViernesSalida = $('#Viernes_salida');
+        let inputSabadoEntrada = $('#Sabado_entrada');
+        let inputSabadoSalida = $('#Sabado_salida');
+        let inputDomingoEntrada = $('#Domingo_entrada');
+        let inputDomingoSalida = $('#Domingo_salida');
         let inputHorarioInicio = $('#horarioTrabajoInicio');
         let inputHorarioFinal = $('#horarioTrabajoFinal');
         let selectAtencion = $('#inputAtiende');
@@ -516,7 +548,6 @@
                 });
 
             }
-
             // Vacía los campos al incio
             $('#telefono').val('');
             $('#rfc').val('');
@@ -525,19 +556,22 @@
             $('#apellidoCliente').val('').prop('disabled', false);
             $('#inputDirecciones').empty();
             $('#inputNombreAtencion').val('').prop('disabled', false);
-            inputHorarioInicio.val('').prop('disabled', false);
-            inputHorarioFinal.val('').prop('disabled', false);
+            inputLunesEntrada.val('').prop('disabled', false);
+            inputLunesSalida.val('').prop('disabled', false);
+            inputMartesEntrada.val('').prop('disabled', false);
+            inputMartesSalida.val('').prop('disabled', false);
+            inputMiercolesEntrada.val('').prop('disabled', false);
+            inputMiercolesSalida.val('').prop('disabled', false);
+            inputJuevesEntrada.val('').prop('disabled', false);
+            inputJuevesSalida.val('').prop('disabled', false);
+            inputViernesEntrada.val('').prop('disabled', false);
+            inputViernesSalida.val('').prop('disabled', false);
+            inputSabadoEntrada.val('').prop('disabled', false);
+            inputSabadoSalida.val('').prop('disabled', false);
+            inputDomingoEntrada.val('').prop('disabled', false);
+            inputDomingoSalida.val('').prop('disabled', false);
             inputrecibe.val('');
-            //para formatear los dias de la semana
-            let dias = "Lunes,Martes,Miércoles,Miercoles,Jueves,Viernes,Sabado,Domingo"; // Tu cadena de días
-            let arrayDias = dias.split(","); // Convierte la cadena en un array
-            arrayDias.forEach(function(dia) {
-                // Selecciona el checkbox correspondiente y márcalo como seleccionado
-                let checkbox = document.querySelector(`input[name="dias[]"][value="${dia}"]`);
-                if (checkbox) {
-                    checkbox.checked = false;
-                }
-            });
+
 
 
             // Vacía el select de atención
@@ -556,18 +590,49 @@
                 //Esta parte es para filtrar el horario mas actual registrado y se lo damos a la variable
                 if (HorarioTrabajo.length > 0) {
                     let ultimoHorario = HorarioTrabajo[HorarioTrabajo.length - 1];
-                    inputHorarioInicio.val(ultimoHorario.horaInicio);
-                    inputHorarioFinal.val(ultimoHorario.horaFinal);
-
-                    let arrayDias = ultimoHorario.dias.split(","); // Convierte la cadena en un array
-                    inputrecibe.val(ultimoHorario.recibe);
-                    arrayDias.forEach(function(dia) {
-                        // Selecciona el checkbox correspondiente y márcalo como seleccionado
-                        let checkbox = document.querySelector(`input[name="dias[]"][value="${dia}"]`);
-                        if (checkbox) {
-                            checkbox.checked = true;
+                    let horariosSalida = ultimoHorario.horaFinal.split(',');
+                    let horariosEntrada = ultimoHorario.horaInicio.split(',');
+                    let dias = ultimoHorario.dias.split(',');
+                    console.log(dias);
+                    dias.forEach((dia, index) => {
+                        if (dia == 'Lunes') {
+                            inputLunesEntrada.val(horariosEntrada[index]);
+                            inputLunesSalida.val(horariosSalida[index]);
+                        } else if (dia == 'Martes') {
+                            inputMartesEntrada.val(horariosEntrada[index]);
+                            inputMartesSalida.val(horariosSalida[index]);
+                        } else if (dia == 'Miercoles') {
+                            console.log(dia);
+                            inputMiercolesEntrada.val(horariosEntrada[index]);
+                            inputMiercolesSalida.val(horariosSalida[index]);
+                        } else if (dia == 'Jueves') {
+                            inputJuevesEntrada.val(horariosEntrada[index]);
+                            inputJuevesSalida.val(horariosSalida[index]);
+                        } else if (dia == 'Viernes') {
+                            inputViernesEntrada.val(horariosEntrada[index]);
+                            inputViernesSalida.val(horariosSalida[index]);
+                        } else if (dia == 'Sabado') {
+                            inputSabadoEntrada.val(horariosEntrada[index]);
+                            inputSabadoSalida.val(horariosSalida[index]);
+                        } else if (dia == 'Domingo') {
+                            inputDomingoEntrada.val(horariosEntrada[index]);
+                            inputDomingoSalida.val(horariosSalida[index]);
                         }
+
                     });
+
+
+
+
+                    /* let arrayDias = ultimoHorario.dias.split(","); // Convierte la cadena en un array
+                     inputrecibe.val(ultimoHorario.recibe);
+                     arrayDias.forEach(function(dia) {
+                         // Selecciona el checkbox correspondiente y márcalo como seleccionado
+                         let checkbox = document.querySelector(`input[name="dias[]"][value="${dia}"]`);
+                         if (checkbox) {
+                             checkbox.checked = true;
+                         }
+                     });*/
 
                 }
 
@@ -629,6 +694,20 @@
                 $('#inputNombreAtencion').val('').prop('disabled', false);
                 inputHorarioInicio.val('').prop('disabled', false);
                 inputHorarioFinal.val('').prop('disabled', false);
+                inputLunesEntrada.val('').prop('disabled', false);
+                inputLunesSalida.val('').prop('disabled', false);
+                inputMartesEntrada.val('').prop('disabled', false);
+                inputMartesSalida.val('').prop('disabled', false);
+                inputMiercolesEntrada.val('').prop('disabled', false);
+                inputMiercolesSalida.val('').prop('disabled', false);
+                inputJuevesEntrada.val('').prop('disabled', false);
+                inputJuevesSalida.val('').prop('disabled', false);
+                inputViernesEntrada.val('').prop('disabled', false);
+                inputViernesSalida.val('').prop('disabled', false);
+                inputSabadoEntrada.val('').prop('disabled', false);
+                inputSabadoSalida.val('').prop('disabled', false);
+                inputDomingoEntrada.val('').prop('disabled', false);
+                inputDomingoSalida.val('').prop('disabled', false);
                 inputrecibe.val('');
 
                 //para formatear los dias de la semana
@@ -651,7 +730,17 @@
 
 
 
-        function toggleRFCField() {
+        //RESTABLECES LOS HORARIOS DE TRABAJO
+        document.getElementById('resetButton').addEventListener('click', function() {
+            ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'].forEach(function(dia) {
+                document.getElementById(dia + '_entrada').value = "";
+                document.getElementById(dia + '_salida').value = "";
+            });
+        }); //AQUI FINALIZA EL RESTABLECER
+
+
+        //ENTRA LA FUNCION CUANDO LE DAMOS AL CHECKBOX QUE REQUERIMOS UN RFC POR QUE QUIERE FACTURA
+        function RequiereRFC() {
             var checkbox = document.getElementById("factura");
             var rfcInput = document.getElementById("rfc");
             var warning = document.getElementById("warning");
@@ -667,7 +756,7 @@
                 warning.classList.add("hidden");
                 rfcInput.setCustomValidity(''); // Limpia cualquier mensaje de error anterior
             }
-        }
+        } //FINALIZA LA FUNCION AL DARLE AL CHECKBOX QUE QUIERE RFC
         //validar rfc
         //Dentro de la función, se define una expresión regular (regex) que describe el formato de un RFC válido. Un RFC válido comienza con 3 o 4 letras mayúsculas (incluyendo Ñ y &), seguido de 6 dígitos, y opcionalmente termina con 3 caracteres alfanuméricos.
         function validarRFC(input) {
@@ -679,7 +768,7 @@
             } else {
                 input.setCustomValidity('');
             }
-        }
+        } //FINALIZA FUNCION DE VALIDACION DE RFC
 
 
         function mostrarHorario(checkbox) {
@@ -742,12 +831,26 @@
 
         });
 
-        /*  document.getElementById('botonGuardar').addEventListener('click', function() {
-              this.disabled = true;
+        //FUNCION QUE PERMITE ENVIAR EL FORMULARIO, PRIMERO REVISA SI HAY VALIDACIONES LUEGO SE DESACTIVA PARA EVITAR DOBLE CLICK Y LUEGO ENVIA FORMULARIO
+        document.getElementById('botonGuardar').addEventListener('click', function(event) {
+            // Obtén el formulario
+            var form = document.getElementById('formulario');
 
-              setTimeout(() => {
-                  this.disabled = false;
-              }, 3000); // Desbloquea el botón después de 3 segundos
-          });*/
+            // Si el formulario no es válido, detén la ejecución de la función
+            if (!form.checkValidity()) {
+                return;
+            }
+
+            // Desactiva el botón
+            this.disabled = true;
+
+            // Envía el formulario
+            form.submit();
+
+            setTimeout(() => {
+                // Reactiva el botón después de 3 segundos
+                this.disabled = false;
+            }, 3000);
+        });
     </script>
 @endpush

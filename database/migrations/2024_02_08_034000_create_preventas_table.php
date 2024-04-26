@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('nombre_atencion')->nullable();
             $table->string('nombre_quien_recibe')->nullable();
             $table->string('nombre_quien_entrega')->nullable();
-            $table->time('horario_trabajo_inicio')->nullable();
-            $table->time('horario_trabajo_final')->nullable();
+            $table->string('horario_trabajo_inicio')->nullable();
+            $table->string('horario_trabajo_final')->nullable();
             $table->string('dia_semana')->nullable();
             $table->string('metodo_pago')->nullable();
             $table->boolean('factura')->nullable();

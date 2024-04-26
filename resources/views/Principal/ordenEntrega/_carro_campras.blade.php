@@ -29,7 +29,7 @@
 
     <div class="flex flex-col w-full md:w-1/2">
         <label class="inline-flex items-center">
-            <input type="checkbox" id="factura" name="factura" onchange="toggleRFCField()">
+            <input type="checkbox" id="factura" name="factura" onchange="RequiereRFC()">
             <span class = "ml-2">Requiere factura</span>
         </label>
         <span id="warning" class="text-red-500 hidden">Si desea factura deberá ingresar RFC</span>

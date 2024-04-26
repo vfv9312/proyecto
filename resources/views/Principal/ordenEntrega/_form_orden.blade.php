@@ -21,7 +21,6 @@
         </select>
     </div>
 
-    <input class="hidden" type="text" name="txtempleado" value="{{ Auth::user()->id }}">
     {{--  <label class="">Empleado</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
