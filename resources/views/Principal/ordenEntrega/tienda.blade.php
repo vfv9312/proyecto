@@ -57,39 +57,11 @@
         //Direccion funcion para validar si hay alguna direccion y si el cambio es menor a 0
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('#formulario').addEventListener('submit', function(event) {
-                let inputDirecciones = document.querySelector('#inputDirecciones');
-                let txtcolonia = document.querySelector('#txtcolonia');
-                let calle = document.querySelector('#calle');
-                let cambioInput = document.querySelector(
-                    '#cambioInput'); // Obtener el campo de entrada de cambio
 
-
-                // Verificar si no se seleccionó una dirección existente y tampoco se ingresó una nueva
-                if (inputDirecciones.value === '' && txtcolonia.value === 'null' && calle.value.trim() ===
-                    '') {
-                    event.preventDefault();
-
-                    // Establecer un mensaje de error personalizado y marcar el campo como inválido
-                    inputDirecciones.setCustomValidity(
-                        'Debes seleccionar una dirección existente o ingresar una nueva.');
-                    inputDirecciones.reportValidity();
-                } else {
-                    // Si los campos son válidos, limpiar cualquier mensaje de error anterior
-                    inputDirecciones.setCustomValidity('');
-                }
-
-                // Verificar si el cambio es menor que 0
-                if (parseFloat(cambioInput.value) < 0) {
-                    event.preventDefault();
-
-                    // Establecer un mensaje de error personalizado y marcar el campo como inválido
-                    cambioInput.setCustomValidity('El cambio no puede ser menor que 0.');
-                    cambioInput.reportValidity();
-                } else {
-                    // Si el campo es válido, limpiar cualquier mensaje de error anterior
-                    cambioInput.setCustomValidity('');
-                }
             });
+
+
+
 
             // Escuchar cambios en los campos txtcolonia y calle para limpiar los mensajes de error cuando se corrijan
             document.querySelector('#txtcolonia').addEventListener('input', function() {
@@ -593,7 +565,7 @@
                     let horariosSalida = ultimoHorario.horaFinal.split(',');
                     let horariosEntrada = ultimoHorario.horaInicio.split(',');
                     let dias = ultimoHorario.dias.split(',');
-                    console.log(dias);
+                    inputrecibe.val(ultimoHorario.recibe);
                     dias.forEach((dia, index) => {
                         if (dia == 'Lunes') {
                             inputLunesEntrada.val(horariosEntrada[index]);
@@ -602,7 +574,6 @@
                             inputMartesEntrada.val(horariosEntrada[index]);
                             inputMartesSalida.val(horariosSalida[index]);
                         } else if (dia == 'Miercoles') {
-                            console.log(dia);
                             inputMiercolesEntrada.val(horariosEntrada[index]);
                             inputMiercolesSalida.val(horariosSalida[index]);
                         } else if (dia == 'Jueves') {
@@ -621,18 +592,6 @@
 
                     });
 
-
-
-
-                    /* let arrayDias = ultimoHorario.dias.split(","); // Convierte la cadena en un array
-                     inputrecibe.val(ultimoHorario.recibe);
-                     arrayDias.forEach(function(dia) {
-                         // Selecciona el checkbox correspondiente y márcalo como seleccionado
-                         let checkbox = document.querySelector(`input[name="dias[]"][value="${dia}"]`);
-                         if (checkbox) {
-                             checkbox.checked = true;
-                         }
-                     });*/
 
                 }
 
@@ -829,12 +788,79 @@
                 }
             });
 
-        });
+        }); //Finaliza la funcion que muestra datos del modal
+
+
+
 
         //FUNCION QUE PERMITE ENVIAR EL FORMULARIO, PRIMERO REVISA SI HAY VALIDACIONES LUEGO SE DESACTIVA PARA EVITAR DOBLE CLICK Y LUEGO ENVIA FORMULARIO
         document.getElementById('botonGuardar').addEventListener('click', function(event) {
             // Obtén el formulario
             var form = document.getElementById('formulario');
+
+            /**
+             *
+             *
+             * */
+
+            var dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+            for (var i = 0; i < dias.length; i++) {
+                var dia = dias[i];
+                var entrada = document.getElementById(dia + '_entrada').value;
+                var salida = document.getElementById(dia + '_salida').value;
+
+                if (entrada && !salida) {
+                    alert('Por favor, también rellene el campo de Hora de salida para el ' + dia + '.');
+                    event.preventDefault();
+                    return;
+                }
+            }
+            //Finaliza funcion para validar si no relleno el horario de salida o entrada
+
+            let inputDirecciones = document.querySelector('#inputDirecciones');
+            let txtcolonia = document.querySelector('#txtcolonia');
+            let calle = document.querySelector('#calle');
+            let cambioInput = document.querySelector(
+                '#cambioInput'); // Obtener el campo de entrada de cambio
+            let ArrayProductos = document.querySelector('#inputProductosSeleccionados');
+
+
+            // Verificar si no se seleccionó una dirección existente y tampoco se ingresó una nueva
+            if (inputDirecciones.value === '' && txtcolonia.value === 'null' && calle.value.trim() ===
+                '') {
+                event.preventDefault();
+
+                // Establecer un mensaje de error personalizado y marcar el campo como inválido
+                inputDirecciones.setCustomValidity(
+                    'Debes seleccionar una dirección existente o ingresar una nueva.');
+                inputDirecciones.reportValidity();
+            } else {
+                // Si los campos son válidos, limpiar cualquier mensaje de error anterior
+                inputDirecciones.setCustomValidity('');
+            }
+
+            //Verificar que tenga datos el array de productos
+            if (!ArrayProductos.value) {
+                alert('No has agregado productos a tu lista de pedidos');
+                event.preventDefault();
+                return;
+            }
+
+            // Verificar si el cambio es menor que 0  pues marque un alert
+            if (parseFloat(cambioInput.value) < 0) {
+                event.preventDefault();
+                // Establecer un mensaje de error personalizado y marcar el campo como inválido
+                pagaCon.setCustomValidity('El cambio no puede ser menor que 0.');
+                pagaCon.reportValidity();
+                alert('El cambio no puede ser menor que 0.');
+                return;
+            } else {
+                // Si el campo es válido, limpiar cualquier mensaje de error anterior
+                cambioInput.setCustomValidity('');
+            }
+
+
+
 
             // Si el formulario no es válido, detén la ejecución de la función
             if (!form.checkValidity()) {

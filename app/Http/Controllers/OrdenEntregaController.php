@@ -171,7 +171,6 @@ class OrdenEntregaController extends Controller
      */
     public function store(Request $request)
     {
-
         /* $request->validate([
             'txtnombreCliente' => 'required',
             // otras reglas de validación...
