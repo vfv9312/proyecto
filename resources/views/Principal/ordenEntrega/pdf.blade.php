@@ -60,6 +60,7 @@
             border-top: 1px dashed;
             padding-top: 5mm;
             text-align: center;
+            font-size: 12px
         }
 
         .item {
@@ -100,9 +101,9 @@ opacity: 0.5;">
     $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
     $fecha = $fechaHoraArray[0];
     $hora = $fechaHoraArray[1];
-
-    $horariosInicio = explode(',', $ordenRecoleccion->horarioTrabajoInicio);
-    $horariosFinal = explode(',', $ordenRecoleccion->horarioTrabajoFinal);
+    // array values reacomoda el indice despues de que haga el filter para eliminar los datos vacios
+    $horariosInicio = array_values(array_filter(explode(',', $ordenRecoleccion->horarioTrabajoInicio)));
+    $horariosFinal = array_values(array_filter(explode(',', $ordenRecoleccion->horarioTrabajoFinal)));
     $dias = explode(',', $ordenRecoleccion->diaSemana);
 
 @endphp
@@ -164,15 +165,37 @@ opacity: 0.5;">
                 <p>Color : {{ $producto->nombreColor }}, Marca : {{ $producto->nombreMarca }}, Tipo :
                     {{ $producto->nombreModo }}, Categoria : {{ $producto->nombreTipo }}, Cantidad:
                     {{ $producto->cantidad }}</p>
-                <p style="margin-bottom: 10px;">Precio unitario: ${{ $producto->precio }}</p>
-                @php
-                    $total += $producto->precio * $producto->cantidad;
-                @endphp
+                <p>Precio unitario: ${{ $producto->precio }}</p>
+                <p>
+                    @if ($producto->tipoDescuento == 'Porcentaje')
+                        Descuento : {{ intval($producto->descuento) }}%
+                        <p> Costo :
+                            ${{ $producto->precio * $producto->cantidad - ($producto->precio * intval($producto->descuento)) / 100 }}
+                        </p>
+                        @php
+                            $total +=
+                                $producto->precio * $producto->cantidad -
+                                ($producto->precio * intval($producto->descuento)) / 100;
+                        @endphp
+                    @elseif ($producto->tipoDescuento == 'cantidad')
+                        Descuento : ${{ $producto->descuento }}
+                        <p> Costo : ${{ $producto->precio * $producto->cantidad - $producto->descuento }}</p>
+                        @php
+                            $total += $producto->precio * $producto->cantidad - $producto->descuento;
+                        @endphp
+                    @elseif ($producto->tipoDescuento == 'Sin descuento')
+                        Costo : {{ $producto->precio * $producto->cantidad }}
+                        @php
+                            $total += $producto->precio * $producto->cantidad;
+                        @endphp
+                    @endif
+                </p>
+                <p style="margin-bottom: 10px;"></p>
             @endforeach
             <h5> Datos del pago </h5>
             <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
             <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
-            Costo total : ${{ $total }}<br>
+            Costo total : ${{ number_format($total, 2) }}<br>
             {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
             <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
             </p>

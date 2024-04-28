@@ -259,11 +259,8 @@ class OrdenEntregaController extends Controller
             // Eliminar la última coma
             $diasConDatos = rtrim($diasConDatos, ',');
 
-
-
             // Decodifica la cadena JSON
             $relacion = json_decode($request->input('inputProductosSeleccionados'), true);
-
 
 
 
@@ -297,6 +294,17 @@ class OrdenEntregaController extends Controller
                     $producto_precio = precios_productos::where('id_producto', $articulo['id'])
                         ->where('estatus', 1)
                         ->first();
+
+                    //si descuento es null entonces valdra 0 y sin descuento para poder ingresarlo a la base de datos
+                    if ($articulo['tipoDescuento'] == "null") {
+                        $tipoDescuento = 'Sin descuento';
+                        $descuento = 0;
+                    } else {
+                        $tipoDescuento =   $articulo['tipoDescuento'];
+                        $descuento = $articulo['descuento'];
+                    }
+
+
                     //luego buscamos los datos del producto
                     $producto = Productos::where('id', $articulo['id'])->first();
                     //ya una vez identificados le agregamos el id del precio actual y cantidad
@@ -304,6 +312,8 @@ class OrdenEntregaController extends Controller
                         'id_precio_producto' => $producto_precio->id, //id del precio producto que esta relacionado con el producto
                         'id_preventa' => $preventa->id, //le asignamos su nummero de preventa
                         'cantidad' => $articulo['cantidad'], //le asignamos su cantidad
+                        'descuento' => $descuento,
+                        'tipo_descuento' => $tipoDescuento, //le asignamos Sin descuento si llega hacer null
                         'estatus' => 3 //le asignamos estatus 3
                     ]);
                 }
@@ -386,11 +396,22 @@ class OrdenEntregaController extends Controller
                         ->first();
                     //luego buscamos los datos del producto
                     $producto = Productos::where('id', $articulo['id'])->first();
+
+                    //si descuento es null entonces valdra 0 y sin descuento para poder ingresarlo a la base de datos
+                    if ($articulo['tipoDescuento'] == "null") {
+                        $tipoDescuento = 'Sin descuento';
+                        $descuento = 0;
+                    } else {
+                        $tipoDescuento =   $articulo['tipoDescuento'];
+                        $descuento = $articulo['descuento'];
+                    }
                     //ya una vez identificados le agregamos el id del precio actual y cantidad
                     $producto_venta = ventas_productos::firstOrCreate([
                         'id_precio_producto' => $producto_precio->id, //id del precio producto que esta relacionado con el producto
                         'id_preventa' => $preventa->id, //le asignamos su nummero de preventa
                         'cantidad' => $articulo['cantidad'], //le asignamos su cantidad
+                        'descuento' => $descuento,
+                        'tipo_descuento' => $tipoDescuento, //le asignamos Sin descuento si llega hacer null
                         'estatus' => 3 //le asignamos estatus 3
                     ]);
                 }
@@ -449,12 +470,12 @@ class OrdenEntregaController extends Controller
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            //return $th->getMessage();
-            session()->flash("incorrect", "Error al procesar los productos, posiblemente no registro algun dato");
-            return redirect()->route('orden_entrega.index');
+            return $th->getMessage();
+
+            //session()->flash("incorrect", "Error al procesar los productos, posiblemente no registro algun dato");
+            //return redirect()->route('orden_entrega.index');
         }
         // Redirecciona al usuario a una página de vista de resumen o éxito
         return redirect()->route('orden_recoleccion.vistaPreviaOrdenEntrega', $preventa->id); // Reemplaza 'ruta.nombre' con el nombre real de la ruta a la que deseas redirigir
@@ -510,7 +531,18 @@ class OrdenEntregaController extends Controller
             ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->join('modos', 'modos.id', '=', 'productos.id_modo')
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
-            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
+            ->select(
+                'productos.nombre_comercial',
+                'precios_productos.precio',
+                'ventas_productos.cantidad',
+                'ventas_productos.descuento',
+                'ventas_productos.tipo_descuento as tipoDescuento',
+                'colors.nombre as nombreColor',
+                'marcas.nombre as nombreMarca',
+                'tipos.nombre as nombreTipo',
+                'modos.nombre as nombreModo',
+
+            )
             ->get();
 
 
@@ -648,7 +680,17 @@ class OrdenEntregaController extends Controller
             ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->join('modos', 'modos.id', '=', 'productos.id_modo')
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
-            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
+            ->select(
+                'productos.nombre_comercial',
+                'precios_productos.precio',
+                'ventas_productos.cantidad',
+                'ventas_productos.descuento',
+                'ventas_productos.tipo_descuento as tipoDescuento',
+                'colors.nombre as nombreColor',
+                'marcas.nombre as nombreMarca',
+                'tipos.nombre as nombreTipo',
+                'modos.nombre as nombreModo'
+            )
             ->get();
         $fechaCreacion = \Carbon\Carbon::parse($ordenRecoleccion->fechaCreacion);
 

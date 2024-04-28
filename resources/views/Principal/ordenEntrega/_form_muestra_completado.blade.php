@@ -109,13 +109,23 @@
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Costo total
         </label>
+        @php
+            $total = 0;
+            foreach ($listaProductos as $producto) {
+                if ($producto->tipoDescuento == 'Porcentaje') {
+                    $total +=
+                        $producto->precio * $producto->cantidad -
+                        ($producto->precio * intval($producto->descuento)) / 100;
+                } elseif ($producto->tipoDescuento == 'cantidad') {
+                    $total += $producto->precio * $producto->cantidad - $producto->descuento;
+                } elseif ($producto->tipoDescuento == 'Sin descuento') {
+                    $total += $producto->precio * $producto->cantidad;
+                }
+            }
+        @endphp
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="atencion" type="text" name="txtatencion"
-            value="@php $total = 0;
-            foreach ($listaProductos as $producto) {
-                $total += $producto->precio * $producto->cantidad;} @endphp ${{ $total }}"
-            readonly>
+            id="atencion" type="text" name="txtatencion" value="${{ $total }}" readonly>
         <input type="hidden" name="total" value="{{ $total }}">
     </div>
     @if ($ordenRecoleccion->metodoPago == 'Efectivo')
@@ -175,6 +185,14 @@
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Precio unitario
                             </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Descuento
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Costo
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -193,6 +211,24 @@
                                 </td>
                                 <td>
                                     ${{ $producto->precio }}
+                                </td>
+                                <td>
+                                    @if ($producto->tipoDescuento == 'Porcentaje')
+                                        {{ intval($producto->descuento) }}%
+                                    @elseif ($producto->tipoDescuento == 'cantidad')
+                                        ${{ $producto->descuento }}
+                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
+                                        {{ $producto->tipoDescuento }}
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($producto->tipoDescuento == 'Porcentaje')
+                                        ${{ $producto->precio * $producto->cantidad - ($producto->precio * intval($producto->descuento)) / 100 }}
+                                    @elseif ($producto->tipoDescuento == 'cantidad')
+                                        ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
+                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
+                                        ${{ $producto->precio * $producto->cantidad }}
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
