@@ -562,11 +562,13 @@
                 //Esta parte es para filtrar el horario mas actual registrado y se lo damos a la variable
                 if (HorarioTrabajo.length > 0) {
                     let ultimoHorario = HorarioTrabajo[HorarioTrabajo.length - 1];
-                    let horariosSalida = ultimoHorario.horaFinal.split(',');
-                    let horariosEntrada = ultimoHorario.horaInicio.split(',');
+                    //split separa la cadena despues del , y luego con filter solo se guardaran los que tengan datos despues del , en el array si esta vacio no
+                    let horariosSalida = ultimoHorario.horaFinal.split(',').filter(Boolean);
+                    let horariosEntrada = ultimoHorario.horaInicio.split(',').filter(Boolean);
                     let dias = ultimoHorario.dias.split(',');
                     inputrecibe.val(ultimoHorario.recibe);
                     dias.forEach((dia, index) => {
+                        console.log(horariosEntrada);
                         if (dia == 'Lunes') {
                             inputLunesEntrada.val(horariosEntrada[index]);
                             inputLunesSalida.val(horariosSalida[index]);
