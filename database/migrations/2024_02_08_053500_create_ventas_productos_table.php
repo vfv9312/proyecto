@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_precio_producto');
             $table->unsignedBigInteger('id_preventa')->nullable();
             $table->integer('cantidad');
+            $table->decimal('descuento', 8, 2);
+            $table->string('tipo_descuento');
             $table->text('descipcion')->nullable();
             $table->timestamps();
             $table->softDeletes();
