@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Inicio')
+@section('title', 'Recoleccion')
 
 @section('content')
     <h1 class=" text-center mb-5">Ultimos ordenes de Entrega/Servicio</h1>
@@ -17,6 +17,7 @@
             {{ session('incorrect') }}
         </div>
     @endif
+
     @include('Principal.ordenRecoleccion._filtros')
     @include('Principal.ordenRecoleccion._tabla_pendientes')
 @endsection('content')

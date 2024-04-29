@@ -27,6 +27,8 @@ class ClientesController extends Controller
                 $query->where('personas.telefono', 'LIKE', "%{$busqueda}%")
                     ->orWhere('personas.nombre', 'LIKE', "%{$busqueda}%")
                     ->orWhere('personas.apellido', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('personas.email', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('clientes.comentario', 'LIKE', "%{$busqueda}%")
                     ->orWhere(DB::raw("CONCAT(personas.nombre, ' ', personas.apellido)"), 'LIKE', "%{$busqueda}%");
             })
             ->select('clientes.id', 'clientes.comentario', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento')

@@ -60,6 +60,7 @@
             border-top: 1px dashed;
             padding-top: 5mm;
             text-align: center;
+            font-size: 12px
         }
 
         .item {
@@ -129,6 +130,7 @@
                             $total += $producto->precio * $producto->cantidad;
                         @endphp
                     @endif
+                    <p style="margin-bottom: 10px;"></p>
                 @endforeach
                 <h5> Datos del pago </h5>
                 @if ($ordenRecoleccion->metodoPago)

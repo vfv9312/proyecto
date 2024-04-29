@@ -20,6 +20,7 @@
                 {{ session('incorrect') }}
             </div>
         @endif
+        @include('empleados._filtro');
         <!-- boton anadir producto-->
         <button id="abrirnModalRegisrarEmpleado"
             class=" ml-10 mb-4 bg-gradient-to-r  from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
@@ -88,7 +89,7 @@
                             <!---Si el cliente cambia de opinion y quiere agregar datos  quitar comentario-->
                             <!-- tipos de ordenes : Orden de Servicio (Recepción), Orden de Pedido a Domicilio, Orden de Venta, Orden de Recolección <label class="text-sm text-gray-500 flex flex-col items-start">
 
-                                                                                                                                                                                                                                                                            </label>-->
+                                                                                                                                                                                                                                                                                </label>-->
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Guardar empleado
@@ -120,8 +121,8 @@
                 <td class="py-3 px-6 text-left border-r">Correo Electronico</td>
                 <!--El dueño no quiere correo o imagen-->
                 <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Correo electronico</td>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Imagen</td>-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td class="py-3 px-6 text-left border-r">Correo electronico</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td class="py-3 px-6 text-left border-r">Imagen</td>-->
             </tr>
             @foreach ($empleados as $empleado)
                 <tr class= " border-b border-gray-200 text-sm">

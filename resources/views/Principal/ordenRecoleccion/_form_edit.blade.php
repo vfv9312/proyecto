@@ -169,22 +169,23 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                     @endif
 
 
-                                    {{-- <input type="number" name="costo_unitario[{{ $producto->id }}]"
-                                        data-cantidad="{{ $producto->cantidad }}" step="0.01"
-                                        class="form-input mt-1 block w-full" placeholder="Costo unitario"
-                                        value="{{ $producto->precio_unitario * $producto->cantidad }}" readonly> --}}
                                 </td>
+
                                 <td>
-                                    @if ($producto->tipoDescuento == 'Porcentaje')
-                                        ${{ $producto->precio * $producto->cantidad - ($producto->precio * intval($producto->descuento)) / 100 }}
-                                    @elseif ($producto->tipoDescuento == 'cantidad')
-                                        ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
-                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
-                                        ${{ $producto->precio * $producto->cantidad }}
-                                    @endif
-
-
-                                    {{-- @if ($producto->porcentaje === null)
+                                    @if ($datosEnvio->estatusPreventa == 3)
+                                        @if ($producto->tipoDescuento == 'Porcentaje')
+                                            ${{ $producto->precio * $producto->cantidad - ($producto->precio * intval($producto->descuento)) / 100 }}
+                                        @elseif ($producto->tipoDescuento == 'cantidad')
+                                            ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
+                                        @elseif ($producto->tipoDescuento == 'Sin descuento')
+                                            ${{ $producto->precio * $producto->cantidad }}
+                                        @endif
+                                    @elseif($datosEnvio->estatusPreventa == 4)
+                                        <input type="number" name="costo_unitario[{{ $producto->id }}]"
+                                            data-cantidad="{{ $producto->cantidad }}" step="0.01"
+                                            class="form-input mt-1 block w-full" placeholder="Costo unitario"
+                                            value="{{ $producto->precio_unitario * $producto->cantidad }}" readonly>
+                                        {{-- @if ($producto->porcentaje === null)
                                     <td>
                                         Sin descuento
                                     </td>
@@ -193,6 +194,7 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                         {{ $producto->porcentaje }}%
                                     </td>
                                 @endif --}}
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

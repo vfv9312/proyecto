@@ -25,8 +25,6 @@
         @include('layouts.navbar')
         @include('layouts.siderbar')
 
-
-
         <!-- Page Content -->
         <main class=" lg:pl-64">
             @yield('content')

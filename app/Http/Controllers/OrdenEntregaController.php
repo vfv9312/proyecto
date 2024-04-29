@@ -174,7 +174,6 @@ class OrdenEntregaController extends Controller
             // otros mensajes personalizados...
         ]);*/
 
-
         $nombreEmpleado = Auth::user()->name;
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
@@ -212,14 +211,14 @@ class OrdenEntregaController extends Controller
             $LunesSalida = $request->input('Lunes_salida');
             $MartesEntrada = $request->input('Martes_entrada');
             $MartesSalida = $request->input('Martes_salida');
-            $MiercolesEntrada = $request->input('Miércoles_entrada');
-            $MiercolesSalida = $request->input('Miércoles_salida');
+            $MiercolesEntrada = $request->input('Miercoles_entrada');
+            $MiercolesSalida = $request->input('Miercoles_salida');
             $JuevesEntrada = $request->input('Jueves_entrada');
             $JuevesSalida = $request->input('Jueves_salida');
             $ViernesEntrada = $request->input('Viernes_entrada');
             $ViernesSalida = $request->input('Viernes_salida');
-            $SabadoEntrada = $request->input('Sábado_entrada');
-            $SabadoSalida = $request->input('Sábado_salida');
+            $SabadoEntrada = $request->input('Sabado_entrada');
+            $SabadoSalida = $request->input('Sabado_salida');
             $DomingoEntrada = $request->input('Domingo_entrada');
             $DomingoSalida = $request->input('Domingo_salida');
 
@@ -236,7 +235,7 @@ class OrdenEntregaController extends Controller
                 $diasConDatos .= 'Martes,';
             }
             if (!empty($MiercolesEntrada)) {
-                $diasConDatos .= 'Miércoles,';
+                $diasConDatos .= 'Miercoles,';
             }
             if (!empty($JuevesEntrada)) {
                 $diasConDatos .= 'Jueves,';
@@ -245,7 +244,7 @@ class OrdenEntregaController extends Controller
                 $diasConDatos .= 'Viernes,';
             }
             if (!empty($SabadoEntrada)) {
-                $diasConDatos .= 'Sábado,';
+                $diasConDatos .= 'Sabado,';
             }
             if (!empty($DomingoEntrada)) {
                 $diasConDatos .= 'Domingo,';

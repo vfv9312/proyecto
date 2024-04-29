@@ -33,10 +33,7 @@
         </label>
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="atencion" type="text" name="txtatencion"
-            value="{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }} -
-            {{ $ordenRecoleccion->nombreRol }}"
-            readonly>
+            id="atencion" type="text" name="txtatencion" value="{{ $ordenRecoleccion->nombreEmpleado }}" readonly>
     </div>
 </div>
 <div class="flex flex-wrap -mx-3 mt-5 px-6 py-4 whitespace-no-wrap border-b border-gray-200">
@@ -182,6 +179,10 @@
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Descuento
                             </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Costo
+                            </th>
 
                         </tr>
                     </thead>
@@ -202,15 +203,18 @@
                                 <td>
                                     ${{ $producto->precio }}
                                 </td>
-                                @if ($producto->porcentaje === null)
-                                    <td>
-                                        Sin descuento
-                                    </td>
-                                @else
-                                    <td>
-                                        {{ $producto->porcentaje }}%
-                                    </td>
-                                @endif
+                                <td>
+                                    @if ($producto->tipoDescuento == 'Porcentaje')
+                                        {{ intval($producto->descuento) }}%
+                                    @elseif ($producto->tipoDescuento == 'cantidad')
+                                        ${{ $producto->descuento }}
+                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
+                                        {{ $producto->tipoDescuento }}
+                                    @endif
+                                </td>
+                                <td>
+                                    {{ $producto->precio_unitario }}
+                                </td>
 
                             </tr>
                         @endforeach

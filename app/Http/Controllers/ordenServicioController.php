@@ -9,7 +9,6 @@ use App\Models\Color;
 use App\Models\Descuentos;
 use App\Models\direcciones;
 use App\Models\direcciones_clientes;
-use App\Models\empleados;
 use App\Models\Folio;
 use App\Models\Info_tickets;
 use App\Models\Marcas;
@@ -26,6 +25,7 @@ use App\Models\ventas_productos;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dotenv\Util\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
@@ -130,8 +130,6 @@ class ordenServicioController extends Controller
      */
     public function store(Request $request)
     {
-
-        dd($request);
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
             // si fue seleccionado el cliente y la direccion tendremos estos datos del id
@@ -151,7 +149,7 @@ class ordenServicioController extends Controller
 
             //datos que iran siempre
             $atencion = $request->input('txtatencion');
-            $idEmpleado = $request->input('txtempleado');
+            $nombreEmpleado = Auth::user()->name;
 
             //si no tenemos datos del id direccion entonces recibiremos
             $idNuevacolonia = $request->input('nuevacolonia');
@@ -180,7 +178,7 @@ class ordenServicioController extends Controller
 
                 //crearemos una preventa con estatus 4
                 $preventa->id_cliente = $idCliente;
-                $preventa->id_empleado = $idEmpleado;
+                $preventa->nombre_empleado = $nombreEmpleado;
                 $preventa->nombre_atencion = $atencion;
                 $preventa->metodo_pago = $metodoPago;
                 $preventa->factura = $factura === 'on' ? 1 : 0;
@@ -200,22 +198,30 @@ class ordenServicioController extends Controller
                         ->first();
                     //luego buscamos los datos del producto
                     $producto = Productos::where('id', $articulo['id'])->first();
-                    //buscamos el descuento
-                    $descuento = Descuentos::where('porcentaje', $articulo['descuento'])->where('estatus', 1)->first();
-                    $descuento = Descuentos::where('porcentaje', $articulo['descuento'])->where('estatus', 1)->first();
-                    if ($descuento === null) {
-                        $descuento = new stdClass();
-                        $descuento->id = null;
+
+                    if ($articulo['tipoDescuento'] == "cantidad") {
+                        $valorDescuento = $articulo['cantidad'] * $articulo['precio'] - $articulo['descuento'];
+                        $descuento = $articulo['descuento'];
+                        $tipoDescuento = $articulo['tipoDescuento'];
+                    } else if ($articulo['tipoDescuento'] == "Porcentaje") {
+                        $descuentoDividido =  intval($articulo['descuento']) / 100;
+                        $valorDescuento = (intval($articulo['cantidad']) * $producto_precio->precio) * (1 - $descuentoDividido);
+                        $descuento = intval($articulo['descuento']);
+                        $tipoDescuento = $articulo['tipoDescuento'];
+                    } else if ($articulo['tipoDescuento'] == "null") {
+                        $valorDescuento = $articulo['cantidad'] * $articulo['precio'];
+                        $descuento = 0;
+                        $tipoDescuento = 'Sin descuento';
                     }
-                    $descuentoDividido =  $articulo['descuento'] / 100;
-                    $cantidadUnitaria = (intval($articulo['cantidad']) * $producto_precio->precio) * (1 - $descuentoDividido);
 
                     //ya una vez identificados le agregamos el id del precio actual y cantidad
                     $producto_venta = Servicios_preventas::firstOrCreate([
                         'id_precio_producto' => $producto_precio->id, //id del precio producto que esta relacionado con el producto
                         'id_preventa' => $preventa->id, //le asignamos su nummero de preventa
-                        'id_descuento' => $descuento->id, //le asignamos el id del descuento
-                        'precio_unitario' => $cantidadUnitaria,
+                        'descuento' => $descuento,
+                        'precio_unitario' => $valorDescuento,
+                        'tipo_descuento' => $tipoDescuento,
+                        'cantidad' => $articulo['cantidad'],  //borrar cuando cargue el migration
                         'cantidad_total' => $articulo['cantidad'], //le asignamos su cantidad
                         'estatus' => 1 //le asignamos estatus 1
                     ]);
@@ -276,9 +282,8 @@ class ordenServicioController extends Controller
                 ]);
 
                 $preventa->id_cliente = $clienteNuevo->id;
-                $preventa->id_empleado = $idEmpleado;
                 $preventa->nombre_atencion = $atencion;
-
+                $preventa->nombre_empleado = $nombreEmpleado;
                 $preventa->metodo_pago = $metodoPago;
                 $preventa->factura = $factura === 'on' ? 1 : 0;
                 $preventa->pago_efectivo = $pagaCon;
@@ -297,21 +302,30 @@ class ordenServicioController extends Controller
                         ->first();
                     //luego buscamos los datos del producto
                     $producto = Productos::where('id', $articulo['id'])->first();
-                    //buscamos el descuento
-                    $descuento = Descuentos::where('porcentaje', $articulo['descuento'])->where('estatus', 1)->first();
-                    if ($descuento === null) {
-                        $descuento = new stdClass();
-                        $descuento->id = null;
+
+                    if ($articulo['tipoDescuento'] == "cantidad") {
+                        $valorDescuento = $articulo['cantidad'] * $articulo['precio'] - $articulo['descuento'];
+                        $descuento = $articulo['descuento'];
+                        $tipoDescuento = $articulo['tipoDescuento'];
+                    } else if ($articulo['tipoDescuento'] == "Porcentaje") {
+                        $descuentoDividido =  intval($articulo['descuento']) / 100;
+                        $valorDescuento = (intval($articulo['cantidad']) * $producto_precio->precio) * (1 - $descuentoDividido);
+                        $descuento = intval($articulo['descuento']);
+                        $tipoDescuento = $articulo['tipoDescuento'];
+                    } else if ($articulo['tipoDescuento'] == "null") {
+                        $valorDescuento = $articulo['cantidad'] * $articulo['precio'];
+                        $descuento = 0;
+                        $tipoDescuento = 'Sin descuento';
                     }
-                    $descuentoDividido =  $articulo['descuento'] / 100;
-                    $cantidadUnitaria = (intval($articulo['cantidad']) * $producto_precio->precio) * (1 - $descuentoDividido);
 
                     //ya una vez identificados le agregamos el id del precio actual y cantidad
                     $producto_venta = Servicios_preventas::firstOrCreate([
                         'id_precio_producto' => $producto_precio->id, //id del precio producto que esta relacionado con el producto
                         'id_preventa' => $preventa->id, //le asignamos su nummero de preventa
-                        'id_descuento' => $descuento->id, //le asignamos el id del descuento
-                        'precio_unitario' => $cantidadUnitaria,
+                        'descuento' => $descuento,
+                        'precio_unitario' => $valorDescuento,
+                        'tipo_descuento' => $tipoDescuento,
+                        'cantidad' => $articulo['cantidad'],  //borrar cuando cargue el migration
                         'cantidad_total' => $articulo['cantidad'], //le asignamos su cantidad
                         'estatus' => 1 //le asignamos estatus 1
                     ]);
@@ -453,11 +467,8 @@ class ordenServicioController extends Controller
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $id->id)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
@@ -483,16 +494,11 @@ class ordenServicioController extends Controller
                 'personaClientes.apellido as apellidoCliente',
                 'personaClientes.telefono as telefonoCliente',
                 'personaClientes.email as correo',
-                'personaEmpleado.nombre as nombreEmpleado',
-                'personaEmpleado.apellido as apellidoEmpleado',
-                'personaEmpleado.telefono as telefonoEmpleado',
-                'roles.nombre as nombreRol',
             )
             ->first();
 
 
         $listaProductos = precios_productos::join('servicios_preventas', 'servicios_preventas.id_precio_producto', '=', 'precios_productos.id')
-            ->leftJoin('descuentos', 'descuentos.id', '=', 'servicios_preventas.id_descuento')
             ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
             ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
@@ -500,7 +506,18 @@ class ordenServicioController extends Controller
             ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->join('modos', 'modos.id', '=', 'productos.id_modo')
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
-            ->select('productos.nombre_comercial', 'servicios_preventas.precio_unitario as precio', 'servicios_preventas.cantidad_total as cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo', 'descuentos.porcentaje')
+            ->select(
+                'productos.nombre_comercial',
+                'servicios_preventas.precio_unitario',
+                'servicios_preventas.cantidad_total as cantidad',
+                'servicios_preventas.tipo_descuento as tipoDescuento',
+                'servicios_preventas.descuento',
+                'precios_productos.precio',
+                'colors.nombre as nombreColor',
+                'marcas.nombre as nombreMarca',
+                'tipos.nombre as nombreTipo',
+                'modos.nombre as nombreModo'
+            )
             ->get();
 
         return view('Principal.ordenServicio.orden_completada', compact('listaProductos', 'ordenRecoleccion'));
@@ -618,11 +635,8 @@ class ordenServicioController extends Controller
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $id->id)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
@@ -652,15 +666,10 @@ class ordenServicioController extends Controller
                 'personaClientes.apellido as apellidoCliente',
                 'personaClientes.telefono as telefonoCliente',
                 'personaClientes.email as correo',
-                'personaEmpleado.nombre as nombreEmpleado',
-                'personaEmpleado.apellido as apellidoEmpleado',
-                'personaEmpleado.telefono as telefonoEmpleado',
-                'roles.nombre as nombreRol',
             )
             ->first();
 
         $listaProductos = Servicios_preventas::join('precios_productos', 'precios_productos.id', '=', 'servicios_preventas.id_precio_producto')
-            ->leftJoin('descuentos', 'descuentos.id', '=', 'servicios_preventas.id_descuento')
             ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
             ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
@@ -677,7 +686,6 @@ class ordenServicioController extends Controller
                 'tipos.nombre as nombreTipo',
                 'colors.nombre as nombreColor',
                 'servicios_preventas.precio_unitario as precio',
-                'descuentos.porcentaje'
             )
             ->get();
 
@@ -711,11 +719,8 @@ class ordenServicioController extends Controller
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $id)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
@@ -736,8 +741,6 @@ class ordenServicioController extends Controller
                 'personaClientes.apellido as apellidoCliente',
                 'personaClientes.telefono as telefonoCliente',
                 'personaClientes.email as correo',
-                'personaEmpleado.nombre as nombreEmpleado',
-                'personaEmpleado.apellido as apellidoEmpleado',
             )
             ->first();
         $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')

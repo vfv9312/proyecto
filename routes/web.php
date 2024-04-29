@@ -72,15 +72,15 @@ Route::middleware(['auth'])->group(function () {
 
     //rutas para restablecer informacion eliminada
     Route::prefix('restablecer')->group(function () {
-        Route::get('/', [RestablecerController::class, 'index'])->name('Restablecer.index')->middleware(['verified']);
-        Route::get('cancelaciones', [RestablecerController::class, 'cancelaciones'])->name('Restablecer.cancelaciones')->middleware(['verified']);
-        Route::get('clientes', [RestablecerController::class, 'clientes'])->name('Restablecer.clientes')->middleware(['verified']);
-        Route::get('servicios', [RestablecerController::class, 'servicios'])->name('Restablecer.servicios')->middleware(['verified']);
-        Route::get('productos', [RestablecerController::class, 'productos'])->name('Restablecer.productos')->middleware(['verified']);
-        Route::put('cancelaciones/{id}', [RestablecerController::class, 'actualizarCancelacion'])->name('Restablecer.actualizarcancelacion')->middleware(['verified']);
-        Route::put('clientes/{id}', [RestablecerController::class, 'actualizarCliente'])->name('Restablecer.actualizarcliente')->middleware(['verified']);
-        Route::put('productos/{id}', [RestablecerController::class, 'actualizarProducto'])->name('Restablecer.actualizarProducto')->middleware(['verified']);
-        Route::put('servicios/{id}', [RestablecerController::class, 'actualizarServicio'])->name('Restablecer.actualizarServicio')->middleware(['verified']);
+        Route::get('/', [RestablecerController::class, 'index'])->name('Restablecer.index')->middleware(['verified', 'rol']);
+        Route::get('cancelaciones', [RestablecerController::class, 'cancelaciones'])->name('Restablecer.cancelaciones')->middleware(['verified', 'rol']);
+        Route::get('clientes', [RestablecerController::class, 'clientes'])->name('Restablecer.clientes')->middleware(['verified', 'rol']);
+        Route::get('servicios', [RestablecerController::class, 'servicios'])->name('Restablecer.servicios')->middleware(['verified', 'rol']);
+        Route::get('productos', [RestablecerController::class, 'productos'])->name('Restablecer.productos')->middleware(['verified', 'rol']);
+        Route::put('cancelaciones/{id}', [RestablecerController::class, 'actualizarCancelacion'])->name('Restablecer.actualizarcancelacion')->middleware(['verified', 'rol']);
+        Route::put('clientes/{id}', [RestablecerController::class, 'actualizarCliente'])->name('Restablecer.actualizarcliente')->middleware(['verified', 'rol']);
+        Route::put('productos/{id}', [RestablecerController::class, 'actualizarProducto'])->name('Restablecer.actualizarProducto')->middleware(['verified', 'rol']);
+        Route::put('servicios/{id}', [RestablecerController::class, 'actualizarServicio'])->name('Restablecer.actualizarServicio')->middleware(['verified', 'rol']);
     });
 
 
@@ -106,7 +106,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('cancelar', CancelacionesController::class)->middleware(['verified']);
     Route::put('/cancelar/{id}/desactivar', [CancelacionesController::class, 'desactivar'])->name('cancelar.desactivar')->middleware(['verified']);
 
-    Route::resource('descuentos', DescuentosController::class)->middleware(['verified']);
+    Route::resource('descuentos', DescuentosController::class)->middleware(['verified', 'rol']);
     Route::put('/descuentos/{descuento}/desactivar', [DescuentosController::class, 'desactivar'])->name('descuentos.desactivar')->middleware(['verified']);
 
 
@@ -130,7 +130,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     //Direccion del ticket
-    Route::resource('infoticket', InfoTicketsController::class)->middleware(['verified']);
+    Route::resource('infoticket', InfoTicketsController::class)->middleware(['verified', 'rol']);
 
     //Direcciones
     Route::resource('direcciones', DireccionesClientesController::class)->middleware(['verifield']);

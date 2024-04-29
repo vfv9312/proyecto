@@ -19,12 +19,13 @@ class EmpleadosController extends Controller
     public function index(Request $request)
     {
 
-        $busqueda = $request->query('search-navbar');
+        $busqueda = $request->query('adminlteSearch');
         //
         $empleados = User::join('roles', 'roles.id', '=', 'users.id_rol')
             ->where(function ($query) use ($busqueda) {
                 $query->where('users.email', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('users.name', 'LIKE', "%{$busqueda}%");
+                    ->orWhere('users.name', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('roles.nombre', 'LIKE', "%{$busqueda}%");
             })
             ->select('users.id', 'users.name as nombre', 'users.email', 'users.id_rol', 'roles.nombre as nombreRol')
             ->orderBy('users.updated_at', 'desc')

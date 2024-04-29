@@ -211,7 +211,6 @@ class OrdenRecoleccionController extends Controller
                 ->get();
         } else if ($datosEnvio->estatusPreventa == 4) { //leftjoin me devolvera null si no hay relaciones
             $productos = Servicios_preventas::join('precios_productos', 'precios_productos.id', '=', 'servicios_preventas.id_precio_producto')
-                ->leftJoin('descuentos', 'descuentos.id', '=', 'servicios_preventas.precio_unitario')
                 ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
                 ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
                 ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
@@ -228,7 +227,10 @@ class OrdenRecoleccionController extends Controller
                     'tipos.nombre as tipo',
                     'colors.nombre as color',
                     'servicios_preventas.precio_unitario',
-                    'descuentos.porcentaje'
+                    'precios_productos.precio',
+                    'servicios_preventas.descuento',
+                    'servicios_preventas.tipo_descuento as tipoDescuento',
+
                 )
                 ->get();
         }

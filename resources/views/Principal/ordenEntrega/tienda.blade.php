@@ -672,7 +672,7 @@
                 inputrecibe.val('');
 
                 //para formatear los dias de la semana
-                let dias = "Lunes,Martes,Miércoles,Miercoles,Jueves,Viernes,Sabado,Domingo"; // Tu cadena de días
+                let dias = "Lunes,Martes,Miercoles,Miercoles,Jueves,Viernes,Sabado,Domingo"; // Tu cadena de días
                 let arrayDias = dias.split(","); // Convierte la cadena en un array
                 arrayDias.forEach(function(dia) {
                     // Selecciona el checkbox correspondiente y márcalo como seleccionado

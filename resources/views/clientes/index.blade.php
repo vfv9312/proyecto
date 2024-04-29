@@ -3,7 +3,7 @@
 @section('title', 'Clientes')
 
 @section('content')
-    <h1>Clientes</h1>
+    <h1 class=" text-center ">Clientes</h1>
 
     <main class="w-full h-3/4">
         <!-- mensaje de aviso que se registro el producto-->
@@ -19,6 +19,7 @@
                 {{ session('incorrect') }}
             </div>
         @endif
+        @include('clientes._filtros')
         <!-- boton anadir producto-->
         <button id="abrirnModalRegisrarCliente"
             class=" mb-4 bg-gradient-to-r  from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">

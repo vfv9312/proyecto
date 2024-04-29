@@ -1,13 +1,11 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Orden de recoleccion')
-
-@section('content_header')
-    <h1 class=" text-center">Orden de Servicio {{ $ordenRecoleccion->letraActual }}
-        {{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</h1>
-@stop
+@section('title', 'Inicio')
 
 @section('content')
+    <h1 class=" text-center">Orden de Servicio {{ $ordenRecoleccion->letraActual }}
+        {{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</h1>
+
 
     @include('Principal.ordenServicio._form_completado')
 
@@ -38,14 +36,14 @@
             WhatsApp
         </a>
     </div>
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-@stop
+@endpush
 
-@section('js')
+@push('js')
     <script></script>
-@stop
+@endpush
