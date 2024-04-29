@@ -103,7 +103,8 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
             id="fecha" type="text" name="txtfecha"
             @if ($datosEnvio->estatusRecoleccion == 4) value="Sin registro"
             @elseif($datosEnvio->estatusRecoleccion == 3) value="En revision"
-            @elseif($datosEnvio->estatusRecoleccion == 2) value="{{ $datosEnvio->fechaEntrega }}" @endif
+            @elseif($datosEnvio->estatusRecoleccion == 2) value="{{ $datosEnvio->fechaEntrega }}"
+            @elseif($datosEnvio->estatusRecoleccion == 1) value="{{ $datosEnvio->fechaEntrega }}" @endif
             readonly>
     </div>
 </div>
@@ -129,10 +130,13 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Precio</th>
+                                Precio Unitario</th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Descuento</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Costo</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -152,13 +156,35 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                     {{ $producto->descripcion ? 'Descripcion :' . $producto->descripcion : '' }}
                                 </td>
                                 <td>
+                                    ${{ $producto->precio }}
+                                </td>
+                                <td>
 
-                                    <input type="number" name="costo_unitario[{{ $producto->id }}]"
+                                    @if ($producto->tipoDescuento == 'Porcentaje')
+                                        {{ intval($producto->descuento) }}%
+                                    @elseif ($producto->tipoDescuento == 'cantidad')
+                                        ${{ $producto->descuento }}
+                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
+                                        {{ $producto->tipoDescuento }}
+                                    @endif
+
+
+                                    {{-- <input type="number" name="costo_unitario[{{ $producto->id }}]"
                                         data-cantidad="{{ $producto->cantidad }}" step="0.01"
                                         class="form-input mt-1 block w-full" placeholder="Costo unitario"
-                                        value="{{ $producto->precio_unitario * $producto->cantidad }}" readonly>
+                                        value="{{ $producto->precio_unitario * $producto->cantidad }}" readonly> --}}
                                 </td>
-                                @if ($producto->porcentaje === null)
+                                <td>
+                                    @if ($producto->tipoDescuento == 'Porcentaje')
+                                        ${{ $producto->precio * $producto->cantidad - ($producto->precio * intval($producto->descuento)) / 100 }}
+                                    @elseif ($producto->tipoDescuento == 'cantidad')
+                                        ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
+                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
+                                        ${{ $producto->precio * $producto->cantidad }}
+                                    @endif
+
+
+                                    {{-- @if ($producto->porcentaje === null)
                                     <td>
                                         Sin descuento
                                     </td>
@@ -166,7 +192,8 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                     <td>
                                         {{ $producto->porcentaje }}%
                                     </td>
-                                @endif
+                                @endif --}}
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

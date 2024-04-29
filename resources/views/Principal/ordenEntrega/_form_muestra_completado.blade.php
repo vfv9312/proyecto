@@ -115,7 +115,7 @@
                 if ($producto->tipoDescuento == 'Porcentaje') {
                     $total +=
                         $producto->precio * $producto->cantidad -
-                        ($producto->precio * intval($producto->descuento)) / 100;
+                        ($producto->precio * $producto->cantidad * intval($producto->descuento)) / 100;
                 } elseif ($producto->tipoDescuento == 'cantidad') {
                     $total += $producto->precio * $producto->cantidad - $producto->descuento;
                 } elseif ($producto->tipoDescuento == 'Sin descuento') {
@@ -223,7 +223,7 @@
                                 </td>
                                 <td>
                                     @if ($producto->tipoDescuento == 'Porcentaje')
-                                        ${{ $producto->precio * $producto->cantidad - ($producto->precio * intval($producto->descuento)) / 100 }}
+                                        ${{ $producto->precio * $producto->cantidad - ($producto->precio * $producto->cantidad * intval($producto->descuento)) / 100 }}
                                     @elseif ($producto->tipoDescuento == 'cantidad')
                                         ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
                                     @elseif ($producto->tipoDescuento == 'Sin descuento')

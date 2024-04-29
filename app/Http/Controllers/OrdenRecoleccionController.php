@@ -46,7 +46,7 @@ class OrdenRecoleccionController extends Controller
             ->join('orden_recoleccions', 'orden_recoleccions.id_preventa', '=', 'preventas.id')
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
-            ->WhereIn('orden_recoleccions.estatus', [4, 3, 2])
+            ->WhereIn('orden_recoleccions.estatus', [4, 3, 2, 1])
             ->where('id_cancelacion', null)
             ->where(function ($query) use ($palabras) {
                 foreach ($palabras as $palabra) {
@@ -157,6 +157,7 @@ class OrdenRecoleccionController extends Controller
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->leftJoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
             ->whereIn('preventas.estatus', [3, 4]) //3 entrega, 4 servicios, 2 inconcluso,
             ->where('orden_recoleccions.id', $id_recoleccion)
             ->select(
@@ -168,11 +169,10 @@ class OrdenRecoleccionController extends Controller
                 'preventas.nombre_quien_recibe as nombreRecibe',
                 'orden_recoleccions.id as idOrden_recoleccions',
                 'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
-                'orden_recoleccions.Fecha_entrega as fechaEntrega',
+                'ventas.created_at as fechaEntrega',
                 'orden_recoleccions.created_at',
                 'orden_recoleccions.id as id_recoleccion',
                 'orden_recoleccions.estatus as estatusRecoleccion', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo
-                'orden_recoleccions.created_at',
                 'clientePersona.nombre as nombreCliente',
                 'clientePersona.apellido as apellidoCliente',
                 'clientePersona.telefono as telefonoCliente',
@@ -197,7 +197,16 @@ class OrdenRecoleccionController extends Controller
                 ->join('modos', 'modos.id', '=', 'productos.id_modo')
                 ->where('precios_productos.estatus', 1)
                 ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color', 'ventas_productos.cantidad', 'precios_productos.precio as precio_unitario')
+                ->select(
+                    'productos.*',
+                    'marcas.nombre as marca',
+                    'tipos.nombre as tipo',
+                    'colors.nombre as color',
+                    'ventas_productos.cantidad',
+                    'ventas_productos.descuento',
+                    'ventas_productos.tipo_descuento as tipoDescuento',
+                    'precios_productos.precio'
+                )
 
                 ->get();
         } else if ($datosEnvio->estatusPreventa == 4) { //leftjoin me devolvera null si no hay relaciones
@@ -402,6 +411,7 @@ class OrdenRecoleccionController extends Controller
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->leftJoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
             ->whereIn('preventas.estatus', [3, 4]) //3 entrega, 4 servicios, 2 inconcluso, 0 eliminado
             ->where('orden_recoleccions.id', $id_recoleccion)
             ->select(
@@ -413,7 +423,7 @@ class OrdenRecoleccionController extends Controller
                 'preventas.nombre_quien_recibe as nombreRecibe',
                 'orden_recoleccions.id as idOrden_recoleccions',
                 'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
-                'orden_recoleccions.Fecha_entrega as fechaEntrega',
+                'ventas.created_at as fechaEntrega',
                 'orden_recoleccions.created_at',
                 'orden_recoleccions.id as id_recoleccion',
                 'orden_recoleccions.estatus as estatusRecoleccion', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
@@ -442,7 +452,17 @@ class OrdenRecoleccionController extends Controller
                 ->join('modos', 'modos.id', '=', 'productos.id_modo')
                 ->where('precios_productos.estatus', 1)
                 ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select('productos.*', 'precios_productos.precio', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color', 'modos.nombre as nombreModo')
+                ->select(
+                    'productos.*',
+                    'precios_productos.precio',
+                    'marcas.nombre as marca',
+                    'tipos.nombre as tipo',
+                    'colors.nombre as color',
+                    'modos.nombre as nombreModo',
+                    'ventas_productos.cantidad',
+                    'ventas_productos.descuento',
+                    'ventas_productos.tipo_descuento as tipoDescuento',
+                )
 
                 ->get();
         } else if ($datosEnvio->estatusPreventa == 4) { //leftjoin me devolvera null si no hay relaciones
@@ -453,7 +473,12 @@ class OrdenRecoleccionController extends Controller
                 ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
                 ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
                 ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select('productos.*', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
+                ->select(
+                    'productos.*',
+                    'marcas.nombre as marca',
+                    'tipos.nombre as tipo',
+                    'colors.nombre as color'
+                )
                 ->get();
         }
 

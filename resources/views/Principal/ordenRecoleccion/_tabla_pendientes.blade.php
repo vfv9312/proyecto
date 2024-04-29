@@ -52,6 +52,9 @@
                     @elseif ($pendiente->estatus == 2)
                         <div style="height:33px;width:33px;background-color:yellow;border-radius:50%;"></div>
                         <span>Entrega</span>
+                    @elseif ($pendiente->estatus == 1)
+                        <div style="height:33px;width:33px;background-color:green;border-radius:50%;"></div>
+                        <span>Orden Procesada</span>
                     @endif
                 </td>
 

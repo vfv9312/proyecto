@@ -8,7 +8,6 @@ use App\Models\Color;
 use App\Models\Descuentos;
 use App\Models\direcciones;
 use App\Models\direcciones_clientes;
-use App\Models\empleados;
 use App\Models\Folio;
 use App\Models\Info_tickets;
 use App\Models\Marcas;
@@ -123,11 +122,7 @@ class OrdenEntregaController extends Controller
      */
     public function create()
     {
-        $listaEmpleados = empleados::join('roles', 'roles.id', '=', 'empleados.id_rol')
-            ->join('personas', 'personas.id', '=', 'empleados.id_persona')
-            ->where('empleados.estatus', 1)
-            ->select('empleados.id', 'roles.nombre as nombre_rol', 'personas.nombre as nombre_empleado', 'personas.apellido')
-            ->get();
+
 
         $listaClientes = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->where('clientes.estatus', 1)
@@ -163,7 +158,7 @@ class OrdenEntregaController extends Controller
         $ListaColonias = Catalago_ubicaciones::orderBy('localidad')->get();
 
 
-        return view('Principal.ordenEntrega.index', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias'));
+        return view('Principal.ordenEntrega.index', compact('listaClientes', 'listaDirecciones', 'ListaColonias'));
     }
 
     /**
@@ -558,11 +553,8 @@ class OrdenEntregaController extends Controller
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $orden_recoleccion)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
@@ -588,10 +580,6 @@ class OrdenEntregaController extends Controller
                 'personaClientes.apellido as apellidoCliente',
                 'personaClientes.telefono as telefonoCliente',
                 'personaClientes.email as correo',
-                'personaEmpleado.nombre as nombreEmpleado',
-                'personaEmpleado.apellido as apellidoEmpleado',
-                'personaEmpleado.telefono as telefonoEmpleado',
-                'roles.nombre as nombreRol',
             )
             ->first();
 
@@ -657,6 +645,7 @@ class OrdenEntregaController extends Controller
                 'preventas.dia_semana as diaSemana',
                 'preventas.nombre_quien_recibe as recibe',
                 'preventas.nombre_empleado as nombreEmpleado',
+                'preventas.comentario',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',

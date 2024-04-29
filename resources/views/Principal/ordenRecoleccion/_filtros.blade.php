@@ -38,6 +38,7 @@
             <option value="4">Recoleccion</option>
             <option value="3">Revision</option>
             <option value="2">Entrega</option>
+            <option value="1">Orden Procesada</option>
         </select>
     </div>
 

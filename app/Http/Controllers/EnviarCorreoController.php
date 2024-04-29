@@ -21,11 +21,8 @@ class EnviarCorreoController extends Controller
                 ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
                 ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
                 ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-                ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
                 ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
                 ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-                ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-                ->join('roles', 'roles.id', '=', 'empleados.id_rol')
                 ->where('orden_recoleccions.id',  $id)
                 ->select(
                     'orden_recoleccions.id as idRecoleccion',
@@ -51,10 +48,6 @@ class EnviarCorreoController extends Controller
                     'personaClientes.apellido as apellidoCliente',
                     'personaClientes.telefono as telefonoCliente',
                     'personaClientes.email as correo',
-                    'personaEmpleado.nombre as nombreEmpleado',
-                    'personaEmpleado.apellido as apellidoEmpleado',
-                    'personaEmpleado.telefono as telefonoEmpleado',
-                    'roles.nombre as nombreRol',
                 )
                 ->first();
 
@@ -90,17 +83,15 @@ class EnviarCorreoController extends Controller
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id',  $id)
             ->select(
                 'ventas.estatus as estatusVenta',
                 'ventas.id as idVenta',
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
+                'orden_recoleccions.estatus as estatusRecoleccion',
                 'folios.letra_actual as letraActual',
                 'folios.ultimo_valor as ultimoValor',
                 'preventas.metodo_pago as metodoPago',
@@ -122,10 +113,6 @@ class EnviarCorreoController extends Controller
                 'personaClientes.apellido as apellidoCliente',
                 'personaClientes.telefono as telefonoCliente',
                 'personaClientes.email as correo',
-                'personaEmpleado.nombre as nombreEmpleado',
-                'personaEmpleado.apellido as apellidoEmpleado',
-                'personaEmpleado.telefono as telefonoEmpleado',
-                'roles.nombre as nombreRol',
             )
             ->first();
 

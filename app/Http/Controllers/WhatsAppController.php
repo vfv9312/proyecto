@@ -17,11 +17,8 @@ class WhatsAppController extends Controller
             ->leftjoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
             ->where('orden_recoleccions.id', $id)
             ->select(
                 'ventas.estatus as estatusVenta',
@@ -46,22 +43,16 @@ class WhatsAppController extends Controller
                 'personaClientes.apellido as apellidoCliente',
                 'personaClientes.telefono as telefonoCliente',
                 'personaClientes.email as correo',
-                'personaEmpleado.nombre as nombreEmpleado',
-                'personaEmpleado.apellido as apellidoEmpleado',
-                'personaEmpleado.telefono as telefonoEmpleado',
-                'roles.nombre as nombreRol',
             )
             ->first();
         //9612602898
-        if ($ordenRecoleccion->estatusVenta) {
-            $enlace = "https://administrativo.ecotonerdelsureste.com/ventas/$ordenRecoleccion->idVenta";
-        } else {
-            if ($ordenRecoleccion->estatusPreventa == 3) {
-                $enlace = "https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/$ordenRecoleccion->idRecoleccion/generarpdf";
-            } else if ($ordenRecoleccion->estatusPreventa == 4) {
-                $enlace = "https://administrativo.ecotonerdelsureste.com/orden_servicio_pdf/$ordenRecoleccion->idRecoleccion/generarpdf";
-            }
+
+        if ($ordenRecoleccion->estatusPreventa == 3) {
+            $enlace = "https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/$ordenRecoleccion->idRecoleccion/generarpdf";
+        } else if ($ordenRecoleccion->estatusPreventa == 4) {
+            $enlace = "https://administrativo.ecotonerdelsureste.com/orden_servicio_pdf/$ordenRecoleccion->idRecoleccion/generarpdf";
         }
+
 
         $numero = 52 . $ordenRecoleccion->telefonoCliente; //$ordenRecoleccion->telefonoCliente; // Número de teléfono al que deseas enviar el mensaje
         $mensaje = "*Ecotoner* \n\n Hola {$ordenRecoleccion->nombreCliente} {$ordenRecoleccion->apellidoCliente}, te saludamos de ecotoner aquí está el enlace a tu orden de entrega:  {$enlace}"; // Mensaje que deseas enviar

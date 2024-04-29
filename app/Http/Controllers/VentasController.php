@@ -70,7 +70,6 @@ class VentasController extends Controller
             'clientePersona.email as emailCliente',
             'clientes.comentario as rfc',
             'catalago_ubicaciones.localidad as colonia',
-            'roles.nombre as nombre_rol',
             'direcciones.calle',
             'direcciones.num_exterior',
             'direcciones.num_interior',

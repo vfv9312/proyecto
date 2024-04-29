@@ -128,8 +128,13 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Precio unitario
-                            </th>
+                                Precio Unitario</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Descuento</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Costo</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -142,12 +147,50 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                     {{ $producto->cantidad }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    Color : {{ $producto->color }}, Marca : {{ $producto->marca }},
-                                    Categoria :
-                                    {{ $producto->tipo }}, Tipo : {{ $producto->nombreModo }}
+                                    {{ $producto->marca ? 'Marca : ' . $producto->marca : '' }}
+                                    {{ $producto->tipo ? 'Categoria : ' . $producto->tipo : '' }}
+                                    {{ $producto->color ? 'Color : ' . $producto->color : '' }}
+                                    {{ $producto->modos ? 'Tipo :' . $producto->modos : '' }}
+                                    {{ $producto->descripcion ? 'Descripcion :' . $producto->descripcion : '' }}
                                 </td>
                                 <td>
                                     ${{ $producto->precio }}
+                                </td>
+                                <td>
+
+                                    @if ($producto->tipoDescuento == 'Porcentaje')
+                                        {{ intval($producto->descuento) }}%
+                                    @elseif ($producto->tipoDescuento == 'cantidad')
+                                        ${{ $producto->descuento }}
+                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
+                                        {{ $producto->tipoDescuento }}
+                                    @endif
+
+
+                                    {{-- <input type="number" name="costo_unitario[{{ $producto->id }}]"
+                                        data-cantidad="{{ $producto->cantidad }}" step="0.01"
+                                        class="form-input mt-1 block w-full" placeholder="Costo unitario"
+                                        value="{{ $producto->precio_unitario * $producto->cantidad }}" readonly> --}}
+                                </td>
+                                <td>
+                                    @if ($producto->tipoDescuento == 'Porcentaje')
+                                        ${{ $producto->precio * $producto->cantidad - ($producto->precio * $producto->cantidad * intval($producto->descuento)) / 100 }}
+                                    @elseif ($producto->tipoDescuento == 'cantidad')
+                                        ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
+                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
+                                        ${{ $producto->precio * $producto->cantidad }}
+                                    @endif
+
+
+                                    {{-- @if ($producto->porcentaje === null)
+                                    <td>
+                                        Sin descuento
+                                    </td>
+                                @else
+                                    <td>
+                                        {{ $producto->porcentaje }}%
+                                    </td>
+                                @endif --}}
                                 </td>
                             </tr>
                         @endforeach

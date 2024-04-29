@@ -9,7 +9,6 @@
 
     @include('Principal.ordenEntrega._form_muestra_completado')
 
-
     <div class="mt-6 flex flex-col sm:flex-row justify-center items-center">
         <a target="_blank" ($ordenRecoleccion)
             href='{{ route('generarpdf.ordenentrega', ['id' => $ordenRecoleccion->idRecoleccion]) }}'

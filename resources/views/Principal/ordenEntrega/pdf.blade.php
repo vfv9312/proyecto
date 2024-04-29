@@ -110,7 +110,7 @@ opacity: 0.5;">
 <div class="ticket">
     <div class="header">
         <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-        <h1>Orden de Entrega!</h1>
+        <h1>{{ $ordenRecoleccion->comentario ? 'Orden Procesada!' : 'Orden de Entrega!' }}</h1>
         <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
         <p>Fecha recepcion: {{ $fecha }}</p>
         <p>{{ $ordenRecoleccion->idCancelacion ? 'Motivo de cancelación : ' . $ordenRecoleccion->nombreCancelacion : '' }}
@@ -211,6 +211,7 @@ opacity: 0.5;">
     <p>Recibe : {{ $ordenRecoleccion->recibe }}</p>
     <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
     </p>
+    <p>{{ $ordenRecoleccion->comentario ? 'Observaciones : ' . $ordenRecoleccion->comentario : '' }}</p>
 
 </div>
 <div class="ubicacion">
