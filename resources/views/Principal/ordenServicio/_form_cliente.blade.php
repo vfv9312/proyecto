@@ -1,6 +1,6 @@
 <div class="flex flex-col md:flex-row">
 
-    <div class="flex flex-col w-full md:w-1/3 md:mr-2">
+    <div class="flex flex-col w-full md:w-1/2 md:mr-2">
         <label class="">Cliente</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -13,7 +13,7 @@
         </select>
     </div>
 
-    <div class="flex flex-col w-full md:w-1/3 md:mr-2">
+    <div class="flex flex-col w-full md:w-1/2 md:mr-2">
         <label class="mr-4">Atención</label>
         <select
             class="w-full px-3 py-1 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

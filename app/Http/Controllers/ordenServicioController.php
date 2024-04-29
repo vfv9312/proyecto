@@ -131,8 +131,8 @@ class ordenServicioController extends Controller
     public function store(Request $request)
     {
 
+        dd($request);
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
-
         try {
             // si fue seleccionado el cliente y la direccion tendremos estos datos del id
             $idCliente = $request->input('cliente');

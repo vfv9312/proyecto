@@ -19,7 +19,7 @@
         </div>
     @endif
 
-    <form id="formulario" class="mt-8 lg:ml-4 flex flex-col justify-center" action="{{ route('orden_entrega.store') }}"
+    <form id="formulario" class="mt-8 lg:ml-4 flex flex-col justify-center" action="{{ route('orden_servicio.store') }}"
         method="POST">
         @csrf
 
