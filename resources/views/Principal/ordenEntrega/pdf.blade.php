@@ -98,6 +98,8 @@ opacity: 0.5;">
 
 
 @php
+    use Carbon\Carbon;
+
     $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
     $fecha = $fechaHoraArray[0];
     $hora = $fechaHoraArray[1];
@@ -106,11 +108,21 @@ opacity: 0.5;">
     $horariosFinal = array_values(array_filter(explode(',', $ordenRecoleccion->horarioTrabajoFinal)));
     $dias = explode(',', $ordenRecoleccion->diaSemana);
 
+    $horaRegistro = Carbon::parse($hora);
+    $tiempo = Carbon::parse($Tiempo->tiempo);
+
+    $horaFinal = $horaRegistro
+        ->addHours($tiempo->hour)
+        ->addMinutes($tiempo->minute)
+        ->addSeconds($tiempo->second);
+    $fechaHoraDeTiempoAproximadoEntrega = explode(' ', $horaFinal);
+    $tiempoPromesa = $fechaHoraDeTiempoAproximadoEntrega[1];
+
 @endphp
 <div class="ticket">
     <div class="header">
         <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-        <h1>{{ $ordenRecoleccion->comentario ? 'Orden Procesada!' : 'Orden de Entrega!' }}</h1>
+        <h1>{{ $ordenRecoleccion->comentario ? 'Orden Procesada!' : 'Orden de recolección y entrega!' }}</h1>
         <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
         <p>Fecha recepcion: {{ $fecha }}</p>
         <p>{{ $ordenRecoleccion->idCancelacion ? 'Motivo de cancelación : ' . $ordenRecoleccion->nombreCancelacion : '' }}
@@ -126,7 +138,7 @@ opacity: 0.5;">
             <p>Atencion : {{ $ordenRecoleccion->nombreAtencion }}</p>
             <p>Tel : {{ $ordenRecoleccion->telefonoCliente }}</p>
             <p>{{ $ordenRecoleccion->correo ? 'Correo : ' . $ordenRecoleccion->correo : '' }}</p>
-            <p>Direccion : Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
+            <p>Direccion de entrega : Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
                 #{{ $ordenRecoleccion->num_exterior }},
                 {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
             <p>CP :{{ $ordenRecoleccion->cp }}</p>
@@ -209,7 +221,7 @@ opacity: 0.5;">
     <p>{{ $ordenRecoleccion->nombreEmpleado }} </p>
     Hora de recepcion : {{ $hora }}
     <p>Recibe : {{ $ordenRecoleccion->recibe }}</p>
-    <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
+    <p>{{ $Tiempo ? 'Hora aproximada de entrega : ' . $tiempoPromesa : 'No hay tiempo aproximado de entrega' }}
     </p>
     <p>{{ $ordenRecoleccion->comentario ? 'Observaciones : ' . $ordenRecoleccion->comentario : '' }}</p>
 
