@@ -36,11 +36,6 @@ class ordenServicioController extends Controller
      */
     public function index()
     {
-        $listaEmpleados = empleados::join('roles', 'roles.id', '=', 'empleados.id_rol')
-            ->join('personas', 'personas.id', '=', 'empleados.id_persona')
-            ->where('empleados.estatus', 1)
-            ->select('empleados.id', 'roles.nombre as nombre_rol', 'personas.nombre as nombre_empleado', 'personas.apellido')
-            ->get();
 
         $listaClientes = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->where('clientes.estatus', 1)
@@ -120,7 +115,7 @@ class ordenServicioController extends Controller
         $descuentos = Descuentos::select('*')->orderBy('nombre', 'asc')->get();
 
 
-        return view('Principal.ordenServicio.datos_cliente', compact('listaEmpleados', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'marcas', 'modos', 'tipos', 'colores', 'listaAtencion', 'productos', 'datosRecoleccion', 'descuentos'));
+        return view('Principal.ordenServicio.datos_cliente', compact('listaClientes', 'listaDirecciones', 'ListaColonias', 'marcas', 'modos', 'tipos', 'colores', 'listaAtencion', 'productos', 'datosRecoleccion', 'descuentos'));
     }
 
     /**

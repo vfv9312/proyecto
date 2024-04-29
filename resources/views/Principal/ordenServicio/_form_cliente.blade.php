@@ -21,20 +21,6 @@
         </select>
     </div>
 
-    <div class="flex flex-col w-full md:w-1/3 ">
-        <label class="">Empleado</label>
-        <select
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="inputAtencion" name="txtempleado" required
-            oninvalid="this.setCustomValidity('Por favor, selecciona un empleado.')"
-            oninput="this.setCustomValidity('')">
-            <option value="">Seleccione un empleado</option>
-            @foreach ($listaEmpleados as $empleado)
-                <option value="{{ $empleado->id }}">{{ $empleado->nombre_empleado }} {{ $empleado->apellido }}-
-                    {{ $empleado->nombre_rol }}</option>
-            @endforeach
-        </select>
-    </div>
 
 </div>
 <section class=" border-4 mt-8 px-3 pb-3">
