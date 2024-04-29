@@ -14,7 +14,8 @@ class TiempoAproximadoController extends Controller
      */
     public function index()
     {
-        return view('Tiempo_aproximado.index');
+        $existeTiempoHoy = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->select('tiempo')->first();
+        return view('Tiempo_aproximado.index', compact('existeTiempoHoy'));
     }
 
     /**
@@ -39,7 +40,9 @@ class TiempoAproximadoController extends Controller
             $existeTiempoHoy = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->exists();
 
             if ($existeTiempoHoy) {
-                return redirect()->back()->with('message', 'Hoy ya se registró un tiempo.');
+                $creartiempo = TiempoAproximado::create([
+                    'tiempo' => $tiempo,
+                ]);
             } else {
                 $creartiempo = TiempoAproximado::create([
                     'tiempo' => $tiempo,
@@ -50,7 +53,8 @@ class TiempoAproximadoController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             //throw $th;
-            return $th->getMessage();
+            //return $th->getMessage();
+            return redirect()->back()->with('message', 'Error al guardar.');
         }
         return redirect()->back()->with('message', 'Todo se guardó con éxito.');
     }

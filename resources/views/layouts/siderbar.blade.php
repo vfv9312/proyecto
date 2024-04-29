@@ -61,42 +61,44 @@
                 </ul>
             </li>
             <li class="menu">
-                <a href="#"
-                    class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group menu-desplegable-siderbar">
-                    <i class="fas fa-cogs"></i>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Ajustes</span> <i class="fas fa-angle-down"></i>
-                </a>
-                <ul class="menu-content hidden">
-                    <li>
-                        <a href="{{ route('Restablecer.index') }}"
-                            class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
-                            <i class="fas fa-trash"></i>
-                            <span class="flex-1 ms-3 whitespace-nowrap">Recuperar información</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('cancelar.create') }}"
-                            class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
-                            <i class="fas fa-times"></i>
-                            <span class="flex-1 ms-3 whitespace-nowrap">Cancelación</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('descuentos.index') }}"
-                            class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
-                            <i class="fas fa-tags"></i>
-                            <span class="flex-1 ms-3 whitespace-nowrap">Descuentos</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('infoticket.index') }}"
-                            class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
-                            <i class="fas fa-address-book"></i>
-                            <span class="flex-1 ms-3 whitespace-nowrap">Datos de contacto</span>
-                        </a>
-                    </li>
-                    <!-- Agrega más enlaces aquí -->
-                </ul>
+                @if (Auth::user()->id_rol == 1)
+                    <a href="#"
+                        class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group menu-desplegable-siderbar">
+                        <i class="fas fa-cogs"></i>
+                        <span class="flex-1 ms-3 whitespace-nowrap">Ajustes</span> <i class="fas fa-angle-down"></i>
+                    </a>
+                    <ul class="menu-content hidden">
+                        <li>
+                            <a href="{{ route('Restablecer.index') }}"
+                                class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
+                                <i class="fas fa-trash"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Recuperar información</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('cancelar.create') }}"
+                                class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
+                                <i class="fas fa-times"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Cancelación</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('descuentos.index') }}"
+                                class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
+                                <i class="fas fa-tags"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Descuentos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('infoticket.index') }}"
+                                class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
+                                <i class="fas fa-address-book"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Datos de contacto</span>
+                            </a>
+                        </li>
+                        <!-- Agrega más enlaces aquí -->
+                    </ul>
+                @endif
             </li>
             <li class="text-yellow-500 my-2 text-center">
                 Vista rapida

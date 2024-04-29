@@ -23,7 +23,8 @@
                         (Horas:Minutos)</label>
                     <input type="time"
                         class="shadow appearance-none border rounded w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="tiempo" name="tiempo" value="00:15">
+                        id="tiempo" name="tiempo"
+                        @if ($existeTiempoHoy) value="{{ $existeTiempoHoy->tiempo }}" @endif>
                     @error('tiempo')
                         <div class="text-red-500 mt-2 text-sm">
                             {{ $message }}
