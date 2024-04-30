@@ -35,6 +35,8 @@
             let inputmetodopago = document.querySelector('#inputmetodopago');
             var inputPersonaRecibe = document.getElementById('personaRecibe');
             var inputs = document.querySelectorAll('input[name^="costo_unitario"]');
+            let codigo = document.querySelector('#form_codigo');
+            let observaciones = document.querySelector('#form_observaciones')
 
             inputs.forEach(input => {
                 if (value == '2') {
@@ -52,12 +54,18 @@
                 4) { // Si el valor seleccionado es "En entrega" y el estatus de preventa es servicio
                 inputCosto.style.display = 'block';
                 inputFactura.style.display = 'flex';
-                inputmetodopago.style.display = 'block'
+                inputmetodopago.style.display = 'block';
+            } else if (value == '3') {
+                codigo.style.display = 'block';
+            } else if (value == '5') {
+                observaciones.style.display = 'block';
             } else {
                 inputCosto.style.display = 'none';
                 inputFactura.style.display = 'none';
                 inputmetodopago.display = 'none';
                 inputPersonaRecibe.style.display = 'none';
+                codigo.style.display = 'none';
+                observaciones.style.display = 'none';
             }
         }
 

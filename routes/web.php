@@ -49,6 +49,11 @@ Route::get('/', function () {
 });
 
 
+//generar pdf
+Route::get('orden_entrega_pdf/{id}/generarpdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');
+Route::get('orden_entrega_pdf/{id}/generarpdf2', [OrdenRecoleccionController::class, 'generarPdf2'])->name('generarpdf2.ordenentrega');
+Route::get('orden_servicio_pdf/{id}/generarpdf', [ordenServicioController::class, 'generarPdf'])->name('generarpdf.ordenservicio');
+
 
 Route::get('/dashboard', function () {
     return view('Principal.inicio');
@@ -64,11 +69,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('inicio', PrincipalController::class)->middleware(['verified']); //aqui se muestra dos iconos si quiere una orden de servicio o una orden de entrega
     Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['verified']); //index: muestra la vista con todos los datos para hacer una orden de entrega, show: muestra una vista previa
     Route::get('orden_entrega/{id}/vistaprevia', [OrdenEntregaController::class, 'VistaPrevioOrdenEntrega'])->name('orden_recoleccion.vistaPreviaOrdenEntrega')->middleware(['verified']); //muestra el contenido
-
-
-    //generar pdf
-    Route::get('orden_entrega_pdf/{id}/generarpdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');
-    Route::get('orden_entrega_pdf/{id}/generarpdf2', [OrdenRecoleccionController::class, 'generarPdf2'])->name('generarpdf2.ordenentrega');
 
     //rutas para restablecer informacion eliminada
     Route::prefix('restablecer')->group(function () {
@@ -98,7 +98,6 @@ Route::middleware(['auth'])->group(function () {
 
     // servicios
     Route::resource('orden_servicio', ordenServicioController::class)->middleware(['verified']);
-    Route::get('orden_servicio_pdf/{id}/generarpdf', [ordenServicioController::class, 'generarPdf'])->name('generarpdf.ordenservicio');
     Route::get('orden_serviciof/{id}/vistaPrevia', [ordenServicioController::class, 'vistaPrevia'])->name('vistaPrevia.ordenservicio');
     Route::get('/orden-servicio/{id}/vista-general', [OrdenServicioController::class, 'vistaGeneral'])->name('ordenServicio.vistaGeneral');
 

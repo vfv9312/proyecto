@@ -146,7 +146,14 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                     {{ $producto->nombre_comercial }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $producto->cantidad }}
+                                    @if ($datosEnvio->estatusPreventa == 3)
+                                        {{ $producto->cantidad }}
+                                    @elseif($datosEnvio->estatusPreventa == 4)
+                                        <input type="number" name="cantidad[{{ $producto->id }}]"
+                                            data-cantidad="{{ $producto->cantidad }}" step="1"
+                                            class="form-input mt-1 block w-full" placeholder="Cantidad"
+                                            value="{{ $producto->cantidad }}" readonly>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $producto->marca ? 'Marca : ' . $producto->marca : '' }}
@@ -204,72 +211,113 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
         </div>
     </div>
 </div>
+@if ($datosEnvio->id_cancelacion == null)
 
-<div class="flex flex-col items-center mt-3">
-    <div class="flex flex-col items-center">
-        <label for="miSelect">Cambia el estatus:</label>
-        <select id="miSelect" name="miSelect" onchange="mostrarInputCosto(this.value)">
-            @if ($datosEnvio->estatusRecoleccion == 4)
-                <option value="4">En recoleccion</option>
-                <option value="3">En revision</option>
-            @elseif($datosEnvio->estatusRecoleccion == 3)
-                <option value="3">En revision</option>
-                <option value="2">En entrega </option>
-            @elseif($datosEnvio->estatusRecoleccion == 2)
-                <option value="2">En entrega </option>
-                <option value="1">Venta completa</option>
-            @endif
-        </select>
-    </div>
-
-
-
-    <div class="flex justify-between mt-5">
-        <div id="inputCosto" style="display: none;" class=" mr-4">
-            <label for="costo">Costo total:</label>
-            <input type="number" id="costo" name="costo_total" step="0.01"
-                class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                readonly>
-        </div>
-
-        <div id="inputmetodopago" style="display: none;" class="mr-4">
-            <label for="metodoPago">Método de pago:</label>
-            <select id="metodoPago" name="txtmetodoPago"
-                class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                <option value="">Seleccione un método de pago</option>
-                <option value="Efectivo">Efectivo</option>
-                <option value="Cheque">Cheque</option>
-                <option value="Transferencia_Bancaria">Transferencia bancaria</option>
-                <option value="Tarjeta_Credito">Tarjeta credito</option>
-                <!-- Agrega más opciones según sea necesario -->
+    <div class="flex flex-col items-center mt-3">
+        <div class="flex flex-col items-center">
+            <label for="miSelect">Cambia el estatus:</label>
+            <select id="miSelect" name="miSelect" onchange="mostrarInputCosto(this.value)">
+                @if ($datosEnvio->estatusRecoleccion == 4)
+                    <option value="4">En recoleccion</option>
+                    <option value="3">En revision</option>
+                @elseif($datosEnvio->estatusRecoleccion == 3)
+                    <option value="3">En revision</option>
+                    <option value="2">En entrega </option>
+                @elseif($datosEnvio->estatusRecoleccion == 2)
+                    <option value="2">En entrega </option>
+                    <option value="5">Observaciones</option>
+                    <option value="1">Venta completa</option>
+                @endif
             </select>
         </div>
 
-        <div id="inputFactura" style="display: none;" class="flex flex-col items-center">
-            <label for="factura" class="text-gray-700">¿Requiere factura?</label>
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-green-500 mt-2" name="txtfactura"
-                id="factura">
+        <div id="form_observaciones" class="flex flex-col sm:flex-row justify-between mt-5" style="display: none;">
+            <div class="mr-4">
+                <label for="">Observaciones:</label>
+                <input type="text" id="observaciones" name="observacionesDetalle"
+                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
         </div>
 
-        <div id="personaRecibe" style="display: none;" class="flex flex-col items-center">
-            <label for="recibe">Observaciones:</label>
-            <input
-                class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type="text" name="observaciones" placeholder="Obervaciones">
+        <div id="form_codigo" class="flex flex-col sm:flex-row justify-between mt-5" style="display: none;">
+            <div class="mr-4">
+                <label for="codigo">Código:</label>
+                <input type="text" id="codigo" name="codigo"
+                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mr-4">
+                <label for="numero_recarga">Número de recarga:</label>
+                <input type="text" id="numero_recarga" name="numero_recarga"
+                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
         </div>
 
-    </div>
-    <div id="inputPagoEfectivo" style="display: none;" class="mr-4">
-        <label for="pagoEfectivo">Cantidad pagada:</label>
-        <input id="pagoEfectivo" name="txtpagoEfectivo" type="number" step="0.01"
-            class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="Ingrese la cantidad pagada">
-    </div>
 
 
-    <button type="submit"
-        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 flex items-center mt-8">
-        <i class="fas fa-sync-alt mr-2"></i>
-        Actualizar
-    </button>
-</div>
+        <div class="flex justify-between mt-5">
+            <div id="inputCosto" style="display: none;" class=" mr-4">
+                <label for="costo">Costo total:</label>
+                <input type="number" id="costo" name="costo_total" step="0.01"
+                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    readonly>
+            </div>
+
+            <div id="inputmetodopago" style="display: none;" class="mr-4">
+                <label for="metodoPago">Método de pago:</label>
+                <select id="metodoPago" name="txtmetodoPago"
+                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">Seleccione un método de pago</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Transferencia_Bancaria">Transferencia bancaria</option>
+                    <option value="Tarjeta_Credito">Tarjeta credito</option>
+                    <!-- Agrega más opciones según sea necesario -->
+                </select>
+            </div>
+
+            <div id="inputFactura" style="display: none;" class="flex flex-col items-center">
+                <label for="factura" class="text-gray-700">¿Requiere factura?</label>
+                <input type="checkbox" class="form-checkbox h-5 w-5 text-green-500 mt-2" name="txtfactura"
+                    id="factura">
+            </div>
+
+            <div id="personaRecibe" style="display: none;" class="flex flex-col items-center">
+                <label for="recibe">Observaciones:</label>
+                <input
+                    class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="text" name="observaciones" placeholder="Obervaciones">
+            </div>
+
+        </div>
+        <div id="inputPagoEfectivo" style="display: none;" class="mr-4">
+            <label for="pagoEfectivo">Cantidad pagada:</label>
+            <input id="pagoEfectivo" name="txtpagoEfectivo" type="number" step="0.01"
+                class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Ingrese la cantidad pagada">
+        </div>
+
+
+        <button type="submit"
+            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 flex items-center mt-8">
+            <i class="fas fa-sync-alt mr-2"></i>
+            Actualizar
+        </button>
+
+    </div>
+@else
+    <div class="flex flex-col items-center mt-3">
+        <div class="flex flex-col items-center">
+            <label for="miSelect">Estatus:</label>
+            @if ($datosEnvio->estatusRecoleccion == 4)
+                <span>En recoleccion</span>
+            @elseif($datosEnvio->estatusRecoleccion == 3)
+                <span>En revision</span>
+            @elseif($datosEnvio->estatusRecoleccion == 2)
+                <span>En entrega</span>
+            @elseif($datosEnvio->estatusRecoleccion == 1)
+                <span>Orden Procesada</span>
+            @endif
+        </div>
+    </div>
+@endif

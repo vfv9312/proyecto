@@ -27,6 +27,9 @@ return new class extends Migration
             $table->decimal('pago_efectivo', 8, 2)->nullable();
             $table->decimal('costo_servicio', 8, 2)->nullable();
             $table->text('comentario')->nullable();
+            $table->text('observacion')->nullable();
+            $table->string('codigo')->nullable();
+            $table->string('numero_recarga')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->tinyInteger('estatus')->default(2); //3 entrega, 4 servicios,

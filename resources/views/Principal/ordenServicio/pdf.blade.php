@@ -71,23 +71,55 @@
             margin: 0;
         }
 
+        .item h3 {
+            text-align: center;
+        }
+
         #paginaweb {
             text-align: center;
         }
     </style>
 </head>
 
+@if ($ordenRecoleccion->idCancelacion)
+
+    <body
+        style="background: url('cancelado.png') no-repeat center center;
+-webkit-background-size: 50% 50%;
+-moz-background-size: 50% 50%;
+-o-background-size: 50% 50%;
+background-size: 50% 50%;
+opacity: 0.5;">
+    @else
+
+        <body>
+@endif
+
 @php
+    use Carbon\Carbon;
+
     $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
     $fecha = $fechaHoraArray[0];
     $hora = $fechaHoraArray[1];
+
+    if ($Tiempo !== null && $Tiempo->tiempo !== null) {
+        $horaRegistro = Carbon::parse($hora);
+        $tiempo = Carbon::parse($Tiempo->tiempo);
+
+        $horaFinal = $horaRegistro
+            ->addHours($tiempo->hour)
+            ->addMinutes($tiempo->minute)
+            ->addSeconds($tiempo->second);
+        $fechaHoraDeTiempoAproximadoEntrega = explode(' ', $horaFinal);
+        $tiempoPromesa = $fechaHoraDeTiempoAproximadoEntrega[1];
+    }
 @endphp
 
 <body>
     <div class="ticket">
         <div class="header">
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-            <h1>Orden de Servicio!</h1>
+            <h1>{{ $ordenRecoleccion->comentario ? 'Orden Procesada' : 'Orden de servicio' }}</h1>
             <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
             <p>Fecha recepcion: {{ $fecha }}</p>
             <p>{{ $ordenRecoleccion->idCancelacion ? 'Motivo de cancelación : ' . $ordenRecoleccion->nombreCancelacion : '' }}
@@ -110,6 +142,9 @@
                 <p> Referencia : {{ $ordenRecoleccion->referencia }}</p>
             </div>
             <div class="item">
+                @if ($ordenRecoleccion->estatus !== 2)
+                    <h3>En revisión</h3>
+                @endif
                 @php
                     $total = 0;
                 @endphp
@@ -123,7 +158,7 @@
                     @if ($producto->porcentaje !== null)
                         <p>Aplica descuento : {{ $producto->porcentaje }}%</p>
                     @endif
-                    @if ($ordenRecoleccion->estatus === 2)
+                    @if ($ordenRecoleccion->estatus === 2 || $ordenRecoleccion->estatus === 1)
                         <p style="margin-bottom: 10px;">
                             {{ $producto->precio ? 'Precio unitario: $' . $producto->precio : '' }}</p>
                         @php
@@ -132,11 +167,18 @@
                     @endif
                     <p style="margin-bottom: 10px;"></p>
                 @endforeach
+
+                @if ($ordenRecoleccion->codigo)
+                    <p>Codigo : {{ $ordenRecoleccion->codigo }}</p>
+                    <p>Recarga :{{ $ordenRecoleccion->nRecarga }}</p>
+                @endif
+
+                <p style="margin-bottom: 4px;"></p>
                 <h5> Datos del pago </h5>
                 @if ($ordenRecoleccion->metodoPago)
                     <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
                     <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
-                    @if ($ordenRecoleccion->estatus === 2)
+                    @if ($ordenRecoleccion->estatus === 2 || $ordenRecoleccion->estatus === 1)
                         Costo total : ${{ $total }}<br>
                         {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
                         <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
@@ -156,7 +198,7 @@
         Hora de recepcion : {{ $hora }}
         <p>Recibe : {{ $ordenRecoleccion->nombreRecibe }}</p>
         <p>Entrega : {{ $ordenRecoleccion->nombreEntrega }}</p>
-        <p>{{ $Tiempo ? 'Tiempo aproximada de entrega : ' . $Tiempo->tiempo : 'No hay tiempo aproximado de entrega' }}
+        <p>{{ $Tiempo ? 'Hora aproximada de entrega : ' . $tiempoPromesa : 'No hay tiempo aproximado de entrega' }}
         </p>
     </div>
     <div class="ubicacion">

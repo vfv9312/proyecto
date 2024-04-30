@@ -49,6 +49,7 @@
                 class="w-full md:w-auto border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 name="estatus" id="estatus">
                 <option value="">Selecciona una opción</option>
+                <option value="5">Cancelación</option>
                 <option value="4">Recoleccion</option>
                 <option value="3">Revision</option>
                 <option value="2">Entrega</option>

@@ -655,6 +655,8 @@ class ordenServicioController extends Controller
                 'preventas.horario_trabajo_inicio as horarioTrabajoInicio',
                 'preventas.horario_trabajo_final as horarioTrabajoFinal',
                 'preventas.dia_semana as diaSemana',
+                'preventas.codigo',
+                'preventas.numero_recarga as nRecarga',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',

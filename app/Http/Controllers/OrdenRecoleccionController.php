@@ -39,6 +39,7 @@ class OrdenRecoleccionController extends Controller
         ];
 
 
+
         $preventas = Preventa::join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
@@ -47,7 +48,7 @@ class OrdenRecoleccionController extends Controller
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
             ->WhereIn('orden_recoleccions.estatus', [4, 3, 2, 1])
-            ->where('id_cancelacion', null)
+            //->where('id_cancelacion', null)
             ->where(function ($query) use ($palabras) {
                 foreach ($palabras as $palabra) {
                     $query->where(function ($query) use ($palabra) {
@@ -77,20 +78,25 @@ class OrdenRecoleccionController extends Controller
         if ($filtroFecha_inicio && $fecha_fin) {
             $preventas->whereBetween('orden_recoleccions.created_at', [$filtroFecha_inicio, $fecha_fin]);
         }
-
+        //si es algun valor positivo entra 1: Listo, 2: Entrega, 3: Revision, 4: Recoleccion, 5: Cancelacion
         if ($filtroEstatus) {
-            $preventas->where('orden_recoleccions.estatus', $filtroEstatus);
+            if ($filtroEstatus == "5") { //si es 5 entonces entra al if y verifica si tiene algun id_cancelacion
+                $preventas->whereNotNull('orden_recoleccions.id_cancelacion');
+            } else {
+                $preventas->where('orden_recoleccions.estatus', $filtroEstatus);
+            }
         }
         $preventas = $preventas->select(
             'orden_recoleccions.id as idRecoleccion',
             'orden_recoleccions.created_at as fechaCreacion',
+            'orden_recoleccions.id_cancelacion',
+            'orden_recoleccions.estatus', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
+            'orden_recoleccions.created_at',
             'folios.letra_actual as letraActual',
             'folios.ultimo_valor as ultimoValor',
             'preventas.id as idPreventa',
             'preventas.estatus as estatusPreventa',
             'preventas.nombre_empleado as nombreEmpleado',
-            'orden_recoleccions.estatus', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
-            'orden_recoleccions.created_at',
             'personas.nombre as nombreCliente',
             'personas.apellido as apellidoCliente',
             'personas.telefono',
@@ -132,7 +138,6 @@ class OrdenRecoleccionController extends Controller
                 ];
             }
         }
-
         return view('Principal.ordenRecoleccion.recolecciones', compact('preventas', 'datosEntregaCompromisos'));
     }
 
@@ -169,6 +174,7 @@ class OrdenRecoleccionController extends Controller
                 'preventas.nombre_quien_recibe as nombreRecibe',
                 'orden_recoleccions.id as idOrden_recoleccions',
                 'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
+                'orden_recoleccions.id_cancelacion',
                 'ventas.created_at as fechaEntrega',
                 'orden_recoleccions.created_at',
                 'orden_recoleccions.id as id_recoleccion',
@@ -303,8 +309,12 @@ class OrdenRecoleccionController extends Controller
      */
     public function edit(Orden_recoleccion $orden_recoleccion, Request $request)
     {
+        dd($request);
         $costo_unitario = $request->input('costo_unitario');
         $pagaCon = $request->input('txtpagoEfectivo');
+        $codigo = $request->input('codigo');
+        $nRecarga = $request->input('numero_recarga');
+        $observaciones = $request->input('observacionesDetalle');
 
         $comentario = $request->input('observaciones');
         // Recuperar el ID de la orden de recolección
@@ -331,7 +341,10 @@ class OrdenRecoleccionController extends Controller
                 $ordenRecoleccion->update([
                     'Fecha_recoleccion' => now(),
                     'estatus' => $estatus,
-                    // Agrega aquí cualquier otro campo que desees actualizar
+                ]);
+                $preventa->update([
+                    'codigo' => $codigo,
+                    'numero_recarga' => $nRecarga,
                 ]);
             } else if ($estatus == 2) {
                 $ordenRecoleccion->update([
@@ -363,6 +376,10 @@ class OrdenRecoleccionController extends Controller
                         ]);
                     }
                 }
+            } else if ($estatus == 5) {
+                $preventa->update([
+                    'observacion' => $observaciones,
+                ]);
             } else if ($estatus == 1) {
                 //actualizamos orden de recoleccion
                 $ordenRecoleccion->update([
@@ -404,8 +421,6 @@ class OrdenRecoleccionController extends Controller
     }
     public function vistacancelar($id)
     {
-
-
         $id_recoleccion = $id;
 
         $datosEnvio = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
@@ -425,6 +440,7 @@ class OrdenRecoleccionController extends Controller
                 'preventas.nombre_quien_recibe as nombreRecibe',
                 'orden_recoleccions.id as idOrden_recoleccions',
                 'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
+                'orden_recoleccions.id_cancelacion',
                 'ventas.created_at as fechaEntrega',
                 'orden_recoleccions.created_at',
                 'orden_recoleccions.id as id_recoleccion',

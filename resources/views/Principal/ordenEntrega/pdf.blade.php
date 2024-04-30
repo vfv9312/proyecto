@@ -108,15 +108,17 @@ opacity: 0.5;">
     $horariosFinal = array_values(array_filter(explode(',', $ordenRecoleccion->horarioTrabajoFinal)));
     $dias = explode(',', $ordenRecoleccion->diaSemana);
 
-    $horaRegistro = Carbon::parse($hora);
-    $tiempo = Carbon::parse($Tiempo->tiempo);
+    if ($Tiempo !== null && $Tiempo->tiempo !== null) {
+        $horaRegistro = Carbon::parse($hora);
+        $tiempo = Carbon::parse($Tiempo->tiempo);
 
-    $horaFinal = $horaRegistro
-        ->addHours($tiempo->hour)
-        ->addMinutes($tiempo->minute)
-        ->addSeconds($tiempo->second);
-    $fechaHoraDeTiempoAproximadoEntrega = explode(' ', $horaFinal);
-    $tiempoPromesa = $fechaHoraDeTiempoAproximadoEntrega[1];
+        $horaFinal = $horaRegistro
+            ->addHours($tiempo->hour)
+            ->addMinutes($tiempo->minute)
+            ->addSeconds($tiempo->second);
+        $fechaHoraDeTiempoAproximadoEntrega = explode(' ', $horaFinal);
+        $tiempoPromesa = $fechaHoraDeTiempoAproximadoEntrega[1];
+    }
 
 @endphp
 <div class="ticket">

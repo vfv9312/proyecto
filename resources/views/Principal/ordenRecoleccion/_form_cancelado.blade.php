@@ -212,32 +212,35 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                     <span>En revision</span>
                 @elseif($datosEnvio->estatusRecoleccion == 2)
                     <span>En entrega</span>
+                @elseif($datosEnvio->estatusRecoleccion == 1)
+                    <span>Orden Procesada</span>
                 @endif
             </div>
         </div>
-
-        <div class="flex flex-col w-full">
-            <label class="" for="motivoCancelacion">Porque se cancela:</label>
-            <select name="txtcategoriaCancelacion" id="categoriaCancelacion"
-                class="w-1/3 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                <option value="">Selecciona un motivo</option>
-                @foreach ($cancelar as $cancelacion)
-                    <option value="{{ $cancelacion->id }}">{{ $cancelacion->nombre }}</option>
-                @endforeach
-            </select>
-        </div>
-
-
-        <div class="flex flex-col w-full">
-            <label class="" for="miSelect">Porque se cancela:</label>
-            <textarea
-                class="w-full h-32 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="cancelado" name="txtcancelado" maxlength="255"></textarea>
-        </div>
+        @if ($datosEnvio->id_cancelacion == null)
+            <div class="flex flex-col w-full">
+                <label class="" for="motivoCancelacion">Porque se cancela:</label>
+                <select name="txtcategoriaCancelacion" id="categoriaCancelacion"
+                    class="w-1/3 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">Selecciona un motivo</option>
+                    @foreach ($cancelar as $cancelacion)
+                        <option value="{{ $cancelacion->id }}">{{ $cancelacion->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
 
 
-        <button type="submit"
-            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 flex items-center mt-8">
-            <i class="fas fa-sync-alt mr-2"></i>
-            Cancelar
-        </button>
+            <div class="flex flex-col w-full">
+                <label class="" for="miSelect">Porque se cancela:</label>
+                <textarea
+                    class="w-full h-32 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="cancelado" name="txtcancelado" maxlength="255"></textarea>
+            </div>
+
+
+            <button type="submit"
+                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 flex items-center mt-8">
+                <i class="fas fa-sync-alt mr-2"></i>
+                Cancelar
+            </button>
+        @endif

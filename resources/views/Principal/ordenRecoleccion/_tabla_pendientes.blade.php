@@ -43,11 +43,15 @@
                     @endif
                 </td>
                 <td class="px-6 py-4">
-                    @if ($pendiente->estatus == 4)
+                    @if (in_array($pendiente->estatus, [1, 2, 3, 4]) && $pendiente->id_cancelacion !== null)
                         <div style="height:33px;width:33px;background-color:red;border-radius:50%;"></div>
+                        <span>Cancelado</span>
+                    @elseif ($pendiente->estatus == 4)
+                        <div style="height:33px;width:33px;background-color:orange;border-radius:50%;"></div>
                         <span>Recoleccion</span>
                     @elseif ($pendiente->estatus == 3)
-                        <div style="height:33px;width:33px;background-color:orange;border-radius:50%;"></div><span>En
+                        <div style="height:33px;width:33px;background-color:rgb(219, 114, 9);border-radius:50%;">
+                        </div><span>En
                             revision</span>
                     @elseif ($pendiente->estatus == 2)
                         <div style="height:33px;width:33px;background-color:yellow;border-radius:50%;"></div>

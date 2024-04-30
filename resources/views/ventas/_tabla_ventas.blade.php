@@ -53,25 +53,27 @@
                         @endforeach
                         ${{ $datosVenta->costo_servicio ? $datosVenta->costo_servicio : $total }}
                     </td>
+                    <td>
+                        <div class="flex flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                            <a href="{{ route('generarpdf.ordenentrega', $datosVenta->idRecoleccion) }}"
+                                target="_blank"
+                                class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
+                                <i class="fas fa-file-pdf"></i>
 
-                    <td>
-                        <a href="{{ route('generarpdf.ordenentrega', $datosVenta->idRecoleccion) }}" target="_blank"
-                            class="border rounded px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out">
-                            <i class="fas fa-file-pdf"></i>
+                            </a>
 
-                        </a>
-                    </td>
-                    <td>
-                        <a href='{{ route('WhatsApp.enviar', ['id' => $datosVenta->idRecoleccion]) }}' target="_blank"
-                            class="tems-center mx-2 px-6 py-4 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                    </td>
-                    <td>
-                        <a href='{{ route('Correo.enviar', ['id' => $datosVenta->idRecoleccion]) }}' target="_blank"
-                            class=" items-center px-6 py-4 bg-purple-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
-                            <i class="fas fa-envelope"></i>
-                        </a>
+                            <a href='{{ route('WhatsApp.enviar', ['id' => $datosVenta->idRecoleccion]) }}'
+                                target="_blank"
+                                class="tems-center mx-2 px-6 py-4 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+
+                            <a href='{{ route('Correo.enviar', ['id' => $datosVenta->idRecoleccion]) }}'
+                                target="_blank"
+                                class=" items-center px-6 py-4 bg-purple-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
                     </td>
 
                 </tr>
