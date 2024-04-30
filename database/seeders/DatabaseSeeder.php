@@ -33,14 +33,14 @@ class DatabaseSeeder extends Seeder
             ColorSeeder::class,
             ModoSeeder::class,
             CancelacionesSeeder::class,
-            ProductosSeeder::class,
-            precios_productosSeeder::class,
+            // ProductosSeeder::class,
+            // precios_productosSeeder::class,
             Info_ticketSeeder::class,
         ]);
 
         //\App\Models\personas::factory(6)->create();
         //\App\Models\empleados::factory(5)->create();
-        \App\Models\clientes::factory(3)->create();
+        // \App\Models\clientes::factory(3)->create();
         \App\Models\User::factory(1)->create();
         /*
         \App\Models\direcciones::factory(30)->create();
