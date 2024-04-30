@@ -17,10 +17,10 @@
             {{ session('incorrect') }}
         </div>
     @endif
-
+    @include('Principal.ordenRecoleccion._excel')
     @include('Principal.ordenRecoleccion._filtros')
     @include('Principal.ordenRecoleccion._tabla_pendientes')
-@endsection('content')
+@endsection
 
 @push('css')
     {{-- Add here extra stylesheets --}}

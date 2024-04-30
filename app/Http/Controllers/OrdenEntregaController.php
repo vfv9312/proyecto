@@ -645,6 +645,7 @@ class OrdenEntregaController extends Controller
                 'preventas.nombre_quien_recibe as recibe',
                 'preventas.nombre_empleado as nombreEmpleado',
                 'preventas.comentario',
+                'preventas.observacion',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
@@ -694,6 +695,12 @@ class OrdenEntregaController extends Controller
             $largoDelTicket += $extra * 50;
         }
 
+        $diasSemana = explode(',', $ordenRecoleccion->diaSemana);
+
+        if (count($diasSemana) > 5) {
+            $largoDelTicket += 50;
+        }
+
         $pdf = PDF::loadView('Principal.ordenEntrega.pdf', compact(
             'ordenRecoleccion',
             'listaProductos',
@@ -707,6 +714,8 @@ class OrdenEntregaController extends Controller
         // Renderiza el documento PDF y lo envía al navegador
         return $pdf->stream();
     }
+
+
 
     /**
      * Remove the specified resource from storage.

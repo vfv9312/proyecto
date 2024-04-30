@@ -225,7 +225,7 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                     <option value="2">En entrega </option>
                 @elseif($datosEnvio->estatusRecoleccion == 2)
                     <option value="2">En entrega </option>
-                    <option value="5">Observaciones</option>
+                    {{-- <option value="5">Observaciones</option> --}}
                     <option value="1">Venta completa</option>
                 @endif
             </select>

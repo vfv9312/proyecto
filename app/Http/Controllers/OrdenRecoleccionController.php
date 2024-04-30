@@ -309,7 +309,6 @@ class OrdenRecoleccionController extends Controller
      */
     public function edit(Orden_recoleccion $orden_recoleccion, Request $request)
     {
-        dd($request);
         $costo_unitario = $request->input('costo_unitario');
         $pagaCon = $request->input('txtpagoEfectivo');
         $codigo = $request->input('codigo');
@@ -602,6 +601,227 @@ class OrdenRecoleccionController extends Controller
 
         // Renderiza el documento PDF y lo envía al navegador
         return $pdf->stream();
+    }
+
+    public function generarExcel(Request $request)
+    {
+        $busqueda = $request->query('adminlteSearch');
+        $filtroES = $request->query('entrega_servicio');
+        $filtroFecha_inicio = $request->query('fecha_inicio');
+        $fecha_fin = $request->query('fecha_fin');
+        $filtroEstatus = $request->query('estatus');
+        $palabras = explode(' ', $busqueda); // Divide la cadena de búsqueda en palabras
+        $datosEntregaCompromisos[] = [
+            'fecha' => null,
+            'hora' => null,
+            'horaEntregaCompromiso' => null,
+        ];
+
+
+
+        $preventas = Preventa::join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('personas', 'personas.id', '=', 'clientes.id_persona')
+            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->join('orden_recoleccions', 'orden_recoleccions.id_preventa', '=', 'preventas.id')
+            ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftJoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
+            ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
+            ->WhereIn('orden_recoleccions.estatus', [4, 3, 2, 1])
+            //->where('id_cancelacion', null)
+            ->where(function ($query) use ($palabras) {
+                foreach ($palabras as $palabra) {
+                    $query->where(function ($query) use ($palabra) {
+                        $query->where('personas.telefono', 'LIKE', "%{$palabra}%")
+                            ->orWhere('personas.nombre', 'LIKE', "%{$palabra}%")
+                            ->orWhere('personas.apellido', 'LIKE', "%{$palabra}%")
+                            ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$palabra}%")
+                            ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$palabra}%");
+                    });
+                }
+            });
+        // Búsqueda por número de folio
+        if (preg_match('/^[A-Z]\d+$/', $busqueda)) {
+            $letra = substr($busqueda, 0, 1);
+            $numero = (int) substr($busqueda, 1);
+
+            $preventas->orWhere(function ($query) use ($letra, $numero) {
+                $query->where('folios.letra_actual', $letra)
+                    ->where('folios.ultimo_valor', $numero);
+            });
+        }
+
+        if ($filtroES) { //E : Entrega , S: Servicio
+            $preventas->where('preventas.estatus', $filtroES);
+        }
+
+        if ($filtroFecha_inicio && $fecha_fin) {
+            $preventas->whereBetween('orden_recoleccions.created_at', [$filtroFecha_inicio, $fecha_fin]);
+        }
+        //si es algun valor positivo entra 1: Listo, 2: Entrega, 3: Revision, 4: Recoleccion, 5: Cancelacion
+        if ($filtroEstatus) {
+            if ($filtroEstatus == "5") { //si es 5 entonces entra al if y verifica si tiene algun id_cancelacion
+                $preventas->whereNotNull('orden_recoleccions.id_cancelacion');
+            } else {
+                $preventas->where('orden_recoleccions.estatus', $filtroEstatus);
+            }
+        }
+        $preventas = $preventas->select(
+            'orden_recoleccions.id as idRecoleccion',
+            'orden_recoleccions.created_at as fechaCreacion',
+            'orden_recoleccions.id_cancelacion',
+            'orden_recoleccions.estatus', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
+            'folios.letra_actual as letraActual',
+            'folios.ultimo_valor as ultimoValor',
+            'preventas.id as idPreventa',
+            'preventas.estatus as estatusPreventa',
+            'preventas.nombre_empleado as nombreEmpleado',
+            'personas.nombre as nombreCliente',
+            'personas.apellido as apellidoCliente',
+            'personas.telefono',
+            'personas.email as correo',
+            'clientes.comentario as rfc',
+            'catalago_ubicaciones.localidad as colonia',
+            'direcciones.calle',
+            'direcciones.num_exterior',
+            'direcciones.num_interior',
+            'direcciones.referencia',
+            'ventas.created_at as fechaVenta',
+        )
+            ->orderBy('orden_recoleccions.updated_at', 'desc')
+            ->get();
+        foreach ($preventas as $preventa) {
+        }
+
+
+        $headers = [
+            'Content-type' => 'text/csv;charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename=Ecotoner.csv',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+        $row = ['Folio', 'Nombre cliente', 'RFC', 'Telefono cliente', 'Correo electronio', 'Dirección', 'Numero Exterior', 'Numero Interior', 'Referencia', 'Empleado', 'Fecha y hora del pedido', 'Hora compromiso', 'Fecha y hora de conclusión', 'Tipo de servicio', 'Estatus', 'Total de productos', 'Costo total'];
+        $callback = function () use ($preventas, $row) {
+            $output = fopen('php://output', 'w');
+            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($output, $row);
+            foreach ($preventas as $index => $row) {
+                if ($row->estatus == 1 && !is_numeric($row->id_cancelacion)) {
+                    $EstadoServicio = 'Orden Procesada';
+                } else if ($row->estatus == 2 && !is_numeric($row->id_cancelacion)) {
+                    $EstadoServicio = 'En entrega';
+                } else if ($row->estatus == 3 && !is_numeric($row->id_cancelacion)) {
+                    $EstadoServicio = 'En revision';
+                } else if ($row->estatus == 4 && !is_numeric($row->id_cancelacion)) {
+                    $EstadoServicio = 'En revisión';
+                } else {
+                    $EstadoServicio = 'Cancelado';
+                }
+
+                if ($row->estatusPreventa == 3) {
+                    $TipoServicio = 'Orden Entrega';
+                } else if ($row->estatusPreventa == 3) {
+                    $TipoServicio = 'Orden Servicio';
+                }
+
+                $fechaCreacion = \Carbon\Carbon::parse($row->fechaCreacion);
+                $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
+                if ($Tiempo) {
+                    $fechaHoraArray = explode(' ', $row->fechaCreacion);
+                    $fecha = $fechaHoraArray[0];
+                    $hora = $fechaHoraArray[1];
+                    // Crear un objeto DateTime con la hora inicial
+                    $horaInicial = new DateTime($hora);
+                    // Sumar el intervalo de tiempo a la hora inicial
+                    list($horas, $minutos, $segundos) = explode(':', $Tiempo->tiempo);
+                    $intervalo = new DateInterval(sprintf('PT%dH%dM%dS', $horas, $minutos, $segundos));
+                    $horaEntregaCompromiso = $horaInicial->add($intervalo);
+                    // Aquí puedes hacer lo que necesites con $horaEntregaCompromiso
+                    // Aquí puedes hacer lo que necesites con $horaEntregaCompromiso
+                    $datosEntregaCompromisos[] = [
+                        'fecha' => $fecha,
+                        'hora' => $hora,
+                        'horaEntregaCompromiso' => $horaEntregaCompromiso->format('H:i:s'),
+                    ];
+                } else {
+                    $datosEntregaCompromisos[] = [
+                        'fecha' => null,
+                        'hora' => null,
+                        'horaEntregaCompromiso' => null,
+                    ];
+                }
+
+                if ($row->estatusPreventa == 3) {
+                    $productos = ventas_productos::join('precios_productos', 'precios_productos.id', '=', 'ventas_productos.id_precio_producto')
+                        ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+                        ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                        ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+                        ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                        ->where('precios_productos.estatus', 1)
+                        ->where('preventas.id', $row->idPreventa)
+                        ->select(
+                            'productos.*',
+                            'precios_productos.precio',
+                            'marcas.nombre as marca',
+                            'tipos.nombre as tipo',
+                            'colors.nombre as color',
+                            'modos.nombre as nombreModo',
+                            'ventas_productos.cantidad',
+                            'ventas_productos.descuento',
+                            'ventas_productos.tipo_descuento as tipoDescuento',
+                        )
+                        ->get();
+                    $total = 0;
+                    $cantidadTotal = 0;
+
+
+                    foreach ($productos as $indice => $producto) {
+
+                        switch ($producto->tipoDescuento) {
+                            case 'Porcentaje':
+                                $descuento = $producto->precio * intval($producto->descuento) / 100;
+                                $total += ($producto->precio * $producto->cantidad - $descuento);
+                                $cantidadTotal += ($producto->cantidad);
+                                break;
+                            case 'cantidad':
+                                $total += ($producto->precio * $producto->cantidad - $producto->descuento);
+                                $cantidadTotal += ($producto->cantidad);
+                                break;
+                            case 'Sin descuento':
+                                $total += ($producto->precio * $producto->cantidad);
+                                $cantidadTotal += ($producto->cantidad);
+                                break;
+                        }
+                    }
+                } else if ($row->estatusPreventa == 4) { //leftjoin me devolvera null si no hay relaciones
+                    $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
+                        ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
+                        ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+                        ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
+                        ->where('preventas.id', $row->idPreventa)
+                        ->select(
+                            'productos.*',
+                            'marcas.nombre as marca',
+                            'tipos.nombre as tipo',
+                            'colors.nombre as color'
+                        )
+                        ->get();
+                }
+
+
+                $count = !is_null($row->cantidad) ? $row->cantidad : 0;
+                $rowContent = [$row->letraActual . ' ' . $row->ultimoValor, $row->nombreCliente . ' ' . $row->apellidoCliente, $row->rfc, $row->telefono, $row->correo, 'Col.' . $row->colonia . '; ' . $row->calle, $row->num_exterior, $row->num_interior, $row->referencia, $row->nombreEmpleado, $row->fechaCreacion, $datosEntregaCompromisos[$index]['horaEntregaCompromiso'], $row->fechaVenta, $TipoServicio, $EstadoServicio, $cantidadTotal, '$' . $total, $count];
+                fputcsv($output, $rowContent);
+            }
+            fclose($output);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
