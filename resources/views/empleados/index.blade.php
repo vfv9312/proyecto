@@ -52,6 +52,13 @@
                                     class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
                                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
                             </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>Nombre de usuario</span>
+                                <input name="username" :value="old('username')" required autofocus autocomplete="username"
+                                    type="text"
+                                    class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
+                                <x-input-error :messages="$errors->get('username')" class="mt-2" />
+                            </label>
                             <!-- Roles-->
                             <label class="text-sm text-gray-500 flex flex-col items-start mb-4">
                                 <span>Rol del empleado</span>
@@ -63,12 +70,12 @@
                                 </select>
                             </label>
                             <!-- Correo Electronico-->
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                            {{-- <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Correo Electronico</span>
                                 <input name="email" :value="old('email')" required autocomplete="username" type="email"
                                     class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
                                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                            </label>
+                            </label> --}}
                             <!-- Password -->
                             <label class="text-sm text-gray-500 flex flex-col items-start mb-4">
                                 <span> Contraseña</span>
@@ -89,7 +96,7 @@
                             <!---Si el cliente cambia de opinion y quiere agregar datos  quitar comentario-->
                             <!-- tipos de ordenes : Orden de Servicio (Recepción), Orden de Pedido a Domicilio, Orden de Venta, Orden de Recolección <label class="text-sm text-gray-500 flex flex-col items-start">
 
-                                                                                                                                                                                                                                                                                </label>-->
+                                                                                                                                                                                                                                                                                                            </label>-->
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Guardar empleado
@@ -117,23 +124,24 @@
             <!--La clase min-w-full hace que la tabla tenga al menos el ancho completo de su contenedor, lo que significa que se desplazará horizontalmente si es necesario.-->
             <tr class=" text-black uppercase text-xs  font-bold leading-normal">
                 <td class="py-3 px-6 text-left border-r">Nombre</td>
+                <td class="py-3 px-6 text-left border-r">Nombre de usuario</td>
                 <td class="py-3 px-6 text-left border-r">Rol</td>
-                <td class="py-3 px-6 text-left border-r">Correo Electronico</td>
                 <!--El dueño no quiere correo o imagen-->
                 <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td class="py-3 px-6 text-left border-r">Correo electronico</td>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td class="py-3 px-6 text-left border-r">Imagen</td>-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Correo electronico</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Imagen</td>-->
             </tr>
             @foreach ($empleados as $empleado)
                 <tr class= " border-b border-gray-200 text-sm">
                     <td class=" px-6 py-4">
                         {{ $empleado->nombre }}</td>
                     <td class="px-6 py-4">
-                        {{ $empleado->nombreRol }}
+                        {{ $empleado->username }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ $empleado->email }}
+                        {{ $empleado->nombreRol }}
                     </td>
+
                     <input type="hidden" name="miDato" value="{{ $empleado->id_rol }}">
                     <!--el dueño no queria foto y email, pero si cambia de opinion aqui esta-->
                     <!--</td> -->

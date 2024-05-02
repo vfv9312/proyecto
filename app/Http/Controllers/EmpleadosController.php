@@ -6,7 +6,11 @@ use App\Models\empleados;
 use App\Models\personas;
 use App\Models\Roles;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
+use Carbon\Carbon;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -24,10 +28,11 @@ class EmpleadosController extends Controller
         $empleados = User::join('roles', 'roles.id', '=', 'users.id_rol')
             ->where(function ($query) use ($busqueda) {
                 $query->where('users.email', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('users.username', 'LIKE', "%{$busqueda}")
                     ->orWhere('users.name', 'LIKE', "%{$busqueda}%")
                     ->orWhere('roles.nombre', 'LIKE', "%{$busqueda}%");
             })
-            ->select('users.id', 'users.name as nombre', 'users.email', 'users.id_rol', 'roles.nombre as nombreRol')
+            ->select('users.id', 'users.name as nombre', 'users.email', 'users.id_rol', 'roles.nombre as nombreRol', 'users.username')
             ->orderBy('users.updated_at', 'desc')
             ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
 
@@ -48,59 +53,32 @@ class EmpleadosController extends Controller
      */
     public function store(Request $request)
     {
-        DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
-        try {
-            //para validar que sea una imagen el archivo cargado
-            $request->validate([
-                'file' => 'image|max:2048',
-            ]);
-            //Guardar imagen en storage
-            if ($request->hasFile('file')) {
-                //esto guardamos nuetra imagen en storage/app/public/imagenEmpleado
-                //no olvidar ejecutar el comando php artisan storage:link para crear un acceso directo
-                $file = $request->file('file')->store('public/imagenEmpleado');
-                /**
-                 * Genera la URL para un archivo almacenado en el almacenamiento.
-                 *
-                 * @param string $file La ruta del archivo.
-                 * @return string La URL del archivo.
-                 */
-                $url = Storage::url($file);
-                // Ahora puedes usar $filename para guardar el nombre del archivo en tu base de datos
-            }
-            // Insertar en la tabla 'personas'
-            $persona = personas::create([
-                'nombre' => $request->txtnombre,
-                'apellido' => $request->txtapellido,
-                'telefono' => $request->txttelefono,
-                'email' => $request->txtemail,
-                'fecha_nacimiento' => $request->txtfecha_nacimiento,
-                'estatus' => 1,
-            ]);
-            // Insertar en la tabla 'empleados' usando el ID de persona
-            $empleado = empleados::create([
-                'id_persona' => $persona->id,
-                'id_rol' => $request->txtrol,
-                'comentario' => 'ninguno',
-                'fotografia' => null, //cambiar por $url si ya quiere foto
-                'estatus' => 1
-            ]);
-            DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-        } catch (\Throwable $th) {
-            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            /*si retorna un error de sql lo veremos en pantalla*/
-            return $th->getMessage();
-            //y que la ultima consulta sea false para mandar msj que salio mal la consulta
-            $empleado = false;
-        }
-        if ($empleado && $persona) {
-            session()->flash("correcto", "Producto registrado correctamente");
-            return redirect()->route('empleados.index');
-        } else {
-            session()->flash("incorrect", "Error al registrar");
-            return redirect()->route('empleados.index');
-        }
+        //return $request;
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|lowercase|max:255|unique:users,username',
+            // 'email' => 'required|string|lowercase|email|max:255',
+            'password' => ['required', 'confirmed', 'string', 'max:12', 'min:8'],
+            'rol' => 'required|integer|exists:roles,id'
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => 'empleado' . time() . '@test.com',
+            'id_rol' => $request->rol,
+            'password' => Hash::make($request->password),
+            'email_verified_at' => Carbon::now()
+        ]);
+
+        //event(new Registered($user));
+
+        //Auth::login($user);
+
+        return redirect()->route('empleados.index');
     }
+
+
 
     /**
      * Display the specified resource.
@@ -135,32 +113,39 @@ class EmpleadosController extends Controller
 
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
+
             $nombre = ucwords(strtolower($request->input('txtnombre')));
             $rol = $request->input('txtrol');
             $email = $request->input('email');
-            $contraseña = $request->input('password');
+            $contrasena =  is_null($request->password) ? $empleado->password : Hash::make($request->password);
 
+            $empleadoActualizado = $empleado->update([
+                'name' => $nombre,
+                'id_rol' => $rol,
+                // 'email' => $empleado->email,
+                'password' => $contrasena,
+            ]);
 
-
-            if ($contraseña === null) {
-                $empleadoActualizado = $empleado->update([
-                    'name' => $nombre,
-                    'id_rol' => $rol,
-                    'email' => $email,
-                ]);
-            } else {
-                $empleadoActualizado = $empleado->update([
-                    'name' => $nombre,
-                    'id_rol' => $rol,
-                    'email' => $email,
-                    'password' => Hash::make($request->password),
-                ]);
-            }
+            // if ($contraseña === null) {
+            //     $empleadoActualizado = $empleado->update([
+            //         'name' => $nombre,
+            //         'id_rol' => $rol,
+            //         'email' => $email,
+            //     ]);
+            // } else {
+            //     $empleadoActualizado = $empleado->update([
+            //         'name' => $nombre,
+            //         'id_rol' => $rol,
+            //         'email' => $email,
+            //         'password' => Hash::make($request->password),
+            //     ]);
+            // }
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+            info($th->getMessage());
             /*si retorna un error de sql lo veremos en pantalla*/
             //return $th->getMessage();
             //y que la ultima consulta sea false para mandar msj que salio mal la consulta

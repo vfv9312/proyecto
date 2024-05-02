@@ -25,6 +25,7 @@ class UserFactory extends Factory
     {
         return [
             'name' => 'Administrador',
+            'username' => 'administrador',
             'email' => 'admin@test.com',
             'id_rol' => 1,
             'email_verified_at' => now(),

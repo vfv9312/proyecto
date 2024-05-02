@@ -568,7 +568,6 @@
                     let dias = ultimoHorario.dias.split(',');
                     inputrecibe.val(ultimoHorario.recibe);
                     dias.forEach((dia, index) => {
-                        console.log(horariosEntrada);
                         if (dia == 'Lunes') {
                             inputLunesEntrada.val(horariosEntrada[index]);
                             inputLunesSalida.val(horariosSalida[index]);
@@ -710,26 +709,15 @@
                 rfcInput.required = true;
                 rfcInput.disabled = false;
                 warning.classList.remove("hidden");
-                validarRFC(rfcInput);
+                //         validarRFC(rfcInput);
             } else {
                 rfcInput.required = false;
                 rfcInput.disabled = true;
                 warning.classList.add("hidden");
-                rfcInput.setCustomValidity(''); // Limpia cualquier mensaje de error anterior
+                //                rfcInput.setCustomValidity(''); // Limpia cualquier mensaje de error anterior
             }
         } //FINALIZA LA FUNCION AL DARLE AL CHECKBOX QUE QUIERE RFC
-        //validar rfc
-        //Dentro de la función, se define una expresión regular (regex) que describe el formato de un RFC válido. Un RFC válido comienza con 3 o 4 letras mayúsculas (incluyendo Ñ y &), seguido de 6 dígitos, y opcionalmente termina con 3 caracteres alfanuméricos.
-        function validarRFC(input) {
-            var regex = /^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{3})?$/;
-            if (input.value.trim() !== '' && !regex.test(input.value)) {
-                input.setCustomValidity(
-                    'RFC inválido. Deben ser 3 o 4 letras mayúsculas, seguido de 6 dígitos y 3 caracteres alfanuméricos.'
-                );
-            } else {
-                input.setCustomValidity('');
-            }
-        } //FINALIZA FUNCION DE VALIDACION DE RFC
+
 
 
         function mostrarHorario(checkbox) {
@@ -800,6 +788,7 @@
             // Obtén el formulario
             var form = document.getElementById('formulario');
 
+
             /**
              *
              *
@@ -860,6 +849,30 @@
                 // Si el campo es válido, limpiar cualquier mensaje de error anterior
                 cambioInput.setCustomValidity('');
             }
+
+            //ENTRA LA FUNCION CUANDO LE DAMOS AL CHECKBOX QUE REQUERIMOS UN RFC POR QUE QUIERE FACTURA
+            var checkbox = document.getElementById("factura");
+            var rfcInput = document.getElementById("rfc");
+
+            if (checkbox.checked) {
+                validarRFC(rfcInput);
+            } else {
+                rfcInput.setCustomValidity(''); // Limpia cualquier mensaje de error anterior
+            }
+
+
+            //validar rfc
+            //Dentro de la función, se define una expresión regular (regex) que describe el formato de un RFC válido. Un RFC válido comienza con 3 o 4 letras mayúsculas (incluyendo Ñ y &), seguido de 6 dígitos, y opcionalmente termina con 3 caracteres alfanuméricos.
+            function validarRFC(input) {
+                var regex = /^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{3})?$/;
+                if (input.value.trim() !== '' && !regex.test(input.value)) {
+                    input.setCustomValidity(
+                        'RFC inválido. Deben ser 3 o 4 letras mayúsculas, seguido de 6 dígitos y 3 caracteres alfanuméricos.'
+                    );
+                } else {
+                    input.setCustomValidity('');
+                }
+            } //FINALIZA FUNCION DE VALIDACION DE RFC
 
 
 

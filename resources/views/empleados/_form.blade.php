@@ -19,12 +19,12 @@
         </select>
     </label>
 
-    <label class="text-sm text-green-500 flex flex-col items-start mb-4">
+    {{-- <label class="text-sm text-green-500 flex flex-col items-start mb-4">
         <span>Correo Electronico</span>
         <input name="email"
             class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none py-2"
             value="{{ $persona->email }}" />
-    </label>
+    </label> --}}
     <label class="text-sm text-green-500 flex flex-col items-start mb-4">
         <span>Contraseña Nueva</span>
         <input name="password" type="password"

@@ -94,7 +94,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('orden_recoleccion', OrdenRecoleccionController::class)->middleware(['verified']);
     Route::get('/orden_recoleccion/{id}/vistacancelar', [OrdenRecoleccionController::class, 'vistacancelar'])->name('orden_recoleccion.vistacancelar')->middleware(['verified']);
     Route::put('/orden_recoleccion/{id}/cancelar', [OrdenRecoleccionController::class, 'cancelar'])->name('orden_recoleccion.cancelar')->middleware(['verified']);
-    Route::get('orden_recolecciones/generarexcel', [OrdenRecoleccionController::class, 'generarExcel'])->name('ordenentrega.generarExcel');
+    Route::get('orden_recoleccion/generarexcel', [OrdenRecoleccionController::class, 'generarExcel'])->name('ordenentrega.generarExcel');
 
 
     // servicios

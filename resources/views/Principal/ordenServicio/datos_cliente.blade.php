@@ -468,6 +468,7 @@
         var datosClientes = @json($listaClientes);
         var datosDirecciones = @json($listaDirecciones);
         let datosAtencion = @json($listaAtencion);
+        let datosRecoleccion = @json($datosRecoleccion);
 
         let inputLunesEntrada = $('#Lunes_entrada');
         let inputLunesSalida = $('#Lunes_salida');
@@ -512,7 +513,12 @@
                     return atencion.id_cliente == clienteSeleccionado.id_cliente;
                 });
 
+                var recibeCliente = datosRecoleccion.filter(function(reciben) {
+                    return reciben.idCliente == clienteSeleccionado.id_cliente;
+                });
+
             }
+
             // Vacía los campos al incio
             $('#telefono').val('');
             $('#rfc').val('');
@@ -553,6 +559,8 @@
                 $('#email').val(clienteSeleccionado.email);
                 $('#nombreCliente').val(clienteSeleccionado.nombre_cliente).prop('disabled', true);
                 $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
+                inputrecibe.val(recibeCliente[0].recibe);
+                inputentrega.val(recibeCliente[0].entrega);
 
 
                 selectAtencion.empty();
@@ -670,26 +678,13 @@
                 rfcInput.required = true;
                 rfcInput.disabled = false;
                 warning.classList.remove("hidden");
-                validarRFC(rfcInput);
             } else {
                 rfcInput.required = false;
                 rfcInput.disabled = true;
                 warning.classList.add("hidden");
-                rfcInput.setCustomValidity(''); // Limpia cualquier mensaje de error anterior
             }
         } //FINALIZA LA FUNCION AL DARLE AL CHECKBOX QUE QUIERE RFC
-        //validar rfc
-        //Dentro de la función, se define una expresión regular (regex) que describe el formato de un RFC válido. Un RFC válido comienza con 3 o 4 letras mayúsculas (incluyendo Ñ y &), seguido de 6 dígitos, y opcionalmente termina con 3 caracteres alfanuméricos.
-        function validarRFC(input) {
-            var regex = /^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{3})?$/;
-            if (input.value.trim() !== '' && !regex.test(input.value)) {
-                input.setCustomValidity(
-                    'RFC inválido. Deben ser 3 o 4 letras mayúsculas, seguido de 6 dígitos y 3 caracteres alfanuméricos.'
-                );
-            } else {
-                input.setCustomValidity('');
-            }
-        } //FINALIZA FUNCION DE VALIDACION DE RFC
+
 
 
         function mostrarHorario(checkbox) {
@@ -786,7 +781,6 @@
                 '#cambioInput'); // Obtener el campo de entrada de cambio
             let ArrayProductos = document.querySelector('#inputProductosSeleccionados');
 
-
             // Verificar si no se seleccionó una dirección existente y tampoco se ingresó una nueva
             if (inputDirecciones.value === '' && txtcolonia.value === 'null' && calle.value.trim() ===
                 '') {
@@ -800,7 +794,6 @@
                 // Si los campos son válidos, limpiar cualquier mensaje de error anterior
                 inputDirecciones.setCustomValidity('');
             }
-
             //Verificar que tenga datos el array de productos
             if (!ArrayProductos.value) {
                 alert('No has agregado productos a tu lista de pedidos');
@@ -821,6 +814,30 @@
                 cambioInput.setCustomValidity('');
             }
 
+
+            //ENTRA LA FUNCION CUANDO LE DAMOS AL CHECKBOX QUE REQUERIMOS UN RFC POR QUE QUIERE FACTURA
+            var checkbox = document.getElementById("factura");
+            var rfcInput = document.getElementById("rfc");
+
+
+            if (checkbox.checked) {
+                validarRFC(rfcInput);
+            } else {
+
+                rfcInput.setCustomValidity(''); // Limpia cualquier mensaje de error anterior
+            }
+            //validar rfc
+            //Dentro de la función, se define una expresión regular (regex) que describe el formato de un RFC válido. Un RFC válido comienza con 3 o 4 letras mayúsculas (incluyendo Ñ y &), seguido de 6 dígitos, y opcionalmente termina con 3 caracteres alfanuméricos.
+            function validarRFC(input) {
+                var regex = /^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{3})?$/;
+                if (input.value.trim() !== '' && !regex.test(input.value)) {
+                    input.setCustomValidity(
+                        'RFC inválido. Deben ser 3 o 4 letras mayúsculas, seguido de 6 dígitos y 3 caracteres alfanuméricos.'
+                    );
+                } else {
+                    input.setCustomValidity('');
+                }
+            } //FINALIZA FUNCION DE VALIDACION DE RFC
 
 
 
