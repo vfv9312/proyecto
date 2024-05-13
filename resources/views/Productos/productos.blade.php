@@ -97,7 +97,7 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>precio</span>
-                                <input name="txtprecio" type="number" min="1"
+                                <input name="txtprecio" type="number" min="1" step="0.01"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
                                     required />
                             </label>
@@ -108,7 +108,8 @@
                             </label>
 
                             <button type="submit" id="enviarmodal"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                onclick="this.disabled = true; this.form.submit();">
                                 Aceptar
                             </button>
 
