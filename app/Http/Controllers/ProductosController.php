@@ -61,6 +61,7 @@ class ProductosController extends Controller
     public function store(Request $request)
     {
 
+
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
             //para validar que sea una imagen el archivo cargado
@@ -121,7 +122,7 @@ class ProductosController extends Controller
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            return $th->getMessage();
+            // return $th->getMessage();
             $precioProducto = 0;
         }
         if ($precioProducto == true) {
