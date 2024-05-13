@@ -47,22 +47,23 @@
                             Registrar Producto
                         </h3>
 
-                        <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data"
+                        <form method="POST" action="{{ route('productos.store') }}"
+                            onsubmit="document.getElementById('enviarmodal').disabled = true;" enctype="multipart/form-data"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Nombre comercial</span>
-                                <input name="txtnombre"
+                                <input name="txtnombre" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Modelo</span>
-                                <input name="txtmodelo"
+                                <input name="txtmodelo" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Color</span>
-                                <select name="txtcolor"
+                                <select name="txtcolor" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona un color</option>
                                     @foreach ($colores as $color)
@@ -72,7 +73,7 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Categoria</span>
-                                <select name="txttipo"
+                                <select name="txttipo" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona una una categoria</option>
                                     @foreach ($categorias as $tipo)
@@ -82,7 +83,7 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Tipo</span>
-                                <select name="txtmodo"
+                                <select name="txtmodo" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona un tipo</option>
                                     @foreach ($modos as $modo)
@@ -92,7 +93,7 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Marca</span>
-                                <select name="txtmarca"
+                                <select name="txtmarca" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona una marca</option>
                                     @foreach ($marcas as $marca)
@@ -113,8 +114,7 @@
                             </label>
 
                             <button type="submit" id="enviarmodal"
-                                class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-greens-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                onclick="this.disabled = true; this.form.submit();">
+                                class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-greens-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-floppy-fill mr-2" viewBox="0 0 16 16">
                                     <path

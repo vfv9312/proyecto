@@ -19,10 +19,15 @@
                 {{ session('incorrect') }}
             </div>
         @endif
-        @include('servicios._filtro');
+        @include('servicios._filtro')
         <!-- boton anadir producto-->
         <button id="abrirnModalRegisrarProducto"
-            class=" mb-4 bg-gradient-to-r from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
+            class=" flex items-center mb-4 bg-gradient-to-r from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-basket mr-2" viewBox="0 0 16 16">
+                <path
+                    d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1v4.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 13.5V9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1.217L5.07 1.243a.5.5 0 0 1 .686-.172zM2 9v4.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V9zM1 7v1h14V7zm3 3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 4 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 6 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5" />
+            </svg>
             Añadir producto
         </button>
         <!--Hacemos responsivo el modal-->
@@ -42,12 +47,13 @@
                             Registrar Producto
                         </h3>
 
-                        <form method="POST" action="{{ route('servicios.store') }}" enctype="multipart/form-data"
+                        <form method="POST" action="{{ route('servicios.store') }}"
+                            onsubmit="document.getElementById('enviarmodal').disabled = true;" enctype="multipart/form-data"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Nombre comercial</span>
-                                <input name="txtnombre"
+                                <input name="txtnombre" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -57,7 +63,7 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Color</span>
-                                <select name="txtcolor"
+                                <select name="txtcolor" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona un color</option>
                                     @foreach ($colores as $color)
@@ -67,7 +73,7 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Categoria</span>
-                                <select name="txttipo"
+                                <select name="txttipo" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona una categoria</option>
                                     @foreach ($categorias as $categoria)
@@ -77,7 +83,7 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Tipo</span>
-                                <select name="txtmodo"
+                                <select name="txtmodo" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona un tipo</option>
                                     @foreach ($modos as $modo)
@@ -87,7 +93,7 @@
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Marca</span>
-                                <select name="txtmarca"
+                                <select name="txtmarca" required
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none">
                                     <option value="">Selecciona una marca</option>
                                     @foreach ($marcas as $marca)
@@ -109,6 +115,14 @@
                     <div class="flex justify-center">
                         <button type="submit" id="enviarmodal"
                             class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-greens-500 sm:ml-3 sm:w-auto sm:text-sm">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-floppy-fill mr-2" viewBox="0 0 16 16">
+                                <path
+                                    d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z" />
+                                <path
+                                    d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z" />
+                            </svg>
                             Guardar
                         </button>
                     </div>

@@ -115,7 +115,7 @@ class ServiciosController extends Controller
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            return $th->getMessage();
+            //return $th->getMessage();
             $precioProducto = 0;
         }
         if ($precioProducto == true) {
