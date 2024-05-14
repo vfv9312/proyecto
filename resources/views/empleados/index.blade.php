@@ -20,10 +20,17 @@
                 {{ session('incorrect') }}
             </div>
         @endif
-        @include('empleados._filtro');
+        @include('empleados._filtro')
         <!-- boton anadir producto-->
         <button id="abrirnModalRegisrarEmpleado"
-            class=" ml-10 mb-4 bg-gradient-to-r  from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
+            class=" flex items-center ml-10 mb-4 bg-gradient-to-r  from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-person-fill-add mr-2" viewBox="0 0 16 16">
+                <path
+                    d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                <path
+                    d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4" />
+            </svg>
             Añadir empleado
         </button>
         <!-- Modal -->
@@ -42,7 +49,8 @@
                             Registrar empleado
                         </h3>
 
-                        <form method="POST" action="{{ route('user.register') }}" class=" mt-8 flex flex-col items-center">
+                        <form method="POST" action="{{ route('user.register') }}" class=" mt-8 flex flex-col items-center"
+                            onsubmit="document.getElementById('enviarmodal').disabled = true;">
                             @csrf
                             <!-- Nombre-->
                             <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -96,7 +104,7 @@
                             <!---Si el cliente cambia de opinion y quiere agregar datos  quitar comentario-->
                             <!-- tipos de ordenes : Orden de Servicio (Recepción), Orden de Pedido a Domicilio, Orden de Venta, Orden de Recolección <label class="text-sm text-gray-500 flex flex-col items-start">
 
-                                                                                                                                                                                                                                                                                                            </label>-->
+                                                                                                                                                                                                                                                                                                                                        </label>-->
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 Guardar empleado
@@ -128,8 +136,8 @@
                 <td class="py-3 px-6 text-left border-r">Rol</td>
                 <!--El dueño no quiere correo o imagen-->
                 <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Correo electronico</td>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Imagen</td>-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td class="py-3 px-6 text-left border-r">Correo electronico</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td class="py-3 px-6 text-left border-r">Imagen</td>-->
             </tr>
             @foreach ($empleados as $empleado)
                 <tr class= " border-b border-gray-200 text-sm">
