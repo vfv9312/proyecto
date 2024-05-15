@@ -422,15 +422,10 @@
             }
         });
 
-
-
-
         $('#mostrarNuevaDireccion').click(function(event) {
             event.preventDefault();
             $('#nuevaDireccion').toggle();
         });
-
-
 
         //este ayuda a buscar en datos en el select
         $(document).ready(function() {
@@ -470,26 +465,14 @@
         let datosAtencion = @json($listaAtencion);
         let datosRecoleccion = @json($datosRecoleccion);
 
-        let inputLunesEntrada = $('#Lunes_entrada');
-        let inputLunesSalida = $('#Lunes_salida');
-        let inputMartesEntrada = $('#Martes_entrada');
-        let inputMartesSalida = $('#Martes_salida');
-        let inputMiercolesEntrada = $('#Miercoles_entrada');
-        let inputMiercolesSalida = $('#Miercoles_salida');
-        let inputJuevesEntrada = $('#Jueves_entrada');
-        let inputJuevesSalida = $('#Jueves_salida');
-        let inputViernesEntrada = $('#Viernes_entrada');
-        let inputViernesSalida = $('#Viernes_salida');
-        let inputSabadoEntrada = $('#Sabado_entrada');
-        let inputSabadoSalida = $('#Sabado_salida');
-        let inputDomingoEntrada = $('#Domingo_entrada');
-        let inputDomingoSalida = $('#Domingo_salida');
+
         let selectAtencion = $('#inputAtiende');
         let inputrecibe = $('#recibe');
         let inputentrega = $('#entrega');
         //el select de direcciones se lo damos a la variable selectDirecciones
         var selectDirecciones = $('#inputDirecciones');
         //esta funcion entra al momento de interactuar con el select de cliente
+
         function rellenarFormulario() {
 
             //el id que esta en value del select va almacenar en la variable clienteId
@@ -516,8 +499,8 @@
                 var recibeCliente = datosRecoleccion.filter(function(reciben) {
                     return reciben.idCliente == clienteSeleccionado.id_cliente;
                 });
-
             }
+
 
             // Vacía los campos al incio
             $('#telefono').val('');
@@ -527,26 +510,8 @@
             $('#apellidoCliente').val('').prop('disabled', false);
             $('#inputDirecciones').empty();
             $('#inputNombreAtencion').val('').prop('disabled', false);
-            inputLunesEntrada.val('').prop('disabled', false);
-            inputLunesSalida.val('').prop('disabled', false);
-            inputMartesEntrada.val('').prop('disabled', false);
-            inputMartesSalida.val('').prop('disabled', false);
-            inputMiercolesEntrada.val('').prop('disabled', false);
-            inputMiercolesSalida.val('').prop('disabled', false);
-            inputJuevesEntrada.val('').prop('disabled', false);
-            inputJuevesSalida.val('').prop('disabled', false);
-            inputViernesEntrada.val('').prop('disabled', false);
-            inputViernesSalida.val('').prop('disabled', false);
-            inputSabadoEntrada.val('').prop('disabled', false);
-            inputSabadoSalida.val('').prop('disabled', false);
-            inputDomingoEntrada.val('').prop('disabled', false);
-            inputDomingoSalida.val('').prop('disabled', false);
             inputrecibe.val('');
             inputentrega.val('');
-
-
-
-
             // Vacía el select de atención
             selectAtencion.empty();
 
@@ -559,10 +524,12 @@
                 $('#email').val(clienteSeleccionado.email);
                 $('#nombreCliente').val(clienteSeleccionado.nombre_cliente).prop('disabled', true);
                 $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
-                inputrecibe.val(recibeCliente[0].recibe);
-                inputentrega.val(recibeCliente[0].entrega);
-
-
+                if (recibeCliente && recibeCliente.length > 0) {
+                    inputrecibe.val(recibeCliente[0].recibe);
+                    inputentrega.val(recibeCliente[0].entrega);
+                } else {
+                    // Aquí va tu código si el array está vacío
+                }
                 selectAtencion.empty();
 
                 // Si atencionCliente tiene datos, los añade al select de atención
@@ -593,12 +560,14 @@
                         $('#inputNombreAtencion').val('').prop('disabled', false);
                     }
                 });
-
-
                 // Vacía el select de direcciones
                 selectDirecciones.empty();
+
+
+
                 //si direccionesCliente tiene datos entra
                 if (direccionesCliente && clienteSeleccionado) {
+
                     selectDirecciones.append(new Option('Buscar Direccion', ''));
                     direccionesCliente.forEach(function(direccion) {
                         selectDirecciones.append(new Option(direccion.localidad + ', ' + direccion.calle + ' #' +
@@ -611,6 +580,7 @@
                     // Si el cliente no tiene ninguna dirección registrada
                     selectDirecciones.append(new Option('No hay direcciones disponibles', ''));
                 }
+
                 //si clienteSeleccionado es null vacio todos los campos y habilita los bloqueados
             } else if (!clienteSeleccionado) {
                 $('#telefono').val('');
@@ -619,37 +589,8 @@
                 $('#nombreCliente').val('').prop('disabled', false);
                 $('#apellidoCliente').val('').prop('disabled', false);
                 $('#inputNombreAtencion').val('').prop('disabled', false);
-                inputHorarioInicio.val('').prop('disabled', false);
-                inputHorarioFinal.val('').prop('disabled', false);
-                inputLunesEntrada.val('').prop('disabled', false);
-                inputLunesSalida.val('').prop('disabled', false);
-                inputMartesEntrada.val('').prop('disabled', false);
-                inputMartesSalida.val('').prop('disabled', false);
-                inputMiercolesEntrada.val('').prop('disabled', false);
-                inputMiercolesSalida.val('').prop('disabled', false);
-                inputJuevesEntrada.val('').prop('disabled', false);
-                inputJuevesSalida.val('').prop('disabled', false);
-                inputViernesEntrada.val('').prop('disabled', false);
-                inputViernesSalida.val('').prop('disabled', false);
-                inputSabadoEntrada.val('').prop('disabled', false);
-                inputSabadoSalida.val('').prop('disabled', false);
-                inputDomingoEntrada.val('').prop('disabled', false);
-                inputDomingoSalida.val('').prop('disabled', false);
                 inputrecibe.val('');
                 inputentrega.val('');
-
-
-                //para formatear los dias de la semana
-                let dias = "Lunes,Martes,Miércoles,Miercoles,Jueves,Viernes,Sabado,Domingo"; // Tu cadena de días
-                let arrayDias = dias.split(","); // Convierte la cadena en un array
-                arrayDias.forEach(function(dia) {
-                    // Selecciona el checkbox correspondiente y márcalo como seleccionado
-                    let checkbox = document.querySelector(`input[name="dias[]"][value="${dia}"]`);
-                    if (checkbox) {
-                        checkbox.checked = false;
-                    }
-                });
-
                 selectDirecciones.append(new Option('No hay direcciones disponibles', ''));
                 // Vacía el select de atención
                 selectAtencion.append(new Option('Nueva persona en atencion', ''));
@@ -659,13 +600,6 @@
 
 
 
-        //RESTABLECES LOS HORARIOS DE TRABAJO
-        document.getElementById('resetButton').addEventListener('click', function() {
-            ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'].forEach(function(dia) {
-                document.getElementById(dia + '_entrada').value = "";
-                document.getElementById(dia + '_salida').value = "";
-            });
-        }); //AQUI FINALIZA EL RESTABLECER
 
 
         //ENTRA LA FUNCION CUANDO LE DAMOS AL CHECKBOX QUE REQUERIMOS UN RFC POR QUE QUIERE FACTURA
@@ -760,19 +694,6 @@
              *
              * */
 
-            var dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
-            for (var i = 0; i < dias.length; i++) {
-                var dia = dias[i];
-                var entrada = document.getElementById(dia + '_entrada').value;
-                var salida = document.getElementById(dia + '_salida').value;
-
-                if (entrada && !salida) {
-                    alert('Por favor, también rellene el campo de Hora de salida para el ' + dia + '.');
-                    event.preventDefault();
-                    return;
-                }
-            }
-            //Finaliza funcion para validar si no relleno el horario de salida o entrada
 
             let inputDirecciones = document.querySelector('#inputDirecciones');
             let txtcolonia = document.querySelector('#txtcolonia');
