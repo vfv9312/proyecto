@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class EmpleadosController extends Controller
 {
@@ -53,29 +54,57 @@ class EmpleadosController extends Controller
      */
     public function store(Request $request)
     {
-        //return $request;
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|lowercase|max:255|unique:users,username',
-            // 'email' => 'required|string|lowercase|email|max:255',
-            'password' => ['required', 'confirmed', 'string', 'max:12', 'min:8'],
-            'rol' => 'required|integer|exists:roles,id',
-        ]);
+        DB::beginTransaction();
+        try {
 
-        $user = User::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'email' => 'empleado' . time() . '@test.com',
-            'id_rol' => $request->rol,
-            'password' => Hash::make($request->password),
-            'email_verified_at' => Carbon::now(),
-        ]);
 
-        //event(new Registered($user));
+            //return $request;
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'username' => 'required|string|lowercase|max:255|unique:users,username',
+                'password' => ['required', 'confirmed', 'string', 'max:12', 'min:8', 'lowercase'],
+                'rol' => 'required|integer|exists:roles,id',
+            ], [
+                'name.required' => 'El campo nombre es obligatorio.',
+                'username.required' => 'El campo nombre de usuario es obligatorio.',
+                'username.lowercase' => 'El nombre de usuario debe estar en minúsculas.',
+                'username.unique' => 'El nombre de usuario ya está en uso.',
+                'password.required' => 'El campo contraseña es obligatorio.',
+                'password.confirmed' => 'Las contraseñas no coinciden.',
+                'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+                'password.max' => 'La contraseña no puede tener más de 12 caracteres.',
+                'password.lowercase' => 'La contraseña debe ser minuscula',
+                'rol.required' => 'El campo rol es obligatorio.',
+                'rol.integer' => 'El rol debe ser un número entero.',
+                'rol.exists' => 'El rol seleccionado no existe.',
+            ]);
 
-        //Auth::login($user);
+            $user = User::create([
+                'name' => $request->name,
+                'username' => $request->username,
+                'email' => 'empleado' . time() . '@test.com',
+                'id_rol' => $request->rol,
+                'password' => Hash::make($request->password),
+                'email_verified_at' => Carbon::now(),
+            ]);
 
-        return redirect()->route('empleados.index');
+            //event(new Registered($user));
+
+            //Auth::login($user);
+
+            DB::commit();
+            session()->flash("correcto", "Guardado correctamente");
+            return redirect()->route('empleados.index');
+        } catch (ValidationException $e) {
+            session()->flash("incorrect", "Hubo un error al crear el usuario.");
+            throw $e; // Laravel manejará esta excepción
+
+        } catch (\Throwable $th) {
+            DB::rollback();
+            // Redirigir al usuario a una página después de la actualización
+            session()->flash("incorrect", "Hubo un error al crear el usuario.");
+            return redirect()->route('empleados.index');
+        }
     }
 
 

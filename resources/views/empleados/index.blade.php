@@ -57,15 +57,15 @@
                                 <input name="name" :value="old('name')" required autofocus autocomplete="name"
                                     type="text"
                                     class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
-                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
                             </label>
+                            <x-input-error :messages="$errors->get('name')" />
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Nombre de usuario</span>
                                 <input name="username" :value="old('username')" required autofocus autocomplete="username"
                                     type="text"
                                     class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
-                                <x-input-error :messages="$errors->get('username')" class="mt-2" />
                             </label>
+                            <x-input-error :messages="$errors->get('username')" class="mt-2" />
                             <!-- Roles-->
                             <label class="text-sm text-gray-500 flex flex-col items-start mb-4">
                                 <span>Rol del empleado</span>
@@ -88,22 +88,24 @@
                                 <span> Contraseña</span>
                                 <input type="password" name="password" required autocomplete="new-password"
                                     class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
-                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+
                             </label>
+                            <x-input-error :messages="$errors->get('password')" class="mt-2" />
                             <!--Confirmar Contraseña-->
                             <label class="text-sm text-gray-500 flex flex-col items-start mb-10">
                                 <span>Confirmar Contraseña</span>
                                 <input id="password_confirmation" type="password" name="password_confirmation" required
                                     autocomplete="new-password"
                                     class="border-2 border-green-500 focus:ring-2 focus:ring-green-300 focus:outline-none" />
-                                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+
                             </label>
+                            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
 
 
                             <!---Si el cliente cambia de opinion y quiere agregar datos  quitar comentario-->
                             <!-- tipos de ordenes : Orden de Servicio (Recepción), Orden de Pedido a Domicilio, Orden de Venta, Orden de Recolección <label class="text-sm text-gray-500 flex flex-col items-start">
 
-                                                                                                                                                                                                                                                                                                                                                    </label>-->
+                                                                                                                                                                                                                                                                                                                                                                            </label>-->
                             <button type="submit" id="enviarmodal"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -142,8 +144,8 @@
                 <td class="py-3 px-6 text-left border-r">Rol</td>
                 <!--El dueño no quiere correo o imagen-->
                 <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <td class="py-3 px-6 text-left border-r">Correo electronico</td>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <td class="py-3 px-6 text-left border-r">Imagen</td>-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Correo electronico</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td class="py-3 px-6 text-left border-r">Imagen</td>-->
             </tr>
             @foreach ($empleados as $empleado)
                 <tr class= " border-b border-gray-200 text-sm">
