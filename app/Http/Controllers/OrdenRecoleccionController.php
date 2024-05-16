@@ -721,7 +721,7 @@ class OrdenRecoleccionController extends Controller
 
                 if ($row->estatusPreventa == 3) {
                     $TipoServicio = 'Orden Entrega';
-                } else if ($row->estatusPreventa == 3) {
+                } else if ($row->estatusPreventa == 4) {
                     $TipoServicio = 'Orden Servicio';
                 }
 
@@ -816,6 +816,7 @@ class OrdenRecoleccionController extends Controller
 
                 $count = !is_null($row->cantidad) ? $row->cantidad : 0;
                 $rowContent = [$row->letraActual . ' ' . $row->ultimoValor, $row->nombreCliente . ' ' . $row->apellidoCliente, $row->rfc, $row->telefono, $row->correo, 'Col.' . $row->colonia . '; ' . $row->calle, $row->num_exterior, $row->num_interior, $row->referencia, $row->nombreEmpleado, $row->fechaCreacion, $datosEntregaCompromisos[$index]['horaEntregaCompromiso'], $row->fechaVenta, $TipoServicio, $EstadoServicio, $cantidadTotal, '$' . $total, $count];
+
                 fputcsv($output, $rowContent);
             }
             fclose($output);

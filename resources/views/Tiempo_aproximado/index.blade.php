@@ -6,6 +6,19 @@
     <h1 class=" text-center"> Puede ingresar el tiempo aproximado de espera del servicio del dia de hoy {{ date('d/m/Y') }}
     </h1>
     <section>
+        <!-- mensaje de aviso que se registro el producto-->
+        @if (session('correcto'))
+            <div class=" flex justify-center">
+                <div id="alert-correcto" class="bg-green-500 bg-opacity-50 text-white px-4 py-2 rounded mb-8 w-64 ">
+                    {{ session('correcto') }}
+                </div>
+            </div>
+        @endif
+        @if (session('incorrect'))
+            <div id="alert-incorrect" class="bg-red-500 text-white px-4 py-2 rounded">
+                {{ session('incorrect') }}
+            </div>
+        @endif
         <div>
             @if ($errors->any())
                 <div id="error-alert" class="alert alert-danger">
@@ -21,10 +34,10 @@
                 <div class="flex flex-col justify-center items-center mb-4">
                     <label for="tiempo" class="block text-gray-700 text-sm font-bold mb-2">Tiempo aproximado de atención
                         (Horas:Minutos)</label>
-                    <input type="time"
+                    <input type="text"
                         class="shadow appearance-none border rounded w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="tiempo" name="tiempo"
-                        @if ($existeTiempoHoy) value="{{ $existeTiempoHoy->tiempo }}" @endif>
+                        id="tiempo" name="tiempo" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
+                        @if ($existeTiempoHoy) value="{{ substr($existeTiempoHoy->tiempo, 0, 5) }}" @endif>
                     @error('tiempo')
                         <div class="text-red-500 mt-2 text-sm">
                             {{ $message }}
@@ -52,6 +65,25 @@
 
 @push('js')
     <script>
+        //Oculta los elementos de alerta despues de 3 segundos
+        window.setTimeout(function() {
+            var alertCorrecto = document.getElementById('alert-correcto');
+            var alertIncorrect = document.getElementById('alert-incorrect');
+            if (alertCorrecto) alertCorrecto.style.display = 'none';
+            if (alertIncorrect) alertIncorrect.style.display = 'none';
+        }, 3000);
+
+        document.getElementById('tiempo').addEventListener('input', function(e) {
+            var input = e.target.value;
+            var match = input.match(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/);
+            if (!match) {
+                e.target.setCustomValidity(
+                    'Por favor, introduce un tiempo válido en formato de 24 horas (HH:MM).');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+
         setTimeout(function() {
             const errorAlert = document.getElementById('error-alert');
             if (errorAlert) {

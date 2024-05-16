@@ -190,15 +190,18 @@
             let valorDescuento;
 
             //verificar que descuento fue positivo o ninguno
-            if (valorDescuentoCantidad) {
-                tipoDescuento = 'cantidad';
-                valorDescuento = valorDescuentoCantidad;
-            } else if (valorDescuentoPorcentaje) {
-                tipoDescuento = 'Porcentaje';
-                valorDescuento = valorDescuentoPorcentaje;
-            } else {
-                tipoDescuento = 'null';
-                valorDescuento = 'null';
+            switch (true) {
+                case Boolean(valorDescuentoCantidad):
+                    tipoDescuento = 'cantidad';
+                    valorDescuento = valorDescuentoCantidad;
+                    break;
+                case Boolean(valorDescuentoPorcentaje):
+                    tipoDescuento = 'Porcentaje';
+                    valorDescuento = valorDescuentoPorcentaje;
+                    break;
+                default:
+                    tipoDescuento = 'null';
+                    valorDescuento = 'null';
             }
 
 
@@ -211,6 +214,7 @@
             var nombreColor = productoSeleccionado[4];
             var precio = productoSeleccionado[5].replace('$', '');
 
+
             // Verifica si el producto ya está en el array
             var productoExistente = productosSeleccionados.find(function(producto) {
                 return producto.id === idProducto;
@@ -220,12 +224,15 @@
             if (productoExistente) {
                 // Si el producto ya está en el array, actualiza la cantidad y el descuento
 
+
                 productoExistente.cantidad = cantidad;
                 productoExistente.descuento = valorDescuento;
                 productoExistente.tipoDescuento = tipoDescuento;
 
+
             } else {
                 // Si el producto no está en el array, lo agrega
+
                 var producto = {
                     id: idProducto,
                     cantidad: cantidad,
@@ -239,6 +246,7 @@
                     tipoDescuento: tipoDescuento
                 };
                 productosSeleccionados.push(producto);
+
             }
 
             // Limpia el input de cantidad
@@ -663,7 +671,6 @@
 
             datosProductos.forEach(element => {
                 if (productoSeleccionado == element.id) {
-
                     titulo.innerText = element.nombre_comercial;
                     categoria.innerText = 'Categoria : ' + element.nombre_categoria;
                     modelo.innerText = 'Modelo : ' + element.modelo;
@@ -672,7 +679,6 @@
                     marca.innerText = 'Marca : ' + element.nombre_marca;
                     precio.innerText = 'Precio : $' + element.precio;
                     descripcion.innerText = 'Descripcion : ' + element.descripcion;
-
 
                 } else if (productoSeleccionado == null) {
                     titulo.innerText = 'Seleccione un producto';

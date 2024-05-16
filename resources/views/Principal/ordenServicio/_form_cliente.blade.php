@@ -135,17 +135,17 @@
     </div>
     <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
         <div class="flex flex-col w-full md:w-1/2">
-            <label class="mr-4">Numero Interior</label>
-            <input type="text"
-                class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="num_interior" name="nuevonum_interior" placeholder="b15">
-        </div>
-
-        <div class="flex flex-col w-full md:w-1/2">
             <label class="mr-4">Numero Exterior</label>
             <input type="text"
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="num_exterior" name="nuevonum_exterior" placeholder="1000">
+        </div>
+
+        <div class="flex flex-col w-full md:w-1/2">
+            <label class="mr-4">Numero Interior</label>
+            <input type="text"
+                class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="num_interior" name="nuevonum_interior" placeholder="b15">
         </div>
     </div>
 

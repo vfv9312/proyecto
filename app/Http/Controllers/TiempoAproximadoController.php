@@ -54,9 +54,11 @@ class TiempoAproximadoController extends Controller
             DB::rollback();
             //throw $th;
             //return $th->getMessage();
-            return redirect()->back()->with('message', 'Error al guardar.');
+            session()->flash("incorrect", "Error al registrar");
+            return redirect()->route('TiempoAproximado.index');
         }
-        return redirect()->back()->with('message', 'Todo se guardó con éxito.');
+        session()->flash("correcto", "Producto registrado correctamente");
+        return redirect()->route('TiempoAproximado.index');
     }
 
     /**

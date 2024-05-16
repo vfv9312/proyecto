@@ -59,7 +59,7 @@ class EmpleadosController extends Controller
             'username' => 'required|string|lowercase|max:255|unique:users,username',
             // 'email' => 'required|string|lowercase|email|max:255',
             'password' => ['required', 'confirmed', 'string', 'max:12', 'min:8'],
-            'rol' => 'required|integer|exists:roles,id'
+            'rol' => 'required|integer|exists:roles,id',
         ]);
 
         $user = User::create([
@@ -68,7 +68,7 @@ class EmpleadosController extends Controller
             'email' => 'empleado' . time() . '@test.com',
             'id_rol' => $request->rol,
             'password' => Hash::make($request->password),
-            'email_verified_at' => Carbon::now()
+            'email_verified_at' => Carbon::now(),
         ]);
 
         //event(new Registered($user));
