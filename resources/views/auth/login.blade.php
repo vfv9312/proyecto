@@ -4,13 +4,14 @@
 
     <form method="POST" action="{{ route('login.store') }}">
         @csrf
-
+        <x-input-error :messages="$errors->get('message')" class="mt-2" />
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Nombre de usuario')" />
             <x-text-input id="email" class="block mt-1 w-full" type="text" name="username" :value="old('username')" required
                 autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('username')" class="mt-2" />
+
         </div>
 
         <!-- Password -->
@@ -21,6 +22,7 @@
                 autocomplete="current-password" />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
+
         </div>
 
         <!-- Remember Me -->
@@ -44,5 +46,6 @@
                 {{ __('Ingresar') }}
             </x-primary-button>
         </div>
+
     </form>
 </x-guest-layout>
