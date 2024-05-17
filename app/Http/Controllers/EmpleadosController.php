@@ -188,16 +188,16 @@ class EmpleadosController extends Controller
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            session()->flash("correcto", "Usuario actualizado con éxito.");
+            session()->flash("correcto", "Contraseña actualizada con éxito.");
             return redirect()->route('empleados.index');
         } catch (ValidationException $e) {
-            session()->flash("incorrect", "Hubo un error al actualizar el usuario.");
+            session()->flash("incorrect", "Hubo un error al actualizar la contraseña.");
             throw $e; // Laravel manejará esta excepción
 
         } catch (\Throwable $th) {
             DB::rollback();
             // Redirigir al usuario a una página después de la actualización
-            session()->flash("incorrect", "Hubo un error al actualizar el usuario.");
+            session()->flash("incorrect", "Hubo un error al actualizar la contraseña.");
             return redirect()->route('empleados.edit');
         }
     }

@@ -8,7 +8,20 @@
             {{ __('Asegúrate de que tu cuenta esté utilizando una contraseña larga y aleatoria para mantenerla segura.') }}
         </p>
     </header>
-
+    <!-- mensaje de aviso que se registro el producto-->
+    @if (session('correcto'))
+        <div class=" flex justify-center">
+            <div id="alert-correcto" class="bg-green-500 bg-opacity-50 text-white px-4 py-2 rounded mb-8 w-64 ">
+                {{ session('correcto') }}
+            </div>
+        </div>
+    @endif
+    @if (session('incorrect'))
+        <div id="alert-incorrect" class="bg-red-500 text-white px-4 py-2 rounded">
+            {{ session('incorrect') }}
+        </div>
+    @endif
+    {{-- FORMULARIO --}}
     <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
         @csrf
         @method('put')
@@ -44,3 +57,14 @@
         </div>
     </form>
 </section>
+@push('js')
+    <script>
+        //Oculta los elementos de alerta despues de 3 segundos
+        window.setTimeout(function() {
+            var alertCorrecto = document.getElementById('alert-correcto');
+            var alertIncorrect = document.getElementById('alert-incorrect');
+            if (alertCorrecto) alertCorrecto.style.display = 'none';
+            if (alertIncorrect) alertIncorrect.style.display = 'none';
+        }, 3000);
+    </script>
+@endpush
