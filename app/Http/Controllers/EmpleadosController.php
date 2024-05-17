@@ -93,7 +93,7 @@ class EmpleadosController extends Controller
             //Auth::login($user);
 
             DB::commit();
-            session()->flash("correcto", "Guardado correctamente");
+            session()->flash("correcto", "Usuario creado con éxito.");
             return redirect()->route('empleados.index');
         } catch (ValidationException $e) {
             session()->flash("incorrect", "Hubo un error al crear el usuario.");
@@ -143,6 +143,22 @@ class EmpleadosController extends Controller
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
 
+
+            $request->validate([
+                'txtnombre' => 'required|string|max:255',
+                //'username' => 'required|string|lowercase|max:255|unique:users,username',
+                'password' => ['nullable', 'string', 'min:8', 'max:12', 'lowercase'],
+                'txtrol' => 'required|integer|exists:roles,id',
+            ], [
+                'txtnombre.required' => 'El campo nombre es obligatorio.',
+                'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+                'password.max' => 'La contraseña no puede tener más de 12 caracteres.',
+                'password.lowercase' => 'La contraseña debe ser minuscula',
+                'txtrol.required' => 'El campo rol es obligatorio.',
+                'txtrol.integer' => 'El rol debe ser un número entero.',
+                'txtrol.exists' => 'El rol seleccionado no existe.',
+            ]);
+
             $nombre = ucwords(strtolower($request->input('txtnombre')));
             $rol = $request->input('txtrol');
             $email = $request->input('email');
@@ -172,17 +188,18 @@ class EmpleadosController extends Controller
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-        } catch (\Throwable $th) {
-            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            info($th->getMessage());
-            /*si retorna un error de sql lo veremos en pantalla*/
-            //return $th->getMessage();
-            //y que la ultima consulta sea false para mandar msj que salio mal la consulta
-            session()->flash("incorrect", "Error al actualizar el registro");
+            session()->flash("correcto", "Usuario actualizado con éxito.");
             return redirect()->route('empleados.index');
+        } catch (ValidationException $e) {
+            session()->flash("incorrect", "Hubo un error al actualizar el usuario.");
+            throw $e; // Laravel manejará esta excepción
+
+        } catch (\Throwable $th) {
+            DB::rollback();
+            // Redirigir al usuario a una página después de la actualización
+            session()->flash("incorrect", "Hubo un error al actualizar el usuario.");
+            return redirect()->route('empleados.edit');
         }
-        session()->flash("correcto", "Producto actualizado correctamente");
-        return redirect()->route('empleados.index');
     }
 
     public function desactivar(Request $request, empleados $id)
