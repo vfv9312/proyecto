@@ -89,12 +89,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('enviar-correo/{error}/{id}/estatus', [EnviarCorreoController::class, 'vistaPrevia'])->name('Correo.vistaPrevia');
     Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMensaje'])->name('WhatsApp.enviar');
 
-
     //estatus de las entregas
+    Route::get('/orden_recoleccion/generarexcel', [OrdenRecoleccionController::class, 'generarExcel'])->name('ordenentrega.generarExcel'); //hay que ponerlo antes del resource para que jale
     Route::resource('orden_recoleccion', OrdenRecoleccionController::class)->middleware(['verified']);
     Route::get('/orden_recoleccion/{id}/vistacancelar', [OrdenRecoleccionController::class, 'vistacancelar'])->name('orden_recoleccion.vistacancelar')->middleware(['verified']);
     Route::put('/orden_recoleccion/{id}/cancelar', [OrdenRecoleccionController::class, 'cancelar'])->name('orden_recoleccion.cancelar')->middleware(['verified']);
-    Route::get('orden_recoleccion/generarexcel', [OrdenRecoleccionController::class, 'generarExcel'])->name('ordenentrega.generarExcel');
 
 
     // servicios

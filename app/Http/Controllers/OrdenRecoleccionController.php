@@ -605,6 +605,7 @@ class OrdenRecoleccionController extends Controller
 
     public function generarExcel(Request $request)
     {
+
         $busqueda = $request->query('adminlteSearch');
         $filtroES = $request->query('entrega_servicio');
         $filtroFecha_inicio = $request->query('fecha_inicio');
@@ -690,6 +691,7 @@ class OrdenRecoleccionController extends Controller
         )
             ->orderBy('orden_recoleccions.updated_at', 'desc')
             ->get();
+
         foreach ($preventas as $preventa) {
         }
 
