@@ -93,11 +93,13 @@
             let cantidad = cantidadInput.value;
             let valorDescuentoCantidad = document.querySelector('#Cantidaddescuento').value;
             let valorDescuentoPorcentaje = document.querySelector('#porcentaje').value;
+            const selectedOption = selectProducto.options[selectProducto.selectedIndex];
+            let precio = selectedOption.getAttribute('data-precio');
 
 
             // Luego los pasas a la función
             agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
-                valorDescuentoPorcentaje);
+                valorDescuentoPorcentaje, precio);
 
             // Oculta ambos divs
             descuentoCantidad.classList.add('hidden');
@@ -185,9 +187,10 @@
         var productosSeleccionados = [];
         // Función para manejar el evento click del botón para agregar productos cuando le de click
         function agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
-            valorDescuentoPorcentaje) {
+            valorDescuentoPorcentaje, valorProducto) {
             let tipoDescuento;
             let valorDescuento;
+
 
             //verificar que descuento fue positivo o ninguno
             if (valorDescuentoCantidad) {
@@ -209,7 +212,7 @@
             var nombreMarca = productoSeleccionado[2];
             var nombreCategoria = productoSeleccionado[3];
             var nombreColor = productoSeleccionado[4];
-            var precio = productoSeleccionado[5].replace('$', '');
+            var precio = valorProducto.replace('$', '');
 
             // Verifica si el producto ya está en el array
             var productoExistente = productosSeleccionados.find(function(producto) {

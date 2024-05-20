@@ -4,8 +4,8 @@
         <select name="producto" id="producto"
             class="lg:w-1/2 w-full px-3 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             @foreach ($productos as $producto)
-                <option value="{{ $producto->id }}">
-                    {{ $producto->nombre_comercial }}_{{ $producto->nombre_modo }}_{{ $producto->nombre_marca }}_{{ $producto->nombre_categoria }}_{{ $producto->nombre_color }}_${{ $producto->precio }}
+                <option value="{{ $producto->id }}" data-precio="${{ $producto->precio }}">
+                    {{ $producto->nombre_comercial }}_{{ $producto->nombre_modo }}_{{ $producto->nombre_marca }}_{{ $producto->nombre_categoria }}_{{ $producto->nombre_color }}
                 </option>
             @endforeach
         </select>
