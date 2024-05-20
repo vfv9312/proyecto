@@ -3,7 +3,8 @@
 @section('title', 'Tiempo aproximado')
 
 @section('content')
-    <h1 class=" text-center"> Puede ingresar el tiempo aproximado de espera del servicio del dia de hoy {{ date('d/m/Y') }}
+    <h1 class=" text-center"> Puede ingresar el tiempo aproximado de espera del servicio del dia de hoy
+        {{ \Carbon\Carbon::now()->locale('es')->isoFormat('dddd') }}, fecha {{ date('d/m/Y') }}
     </h1>
     <section>
         <!-- mensaje de aviso que se registro el producto-->
@@ -33,7 +34,8 @@
                 @csrf
                 <div class="flex flex-col justify-center items-center mb-4">
                     <label for="tiempo" class="block text-gray-700 text-sm font-bold mb-2">Tiempo aproximado de atención
-                        (Horas:Minutos)</label>
+                        (Horas:Minutos) ejemplo 01:20 es una hora con veinte minutos de tiempo aproximado del
+                        servicio</label>
                     <input type="text"
                         class="shadow appearance-none border rounded w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="tiempo" name="tiempo" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
@@ -50,6 +52,16 @@
 
             </form>
         </div>
+        @if ($existeTiempoHoy)
+            <div class=" text-center">
+                <p class=" text-4xl font-bold ">{{ \Carbon\Carbon::now()->locale('es')->isoFormat('dddd') }},
+                    {{ date('d/m/Y') }}.</p>
+
+                El tiempo de espera asignado es de <p class=" text-6xl font-extrabold">
+                    {{ substr($existeTiempoHoy->tiempo, 0, 5) }}</p>
+                {{ \Carbon\Carbon::parse($existeTiempoHoy->tiempo)->locale('es')->isoFormat('H [horas] m [minutos]') }}
+            </div>
+        @endif
     </section>
 @endsection
 
@@ -78,7 +90,8 @@
             var match = input.match(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/);
             if (!match) {
                 e.target.setCustomValidity(
-                    'Por favor, introduce un tiempo válido en formato de 24 horas (HH:MM).');
+                    'Por favor, introduce un tiempo válido en formato HH:MM, ejemplo 02:00 que equivale 2 horas.'
+                );
             } else {
                 e.target.setCustomValidity('');
             }

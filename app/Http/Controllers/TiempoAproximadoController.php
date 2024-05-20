@@ -57,7 +57,7 @@ class TiempoAproximadoController extends Controller
             session()->flash("incorrect", "Error al registrar");
             return redirect()->route('TiempoAproximado.index');
         }
-        session()->flash("correcto", "Producto registrado correctamente");
+        session()->flash("correcto", "Registrado correctamente");
         return redirect()->route('TiempoAproximado.index');
     }
 
