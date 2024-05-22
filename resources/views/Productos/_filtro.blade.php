@@ -2,7 +2,7 @@
     <div class="flex justify-center items-center">
         <div class="relative">
             <input type="search" class="pl-10 pr-4 py-1 rounded-lg border-2 border-gray-300" name="adminlteSearch"
-                placeholder="Buscar...">
+                placeholder="Buscar..." value="{{ $busqueda }}">
             <div class="absolute left-2 top-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                     class="w-6 h-6 text-gray-500">
