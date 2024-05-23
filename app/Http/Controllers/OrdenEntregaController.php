@@ -187,14 +187,14 @@ class OrdenEntregaController extends Controller
             $telefono = $request->input('txttelefono'); //telefono del cliente
             $rfc = $request->input('txtrfc'); //rfc del cliente
             $email = $request->input('txtemail'); //correo electronico del cliente
-            $recibe = $request->input('txtrecibe'); // persona que recibira el pedido
+            $recibe = ucwords(strtolower($request->input('txtrecibe'))); // persona que recibira el pedido
 
             //si registramos un cliente nuevo recibiremos
             $nuevoCliente = $request->input('txtnombreCliente'); //nombre del cliente
             $nuevoApeCliente = $request->input('txtapellidoCliente'); // apellido del cliente
 
             //datos que iran siempre
-            $atencion = $request->input('txtatencion'); //persona que atendera cuando llegue el motociclista
+            $atencion = ucwords(strtolower($request->input('txtatencion'))); //persona que atendera cuando llegue el motociclista
 
             //si no tenemos datos del id direccion entonces recibiremos
             $idNuevacolonia = $request->input('nuevacolonia'); // el id de la colonia
