@@ -174,17 +174,17 @@ class ClientesController extends Controller
         //guardamos los datos recibidos en el $request por los input en variables
         $idCliente = $request->input('id_cliente');
         $idPersona = $request->input('id_persona');
-        $nombreCliente = $request->input('txtnombre');
-        $apellidoCliente = $request->input('txtapellido');
+        $nombreCliente = ucwords(strtolower($request->input('txtnombre')));
+        $apellidoCliente = ucwords(strtolower($request->input('txtapellido')));
         $telefonoCliente = $request->input('txttelefono');
-        $emailCliente = $request->input('txtemail');
+        $emailCliente = strtolower($request->input('txtemail'));
         $idDireccion = $request->input('id_direccion');
         $coloniaCliente = $request->input('txtcolonia');
         $calleCliente = $request->input('txtcalle');
         $numExterior = $request->input('txtnum_exterior');
         $numInterior = $request->input('txtnum_interior');
         $numReferencia = $request->input('txtreferencia');
-        $rfcCliente = $request->input('txtrfc');
+        $rfcCliente = strtoupper($request->input('txtrfc'));
 
 
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.

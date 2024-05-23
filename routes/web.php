@@ -132,7 +132,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('infoticket', InfoTicketsController::class)->middleware(['verified', 'rol']);
 
     //Direcciones
-    Route::resource('direcciones', DireccionesClientesController::class)->middleware(['verifield']);
+    Route::resource('direcciones', DireccionesClientesController::class)->middleware(['verified']);
 
     //Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
 

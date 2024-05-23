@@ -54,16 +54,17 @@ class DireccionesClientesController extends Controller
         $cliente = $direccione;
         $catalogo_colonias = Catalago_ubicaciones::orderBy('localidad')->get();
         //enviar los dos datos a la vista
-        return view('direcciones.edit', compact('cliente', 'catalogo_colonias'));
+        return view('clientes.direcciones.edit', compact('cliente', 'catalogo_colonias'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, direcciones_clientes $direcciones_clientes)
+    public function update(Request $request, $id)
     {
+
         //guardamos los datos recibidos en el $request por los input en variables
-        $cliente = $request->input('cliente');
+        $cliente = $id;
         $colonia = $request->input('txtcolonia');
         $calle = $request->input('txtcalle');
         $num_exterior = $request->input('txtnum_exterior');

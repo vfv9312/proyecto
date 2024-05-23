@@ -1,26 +1,28 @@
-@extends('adminlte::page')
+@extends('layouts.admin')
 
-@section('title', 'Editar empleado')
-
-@section('content_header')
-    <h1>Editar cliente</h1>
-@stop
+@section('title', 'Editar cliente')
 
 @section('content')
+    <h1 class=" font-bold text-center">Editar cliente</h1>
+
+
+
     <form class="mt-8 flex flex-col justify-center items-center"
         action="{{ route('clientes.update', $cliente, $persona, $direcciones, $catalogo_colonias) }}" method="POST"
         enctype="multipart/form-data">
         @method('PUT')
         @include('clientes._form')
     </form>
-@stop
+@endsection
 
-@section('css')
+@push('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-@stop
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+@endpush
 
-@section('js')
+@push('js')
     <script></script>
-@stop
+@endpush

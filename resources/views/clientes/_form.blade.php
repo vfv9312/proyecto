@@ -15,18 +15,21 @@
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Telefono</span>
     <input name="txttelefono" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $persona->telefono }}" />
+        value="{{ $persona->telefono }}" pattern="\d{10}"
+        title="Por favor ingrese un número de teléfono de 10 dígitos" />
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>Corre electronico</span>
-    <input name="txtemail" class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+    <input type="email" name="txtemail"
+        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
         value="{{ $persona->email }}" />
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>RFC</span>
     <input name="txtrfc" type="text"
         class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none w-full h-10"
-        value="{{ $cliente->comentario }}" />
+        value="{{ $cliente->comentario }}" pattern="^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{2}[A\d])?$"
+        title="Por favor ingrese un RFC válido" />
 </label>
 <label class="text-sm text-gray-500 flex flex-col items-center">
     <label class="text-sm text-gray-500 flex flex-col items-start">
@@ -78,7 +81,8 @@
     <div class="flex justify-between items-center">
 
         <button type="submit" id="enviarmodal"
-            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-700 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+            onclick="this.disabled = true; this.form.submit();">
             Guardar cambios
         </button>
     </div>
