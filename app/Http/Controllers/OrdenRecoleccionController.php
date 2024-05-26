@@ -13,6 +13,7 @@ use App\Models\TiempoAproximado;
 use App\Models\ventas;
 use App\Models\ventas_productos;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 use Illuminate\Http\Request;
@@ -76,8 +77,13 @@ class OrdenRecoleccionController extends Controller
         }
 
         if ($filtroFecha_inicio && $fecha_fin) {
-            $preventas->whereBetween('orden_recoleccions.created_at', [$filtroFecha_inicio, $fecha_fin]);
+
+            $Inicio = Carbon::createFromFormat('Y-m-d', $filtroFecha_inicio)->startOfDay();
+            $Fin = Carbon::createFromFormat('Y-m-d', $fecha_fin)->endOfDay();
+
+            $preventas->whereBetween('orden_recoleccions.created_at', [$Inicio, $Fin->addDay()]);
         }
+
         //si es algun valor positivo entra 1: Listo, 2: Entrega, 3: Revision, 4: Recoleccion, 5: Cancelacion
         if ($filtroEstatus) {
             if ($filtroEstatus == "5") { //si es 5 entonces entra al if y verifica si tiene algun id_cancelacion
@@ -109,7 +115,7 @@ class OrdenRecoleccionController extends Controller
             'direcciones.referencia',
         )
             ->orderBy('orden_recoleccions.updated_at', 'desc')
-            ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
+            ->paginate(5)->appends(['adminlteSearch' => $busqueda, 'entrega_servicio' => $filtroES, 'fecha_inicio' => $filtroFecha_inicio, 'fecha_fin' => $fecha_fin, 'estatus' => $filtroEstatus]); // Mueve paginate() aquí para que funcione correctamente
         foreach ($preventas as $preventa) {
             $fechaCreacion = \Carbon\Carbon::parse($preventa->fechaCreacion);
             $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
@@ -138,7 +144,7 @@ class OrdenRecoleccionController extends Controller
                 ];
             }
         }
-        return view('Principal.ordenRecoleccion.recolecciones', compact('preventas', 'datosEntregaCompromisos'));
+        return view('Principal.ordenRecoleccion.recolecciones', compact('preventas', 'datosEntregaCompromisos', 'busqueda', 'filtroES', 'filtroFecha_inicio', 'fecha_fin', 'filtroEstatus'));
     }
 
     /**
