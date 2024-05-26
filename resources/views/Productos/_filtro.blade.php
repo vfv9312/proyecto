@@ -65,10 +65,10 @@
             <select
                 class="w-full md:w-auto border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 name="categoria" id="categoria">
-                <option value="">Categoria</option>
+                <option value="">Selecciona una opcion</option>
                 @foreach ($categorias as $categoria)
                     <option value="{{ $categoria->id }}"
-                        {{ old('categoria', $busquedaCategoria) == $color->id ? 'selected' : '' }}>
+                        {{ old('categoria', $busquedaCategoria) == $categoria->id ? 'selected' : '' }}>
                         {{ $categoria->nombre }}</option>
                 @endforeach
             </select>
