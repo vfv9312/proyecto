@@ -56,8 +56,21 @@
     <script>
         //Direccion funcion para validar si hay alguna direccion y si el cambio es menor a 0
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('#formulario').addEventListener('submit', function(event) {
+            document.getElementById('nombreCliente').addEventListener('input', function() {
+                document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
+                    .getElementById('apellidoCliente').value;
 
+                document.getElementById('recibe').value = this.value + ' ' + document
+                    .getElementById('apellidoCliente').value;
+            });
+
+            document.getElementById('apellidoCliente').addEventListener('input', function() {
+                document.getElementById('inputNombreAtencion').value = document.getElementById(
+                        'nombreCliente')
+                    .value + ' ' + this.value;
+
+                document.getElementById('recibe').value = document.getElementById('nombreCliente')
+                    .value + ' ' + this.value;
             });
 
 
@@ -687,6 +700,22 @@
                 selectDirecciones.append(new Option('No hay direcciones disponibles', ''));
                 // Vacía el select de atención
                 selectAtencion.append(new Option('Nueva persona en atencion', ''));
+
+                document.getElementById('nombreCliente').addEventListener('input', function() {
+                    document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
+                        .getElementById('apellidoCliente').value;
+
+                    document.getElementById('recibe').value = this.value + ' ' + document
+                        .getElementById('apellidoCliente').value;
+                });
+
+                document.getElementById('apellidoCliente').addEventListener('input', function() {
+                    document.getElementById('inputNombreAtencion').value = document.getElementById('nombreCliente')
+                        .value + ' ' + this.value;
+
+                    document.getElementById('recibe').value = document.getElementById('nombreCliente')
+                        .value + ' ' + this.value;
+                });
             }
 
         }
