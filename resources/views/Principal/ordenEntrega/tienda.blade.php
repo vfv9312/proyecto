@@ -25,6 +25,7 @@
 
         @include('Principal.ordenEntrega._form_orden')
         @include('Principal.ordenEntrega._modal')
+        @include('Principal.ordenEntrega._modal_horario')
         @include('Principal.ordenEntrega._modal_Descuentos')
         @include('Principal.ordenEntrega._Lista_Productos')
         @include('Principal.ordenEntrega._carro_campras')
@@ -686,16 +687,7 @@
                 inputDomingoSalida.val('').prop('disabled', false);
                 inputrecibe.val('');
 
-                //para formatear los dias de la semana
-                let dias = "Lunes,Martes,Miercoles,Miercoles,Jueves,Viernes,Sabado,Domingo"; // Tu cadena de días
-                let arrayDias = dias.split(","); // Convierte la cadena en un array
-                arrayDias.forEach(function(dia) {
-                    // Selecciona el checkbox correspondiente y márcalo como seleccionado
-                    let checkbox = document.querySelector(`input[name="dias[]"][value="${dia}"]`);
-                    if (checkbox) {
-                        checkbox.checked = false;
-                    }
-                });
+
 
                 selectDirecciones.append(new Option('No hay direcciones disponibles', ''));
                 // Vacía el select de atención
@@ -729,6 +721,32 @@
                 document.getElementById(dia + '_salida').value = "";
             });
         }); //AQUI FINALIZA EL RESTABLECER
+
+        //Abrir modal si es de Lunes a Viernes
+        document.getElementById('lunesAViernes').addEventListener('click', function() {
+            document.getElementById('modalHorario').classList.remove('hidden');
+        });
+        document.querySelector('#cerrarmodalhorario').addEventListener('click', function() {
+            document.getElementById('modalHorario').classList.add('hidden');
+        });
+
+        document.querySelector('#botonLunesAViernesAceptar').addEventListener('click', function() {
+            entrada = document.getElementById('_entrada').value;
+            salida = document.getElementById('_salida').value;
+
+            inputLunesEntrada.val(entrada).prop('disabled', false);
+            inputLunesSalida.val(salida).prop('disabled', false);
+            inputMartesEntrada.val(entrada).prop('disabled', false);
+            inputMartesSalida.val(salida).prop('disabled', false);
+            inputMiercolesEntrada.val(entrada).prop('disabled', false);
+            inputMiercolesSalida.val(salida).prop('disabled', false);
+            inputJuevesEntrada.val(entrada).prop('disabled', false);
+            inputJuevesSalida.val(salida).prop('disabled', false);
+            inputViernesEntrada.val(entrada).prop('disabled', false);
+            inputViernesSalida.val(salida).prop('disabled', false);
+
+            document.getElementById('modalHorario').classList.add('hidden');
+        });
 
 
         //ENTRA LA FUNCION CUANDO LE DAMOS AL CHECKBOX QUE REQUERIMOS UN RFC POR QUE QUIERE FACTURA
