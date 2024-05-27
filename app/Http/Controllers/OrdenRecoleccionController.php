@@ -81,7 +81,7 @@ class OrdenRecoleccionController extends Controller
             $Inicio = Carbon::createFromFormat('Y-m-d', $filtroFecha_inicio)->startOfDay();
             $Fin = Carbon::createFromFormat('Y-m-d', $fecha_fin)->endOfDay();
 
-            $preventas->whereBetween('orden_recoleccions.created_at', [$Inicio, $Fin->addDay()]);
+            $preventas->whereBetween('orden_recoleccions.created_at', [$Inicio, $Fin]);
         }
 
         //si es algun valor positivo entra 1: Listo, 2: Entrega, 3: Revision, 4: Recoleccion, 5: Cancelacion
@@ -663,7 +663,11 @@ class OrdenRecoleccionController extends Controller
         }
 
         if ($filtroFecha_inicio && $fecha_fin) {
-            $preventas->whereBetween('orden_recoleccions.created_at', [$filtroFecha_inicio, $fecha_fin]);
+
+            $Inicio = Carbon::createFromFormat('Y-m-d', $filtroFecha_inicio)->startOfDay();
+            $Fin = Carbon::createFromFormat('Y-m-d', $fecha_fin)->endOfDay();
+
+            $preventas->whereBetween('orden_recoleccions.created_at', [$Inicio, $Fin]);
         }
         //si es algun valor positivo entra 1: Listo, 2: Entrega, 3: Revision, 4: Recoleccion, 5: Cancelacion
         if ($filtroEstatus) {

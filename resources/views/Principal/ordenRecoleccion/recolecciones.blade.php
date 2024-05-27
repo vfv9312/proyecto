@@ -17,8 +17,10 @@
             {{ session('incorrect') }}
         </div>
     @endif
-    @include('Principal.ordenRecoleccion._excel')
-    @include('Principal.ordenRecoleccion._filtros')
+    <form id="formularioBusqueda" method="GET">
+        @include('Principal.ordenRecoleccion._excel')
+        @include('Principal.ordenRecoleccion._filtros')
+    </form>
     @include('Principal.ordenRecoleccion._tabla_pendientes')
 @endsection
 
@@ -33,6 +35,14 @@
 
 @push('js')
     <script>
+        document.getElementById('excel').addEventListener('click', function() {
+            document.querySelector('#formularioBusqueda').action = "{{ route('ordenentrega.generarExcel') }}";
+        });
+
+        document.getElementById('BotonFiltrar').addEventListener('click', function() {
+            document.querySelector('#formularioBusqueda').action = "{{ route('orden_recoleccion.index') }}";
+        });
+
         //Oculta los elementos de alerta despues de 3 segundos
         window.setTimeout(function() {
             var alertCorrecto = document.getElementById('alert-correcto');
