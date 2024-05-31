@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 
-@section('title', 'Categoria')
+@section('title', 'Marcas')
 
 @section('content')
-    <h1 class=" font-bold text-center mb-8">Categorias</h1>
+    <h1 class=" font-bold text-center mb-8">Marcas</h1>
 
     <main class="w-full h-3/4">
         <!-- mensaje de aviso que se registro el producto-->
@@ -21,19 +21,19 @@
             </div>
         @endif
 
-        @include('Categoria._filtro')
+        @include('Marcas._filtro')
         <!-- boton anadir producto-->
         <button id="abrirnModalRegisrarProducto"
             class=" flex items-center mb-4 bg-gradient-to-r from-gray-800 via-gray-600 to-green-500 text-white font-bold py-2 px-4 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-book-half mr-2" viewBox="0 0 16 16">
+                class="bi bi-threads mr-2" viewBox="0 0 16 16">
                 <path
-                    d="M8.5 2.687c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783" />
+                    d="M6.321 6.016c-.27-.18-1.166-.802-1.166-.802.756-1.081 1.753-1.502 3.132-1.502.975 0 1.803.327 2.394.948s.928 1.509 1.005 2.644q.492.207.905.484c1.109.745 1.719 1.86 1.719 3.137 0 2.716-2.226 5.075-6.256 5.075C4.594 16 1 13.987 1 7.994 1 2.034 4.482 0 8.044 0 9.69 0 13.55.243 15 5.036l-1.36.353C12.516 1.974 10.163 1.43 8.006 1.43c-3.565 0-5.582 2.171-5.582 6.79 0 4.143 2.254 6.343 5.63 6.343 2.777 0 4.847-1.443 4.847-3.556 0-1.438-1.208-2.127-1.27-2.127-.236 1.234-.868 3.31-3.644 3.31-1.618 0-3.013-1.118-3.013-2.582 0-2.09 1.984-2.847 3.55-2.847.586 0 1.294.04 1.663.114 0-.637-.54-1.728-1.9-1.728-1.25 0-1.566.405-1.967.868ZM8.716 8.19c-2.04 0-2.304.87-2.304 1.416 0 .878 1.043 1.168 1.6 1.168 1.02 0 2.067-.282 2.232-2.423a6.2 6.2 0 0 0-1.528-.161" />
             </svg>
-            Añadir categoria
+            Añadir Marca
         </button>
 
-        @include('Categoria._modal')
+        @include('Marcas._modal')
 
         <!--tabla-->
         <section class="overflow-x-auto">
@@ -45,26 +45,26 @@
                     <td class="py-3 px-6 text-left border-r">Fecha creacion</td>
                     <td class="py-3 px-6 text-left border-r">Fecha Actualización</td>
                 </tr>
-                @foreach ($categorias as $categoria)
+                @foreach ($marcas as $marca)
                     <tr class= " border-b border-gray-200 text-sm">
                         <td class=" px-6 py-4">
-                            {{ $categoria->nombre }}</td>
+                            {{ $marca->nombre }}</td>
                         <td class="px-6 py-4">
-                            {{ $categoria->created_at }}
+                            {{ $marca->created_at }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ $categoria->updated_at }}
+                            {{ $marca->updated_at }}
                         </td>
                         <td>
 
-                            <button onclick="location.href='{{ route('categorias.edit', $categoria->id) }}';"
+                            <button onclick="location.href='{{ route('marcas.edit', $marca->id) }}';"
                                 class="abrirModalEditar border rounded px-6 py-4 bg-green-500 text-white cursor-pointer hover:bg-green-700 transition duration-200 ease-in-out">
                                 <i class="fas fa-sync"></i>
                             </button>
 
                         </td>
                         <td>
-                            <form action="{{ route('categorias.desactivar', $categoria->id) }}" method="POST"
+                            <form action="{{ route('marcas.desactivar', $marca->id) }}" method="POST"
                                 onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
                                 @csrf
                                 @method('PUT')
@@ -79,8 +79,8 @@
                 @endforeach
             </table>
             <div class=" mt-3">
-                <p>Total de resultados: {{ $categorias->total() }}</p> <!--mostrar total de resultados-->
-                {{ $categorias->links() }} <!-- Esto mostrará los enlaces de paginación -->
+                <p>Total de resultados: {{ $marcas->total() }}</p> <!--mostrar total de resultados-->
+                {{ $marcas->links() }} <!-- Esto mostrará los enlaces de paginación -->
             </div>
         </section>
     </main>

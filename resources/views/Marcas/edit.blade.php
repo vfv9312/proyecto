@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', 'Categoria')
+@section('title', 'Marcas')
 
 @section('content')
-    <h1 class=" font-bold text-center mb-8">Categorias</h1>
+    <h1 class=" font-bold text-center mb-8">Marcas</h1>
 
-    <form class="mt-8 flex flex-col justify-center items-center" action="{{ route('categorias.update', $categoria) }}"
-        method="POST" enctype="multipart/form-data">
+    <form class="mt-8 flex flex-col justify-center items-center" action="{{ route('marcas.update', $marca) }}" method="POST"
+        enctype="multipart/form-data">
         @method('PUT')
-        @include('Categoria._form')
+        @include('Marcas._form')
     </form>
 @endsection
 

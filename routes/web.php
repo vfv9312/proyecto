@@ -9,6 +9,7 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\EnviarCorreoController;
 use App\Http\Controllers\InfoTicketsController;
+use App\Http\Controllers\MarcasController;
 use App\Http\Controllers\OrdenEntregaController;
 use App\Http\Controllers\OrdenRecoleccionController;
 use App\Http\Controllers\ordenServicioController;
@@ -150,6 +151,10 @@ Route::middleware(['auth'])->group(function () {
     //Categorias
     Route::resource('categorias', CategoriaController::class)->middleware(['verified']);
     Route::put('/categorias/{id}/desactivar', [CategoriaController::class, 'desactivar'])->name('categorias.desactivar')->middleware(['verified']);
+
+    //Marcas
+    Route::resource('marcas', MarcasController::class)->middleware(['verified']);
+    Route::put('/marcas/{id}/desactivar', [MarcasController::class, 'desactivar'])->name('marcas.desactivar')->middleware(['verified']);
 
 
     //Direcciones
