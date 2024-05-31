@@ -5,6 +5,7 @@ use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\DescuentosController;
 use App\Http\Controllers\DireccionesClientesController;
 use App\Http\Controllers\DireccionesController;
+use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\EnviarCorreoController;
 use App\Http\Controllers\InfoTicketsController;
@@ -28,6 +29,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use PhpParser\Node\Stmt\Return_;
 use PHPUnit\Framework\Attributes\Ticket;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 
 use function Laravel\Prompts\select;
 
@@ -48,6 +51,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+Route::get('/clear-cache', function () {
+    if (Auth::check()) {
+        Artisan::call('cache:clear');
+        Artisan::call('config:clear');
+        Artisan::call('route:clear');
+        Artisan::call('view:clear');
+
+        return 'Caché limpiada';
+    }
+
+    return redirect('login');
+})->middleware('auth');
 
 //generar pdf
 Route::get('orden_entrega_pdf/{id}/generarpdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');
@@ -130,6 +146,11 @@ Route::middleware(['auth'])->group(function () {
 
     //Direccion del ticket
     Route::resource('infoticket', InfoTicketsController::class)->middleware(['verified', 'rol']);
+
+    //Categorias
+    Route::resource('categorias', CategoriaController::class)->middleware(['verified']);
+    Route::put('/categorias/{id}/desactivar', [CategoriaController::class, 'desactivar'])->name('categorias.desactivar')->middleware(['verified']);
+
 
     //Direcciones
     Route::resource('direcciones', DireccionesClientesController::class)->middleware(['verified']);
