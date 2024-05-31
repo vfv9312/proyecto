@@ -38,7 +38,24 @@ class MarcasController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $nombre = ucfirst(strtolower($request->txtnombre));
+
+            // Insertar en la tabla 'productos'
+            Marcas::create([
+                'nombre' => $nombre,
+                'estatus' => 1,
+            ]);
+            DB::commit();
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            session()->flash("incorrect", "Error en el registro");
+            return redirect()->route('marcas.index');
+        }
+        session()->flash("correcto", "Registrado correctamente");
+        return redirect()->route('marcas.index');
     }
 
     /**
