@@ -11,6 +11,8 @@
         @include('Restablecer._opcionClientes')
         @include('Restablecer._opcionProducto')
         @include('Restablecer._opcionServicio')
+        @include('Restablecer._opcionCategoria')
+        @include('Restablecer._opcionMarca')
     </section>
 @endsection
 
