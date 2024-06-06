@@ -14,8 +14,10 @@ class TiempoAproximadoController extends Controller
      */
     public function index()
     {
-        $existeTiempoHoy = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->select('tiempo')->first();
-        return view('Tiempo_aproximado.index', compact('existeTiempoHoy'));
+        $existeTiempoHoy = TiempoAproximado::whereDate('created_at', date('Y-m-d'))->orderBy('created_at', 'desc')->select('tiempo', 'created_at')->first();
+        $TodoslosTiempo = TiempoAproximado::orderBy('created_at', 'desc')->paginate(5);
+
+        return view('Tiempo_aproximado.index', compact('existeTiempoHoy', 'TodoslosTiempo'));
     }
 
     /**
