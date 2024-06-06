@@ -53,15 +53,16 @@
         class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
         value="{{ $precioProducto->precio }}" />
 </label>
-<label class="text-sm text-gray-500 flex flex-col items-start">
-    <span>Descripcion</span>
-    <input name="txtdescripcion" type="text"
-        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        value="{{ $producto->descripcion }}" />
-</label>
+
+<div class=" w-3/4">
+    <label for="message" class="text-lg text-gray-500 flex flex-col items-start">Descripcion</label>
+    <textarea id="message" rows="4" name="txtdescripcion"
+        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        placeholder="Escribe aqui la descripcion ....">{{ $producto->descripcion }}</textarea>
+</div>
 
 
 <div class="flex justify-between items-center">
-    <a href="{{ route('productos.index') }}" class="text-indigo-600">Volver</a>
-    <input type="submit" value="Guardar cambios" class="bg-green-500 text-white rounded px-4 py-2">
+    <a href="{{ route('productos.index') }}" class="text-indigo-600 mr-3">Volver</a>
+    <input type="submit" value="Guardar cambios" class="bg-green-500 text-white rounded px-4 py-2 cursor-pointer">
 </div>

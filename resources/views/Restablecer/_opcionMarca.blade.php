@@ -1,4 +1,4 @@
-<a href="{{ route('Restablecer.clientes') }}">
+<a href="{{ route('Restablecer.marcas') }}">
     <div
         class="flex h-32 flex-col justify-center bg-gray-800  rounded-2xl text-white text-center mb-7 xl:mt-0 px-5  hover:bg-gray-900 cursor-pointer hover:shadow-2xl transition duration-200 animate__animated animate__shakeY">
         <div class="flex justify-center">

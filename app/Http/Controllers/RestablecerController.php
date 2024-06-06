@@ -271,4 +271,64 @@ class RestablecerController extends Controller
         session()->flash("correcto", "Restaurado correctamente");
         return redirect()->route('productos.index');
     }
+    public function categorias(Request $request)
+    {
+        $busqueda = $request->query('adminlteSearch');
+
+
+        $categorias = Tipo::where('estatus', 0)->orderBy('nombre')->paginate(10);
+
+        return view('Restablecer.categoria', compact('categorias'));
+    }
+    public function actualizarCategorias(Tipo $id)
+    {
+        DB::beginTransaction();
+        try {
+            $categoria = $id;
+
+            $categoria->update([
+                'deleted_at' => null,
+                'estatus' => 1
+            ]);
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            session()->flash("incorrect", "Error al restaurar el registro");
+
+            return redirect()->route('categorias.index');
+        }
+        session()->flash("correcto", "Restaurado correctamente");
+        return redirect()->route('categorias.index');
+    }
+    public function marcas(Request $request)
+    {
+        $busqueda = $request->query('adminlteSearch');
+
+        $marcas = Marcas::where('estatus', 0)->orderBy('nombre')->paginate(10);
+
+        return  view('Restablecer.marcas', compact('marcas'));
+    }
+    public function actualizarMarcas(Marcas $id)
+    {
+        DB::beginTransaction();
+        try {
+            $marca = $id;
+
+            $marca->update([
+                'deleted_at' => null,
+                'estatus' => 1
+            ]);
+
+            DB::commit();
+        } catch (\Throwable $th) {
+
+
+            DB::rollback();
+            session()->flash("incorrect", "Error al restaurar el registro");
+            return redirect()->route('marcas.index');
+        }
+        session()->flash("correcto", "Restaurado correctamente");
+        return redirect()->route('marcas.index');
+    }
 }
