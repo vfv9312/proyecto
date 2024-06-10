@@ -6,8 +6,6 @@
     <div class=" flex lg:flex-row flex-col justify-center">
 
         @foreach (['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'] as $dia)
-            {{-- Este fooreach es por si quiere denuevo los input de lunes a domingo de manera individual --}}
-            {{-- @foreach (['Lunes', 'Sabado', 'Domingo'] as $dia) --}}
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2 mr-3" for="{{ $dia }}_entrada">
                     {{ $dia }} - Hora de entrada

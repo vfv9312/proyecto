@@ -55,28 +55,31 @@
 @push('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
-        //Direccion funcion para validar si hay alguna direccion y si el cambio es menor a 0
+        //Cuando entra y carga la pagina entra lo siguiente
         document.addEventListener('DOMContentLoaded', function() {
+            //lo que escriba en nombre Cliente se escribe en el input del nombre de atencion
             document.getElementById('nombreCliente').addEventListener('input', function() {
-                document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
-                    .getElementById('apellidoCliente').value;
+                var checkbox = document.getElementById('tipoDeCliente');
+                if (!checkbox.checked) {
+                    document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
+                        .getElementById('apellidoCliente').value;
 
-                document.getElementById('recibe').value = this.value + ' ' + document
-                    .getElementById('apellidoCliente').value;
+                    document.getElementById('recibe').value = this.value + ' ' + document
+                        .getElementById('apellidoCliente').value;
+                }
             });
 
             document.getElementById('apellidoCliente').addEventListener('input', function() {
-                document.getElementById('inputNombreAtencion').value = document.getElementById(
-                        'nombreCliente')
-                    .value + ' ' + this.value;
+                var checkbox = document.getElementById('tipoDeCliente');
+                if (!checkbox.checked) {
+                    document.getElementById('inputNombreAtencion').value = document.getElementById(
+                            'nombreCliente')
+                        .value + ' ' + this.value;
 
-                document.getElementById('recibe').value = document.getElementById('nombreCliente')
-                    .value + ' ' + this.value;
+                    document.getElementById('recibe').value = document.getElementById('nombreCliente')
+                        .value + ' ' + this.value;
+                }
             });
-
-
-
-
             // Escuchar cambios en los campos txtcolonia y calle para limpiar los mensajes de error cuando se corrijan
             document.querySelector('#txtcolonia').addEventListener('input', function() {
                 let inputDirecciones = document.querySelector('#inputDirecciones');
@@ -88,8 +91,25 @@
             });
             document.querySelector('#inputDirecciones').addEventListener('input', function() {
                 this.setCustomValidity('');
-            });
-        }); //Finaliza la funcion para las direcciones
+            }); //Finaliza la funcion para las direcciones
+
+
+        });
+
+        //Checbox de persona moral o persona fisica si es persona moral el chebox sera verdadero por lo que ocultara apellido
+        let seleccionarTipoCliente = document.getElementById('tipoDeCliente');
+        let contenedorCliente = document.querySelector('#tipoCliente');
+        seleccionarTipoCliente.addEventListener('change', function() {
+            if (this.checked) {
+                $('#apellidoCliente').val('.').prop('disabled', true);
+                $('#tituloApellido').css('display', 'none');
+                document.getElementById('titulonombre').textContent = 'Razon Social';
+            } else {
+                $('#tituloApellido').css('display', 'flex');
+                $('#apellidoCliente').val('').prop('disabled', false);
+                document.getElementById('titulonombre').textContent = 'Nombre';
+            }
+        });
 
 
 
@@ -535,13 +555,18 @@
                 var HorarioTrabajo = datosHorarioTrabajo.filter(function(horario) {
                     return horario.idCliente == clienteSeleccionado.id_cliente;
                 });
+                seleccionarTipoCliente.checked = false;
+                contenedorCliente.style.display = 'none';
 
             }
+
             // Vacía los campos al incio
             $('#telefono').val('');
             $('#rfc').val('');
             $('#email').val('');
             $('#nombreCliente').val('').prop('disabled', false);
+            $('#tituloApellido').css('display', 'inline');
+            document.getElementById('titulonombre').textContent = 'Nombre';
             $('#apellidoCliente').val('').prop('disabled', false);
             $('#inputDirecciones').empty();
             $('#inputNombreAtencion').val('').prop('disabled', false);
@@ -574,7 +599,17 @@
                 $('#rfc').val(clienteSeleccionado.comentario);
                 $('#email').val(clienteSeleccionado.email);
                 $('#nombreCliente').val(clienteSeleccionado.nombre_cliente).prop('disabled', true);
-                $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
+
+                if (clienteSeleccionado.apellido == ".") {
+                    $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
+                    $('#tituloApellido').css('display', 'none');
+                    document.getElementById('titulonombre').textContent = 'Razon Social';
+                } else {
+                    $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
+                    $('#tituloApellido').css('display', 'flex');
+                    document.getElementById('titulonombre').textContent = 'Nombre';
+                }
+
 
                 //Esta parte es para filtrar el horario mas actual registrado y se lo damos a la variable
                 if (HorarioTrabajo.length > 0) {
@@ -663,6 +698,8 @@
                 }
                 //si clienteSeleccionado es null vacio todos los campos y habilita los bloqueados
             } else if (!clienteSeleccionado) {
+                contenedorCliente.style.display = 'flex';
+
                 $('#telefono').val('');
                 $('#rfc').val('');
                 $('#email').val('');
@@ -693,20 +730,33 @@
                 // Vacía el select de atención
                 selectAtencion.append(new Option('Nueva persona en atencion', ''));
 
-                document.getElementById('nombreCliente').addEventListener('input', function() {
-                    document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
-                        .getElementById('apellidoCliente').value;
 
-                    document.getElementById('recibe').value = this.value + ' ' + document
-                        .getElementById('apellidoCliente').value;
+
+
+
+                document.getElementById('nombreCliente').addEventListener('input', function() {
+                    var tipodeCliente = document.getElementById('tipoDeCliente');
+
+                    if (!tipodeCliente.checked) {
+                        console.log(tipodeCliente.checked);
+                        document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
+                            .getElementById('apellidoCliente').value;
+
+                        document.getElementById('recibe').value = this.value + ' ' + document
+                            .getElementById('apellidoCliente').value;
+                    }
                 });
 
                 document.getElementById('apellidoCliente').addEventListener('input', function() {
-                    document.getElementById('inputNombreAtencion').value = document.getElementById('nombreCliente')
-                        .value + ' ' + this.value;
+                    var tipodeCliente = document.getElementById('tipoDeCliente');
+                    if (!tipodeCliente.checked) {
+                        document.getElementById('inputNombreAtencion').value = document.getElementById(
+                                'nombreCliente')
+                            .value + ' ' + this.value;
 
-                    document.getElementById('recibe').value = document.getElementById('nombreCliente')
-                        .value + ' ' + this.value;
+                        document.getElementById('recibe').value = document.getElementById('nombreCliente')
+                            .value + ' ' + this.value;
+                    }
                 });
             }
 
@@ -923,6 +973,14 @@
                     input.setCustomValidity('');
                 }
             } //FINALIZA FUNCION DE VALIDACION DE RFC
+
+
+            //chebox de funciones
+
+
+
+
+
 
 
 

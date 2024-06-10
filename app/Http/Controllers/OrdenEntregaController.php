@@ -166,6 +166,7 @@ class OrdenEntregaController extends Controller
      */
     public function store(Request $request)
     {
+
         /* $request->validate([
             'txtnombreCliente' => 'required',
             // otras reglas de validación...
@@ -361,6 +362,15 @@ class OrdenEntregaController extends Controller
                     'estatus' => 1,
                     // ...otros campos aquí...
                 ]);
+
+                if ($nuevoApeCliente) {
+                    //si tiene apellido no es necesario guardar de nuevo por que es minuscula y mayuscula
+                } else {
+                    $clientePersona->update([
+                        'nombre' => strtoupper($nuevoCliente),
+                        'apellido' => '.',
+                    ]);
+                }
 
 
                 $clienteNuevo = clientes::create([
