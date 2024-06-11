@@ -66,6 +66,7 @@ class ClientesController extends Controller
     {
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
+
             //En este código, required indica que el campo es obligatorio, valida que el campo solo contenga números, espacios, guiones, signos más y paréntesis, y min:10 valida que el campo tenga al menos 10 caracteres.
             $request->validate([
                 'txttelefono' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
@@ -85,6 +86,17 @@ class ClientesController extends Controller
                 'email' => strtolower($request->txtemail),
                 'estatus' => 1,
             ]);
+            if ($request->txtapellido) {
+                $persona->update([
+                    'apellido' => ucwords(strtolower($request->txtapellido)),
+                ]);
+            } else {
+                $persona->update([
+                    'nombre' => strtoupper($request->txtnombre),
+                    'apellido' => '.',
+                ]);
+            }
+
             // Insertar en la tabla 'clientes' usando el ID de persona
             //comentarios es el RFC al final si necesitan ese dato y comentarios no asi que uso ese campo para guardar RFC del cliente
             $cliente = clientes::create([

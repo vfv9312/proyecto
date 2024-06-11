@@ -44,20 +44,32 @@
                 <div
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+
+
                         <h3 class=" text-center text-lg leading-6 font-medium text-gray-900" id="modal-title">
                             Registrar cliente
                         </h3>
+
+                        <label id="tipoCliente" class="flex items-center cursor-pointer justify-center">
+                            <span class="ms-3 mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">Persona
+                                Fisica</span>
+                            <input id="tipoDeCliente" type="checkbox" value="" class="sr-only peer">
+                            <div
+                                class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600">
+                            </div>
+                            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Persona Moral</span>
+                        </label>
 
                         <form method="POST" action="{{ route('clientes.store') }}"
                             onsubmit="document.getElementById('enviarmodal').disabled = true;"
                             class=" mt-8 flex flex-col items-center">
                             @csrf
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Nombre del cliente</span>
+                                <span id="nombreLabel">Nombre del cliente</span>
                                 <input name="txtnombre"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
                             </label>
-                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                            <label id="apellidoCliente" class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>Apellidos</span>
                                 <input name="txtapellido"
                                     class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
@@ -282,6 +294,19 @@
         //con esto buscamos rapido con lo que escribimos en el select lo que necesitamos
         $(document).ready(function() {
             $('#coloniaSelect').select2();
+        });
+
+        document.getElementById('tipoDeCliente').addEventListener('change', function() {
+            var apellidoInput = document.getElementById('apellidoCliente');
+            if (this.checked) {
+                apellidoInput.style.display = 'none';
+                nombreLabel.textContent = 'Razon Social';
+
+            } else {
+                apellidoInput.style.display = 'flex';
+                nombreLabel.textContent = 'Nombre del cliente';
+
+            }
         });
     </script>
 @endpush
