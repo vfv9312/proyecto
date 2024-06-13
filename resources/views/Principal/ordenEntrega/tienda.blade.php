@@ -25,7 +25,7 @@
 
         @include('Principal.ordenEntrega._form_orden')
         @include('Principal.ordenEntrega._modal')
-        @include('Principal.ordenEntrega._modal_horario')
+        {{-- @include('Principal.ordenEntrega._modal_horario') --}}
         @include('Principal.ordenEntrega._modal_Descuentos')
         @include('Principal.ordenEntrega._Lista_Productos')
         @include('Principal.ordenEntrega._carro_campras')
@@ -85,6 +85,7 @@
             }).catch(function(error) {
                 // Aquí puedes manejar los errores de la solicitud
                 console.error(error);
+                console.log('error');
             });
 
 
@@ -567,6 +568,8 @@
                 matcher: matchCustom
             });
         });
+
+
         //pasamos los valores recibidos a variables js
         var datosClientes = @json($listaClientes);
         var datosDirecciones = @json($listaDirecciones);
@@ -575,14 +578,14 @@
 
         let inputLunesEntrada = $('#Lunes_entrada');
         let inputLunesSalida = $('#Lunes_salida');
-        let inputMartesEntrada = $('#Martes_entrada');
-        let inputMartesSalida = $('#Martes_salida');
-        let inputMiercolesEntrada = $('#Miercoles_entrada');
-        let inputMiercolesSalida = $('#Miercoles_salida');
-        let inputJuevesEntrada = $('#Jueves_entrada');
-        let inputJuevesSalida = $('#Jueves_salida');
-        let inputViernesEntrada = $('#Viernes_entrada');
-        let inputViernesSalida = $('#Viernes_salida');
+        // let inputMartesEntrada = $('#Martes_entrada');
+        // let inputMartesSalida = $('#Martes_salida');
+        // let inputMiercolesEntrada = $('#Miercoles_entrada');
+        // let inputMiercolesSalida = $('#Miercoles_salida');
+        // let inputJuevesEntrada = $('#Jueves_entrada');
+        // let inputJuevesSalida = $('#Jueves_salida');
+        // let inputViernesEntrada = $('#Viernes_entrada');
+        // let inputViernesSalida = $('#Viernes_salida');
         let inputSabadoEntrada = $('#Sabado_entrada');
         let inputSabadoSalida = $('#Sabado_salida');
         let inputDomingoEntrada = $('#Domingo_entrada');
@@ -638,14 +641,14 @@
             $('#inputNombreAtencion').val('').prop('disabled', false);
             inputLunesEntrada.val('').prop('disabled', false);
             inputLunesSalida.val('').prop('disabled', false);
-            inputMartesEntrada.val('').prop('disabled', false);
-            inputMartesSalida.val('').prop('disabled', false);
-            inputMiercolesEntrada.val('').prop('disabled', false);
-            inputMiercolesSalida.val('').prop('disabled', false);
-            inputJuevesEntrada.val('').prop('disabled', false);
-            inputJuevesSalida.val('').prop('disabled', false);
-            inputViernesEntrada.val('').prop('disabled', false);
-            inputViernesSalida.val('').prop('disabled', false);
+            // inputMartesEntrada.val('').prop('disabled', false);
+            // inputMartesSalida.val('').prop('disabled', false);
+            // inputMiercolesEntrada.val('').prop('disabled', false);
+            // inputMiercolesSalida.val('').prop('disabled', false);
+            // inputJuevesEntrada.val('').prop('disabled', false);
+            // inputJuevesSalida.val('').prop('disabled', false);
+            // inputViernesEntrada.val('').prop('disabled', false);
+            // inputViernesSalida.val('').prop('disabled', false);
             inputSabadoEntrada.val('').prop('disabled', false);
             inputSabadoSalida.val('').prop('disabled', false);
             inputDomingoEntrada.val('').prop('disabled', false);
@@ -689,19 +692,21 @@
                         if (dia == 'Lunes') {
                             inputLunesEntrada.val(horariosEntrada[index]);
                             inputLunesSalida.val(horariosSalida[index]);
-                        } else if (dia == 'Martes') {
-                            inputMartesEntrada.val(horariosEntrada[index]);
-                            inputMartesSalida.val(horariosSalida[index]);
-                        } else if (dia == 'Miercoles') {
-                            inputMiercolesEntrada.val(horariosEntrada[index]);
-                            inputMiercolesSalida.val(horariosSalida[index]);
-                        } else if (dia == 'Jueves') {
-                            inputJuevesEntrada.val(horariosEntrada[index]);
-                            inputJuevesSalida.val(horariosSalida[index]);
-                        } else if (dia == 'Viernes') {
-                            inputViernesEntrada.val(horariosEntrada[index]);
-                            inputViernesSalida.val(horariosSalida[index]);
-                        } else if (dia == 'Sabado') {
+                        }
+                        // else if (dia == 'Martes') {
+                        //     inputMartesEntrada.val(horariosEntrada[index]);
+                        //     inputMartesSalida.val(horariosSalida[index]);
+                        // } else if (dia == 'Miercoles') {
+                        //     inputMiercolesEntrada.val(horariosEntrada[index]);
+                        //     inputMiercolesSalida.val(horariosSalida[index]);
+                        // } else if (dia == 'Jueves') {
+                        //     inputJuevesEntrada.val(horariosEntrada[index]);
+                        //     inputJuevesSalida.val(horariosSalida[index]);
+                        // } else if (dia == 'Viernes') {
+                        //     inputViernesEntrada.val(horariosEntrada[index]);
+                        //     inputViernesSalida.val(horariosSalida[index]);
+                        // }
+                        else if (dia == 'Sabado') {
                             inputSabadoEntrada.val(horariosEntrada[index]);
                             inputSabadoSalida.val(horariosSalida[index]);
                         } else if (dia == 'Domingo') {
@@ -752,7 +757,8 @@
                 if (direccionesCliente && clienteSeleccionado) {
                     selectDirecciones.append(new Option('Buscar Direccion', ''));
                     direccionesCliente.forEach(function(direccion) {
-                        selectDirecciones.append(new Option(direccion.localidad + ', ' + direccion.calle + ' #' +
+                        selectDirecciones.append(new Option(direccion.localidad + ', ' + direccion.calle +
+                            ' #' +
                             direccion.num_exterior + ' - ' + direccion.num_interior + ' referencia: ' +
                             direccion.referencia, direccion
                             .id));
@@ -776,14 +782,14 @@
                 inputHorarioFinal.val('').prop('disabled', false);
                 inputLunesEntrada.val('').prop('disabled', false);
                 inputLunesSalida.val('').prop('disabled', false);
-                inputMartesEntrada.val('').prop('disabled', false);
-                inputMartesSalida.val('').prop('disabled', false);
-                inputMiercolesEntrada.val('').prop('disabled', false);
-                inputMiercolesSalida.val('').prop('disabled', false);
-                inputJuevesEntrada.val('').prop('disabled', false);
-                inputJuevesSalida.val('').prop('disabled', false);
-                inputViernesEntrada.val('').prop('disabled', false);
-                inputViernesSalida.val('').prop('disabled', false);
+                // inputMartesEntrada.val('').prop('disabled', false);
+                // inputMartesSalida.val('').prop('disabled', false);
+                // inputMiercolesEntrada.val('').prop('disabled', false);
+                // inputMiercolesSalida.val('').prop('disabled', false);
+                // inputJuevesEntrada.val('').prop('disabled', false);
+                // inputJuevesSalida.val('').prop('disabled', false);
+                // inputViernesEntrada.val('').prop('disabled', false);
+                // inputViernesSalida.val('').prop('disabled', false);
                 inputSabadoEntrada.val('').prop('disabled', false);
                 inputSabadoSalida.val('').prop('disabled', false);
                 inputDomingoEntrada.val('').prop('disabled', false);
@@ -831,38 +837,39 @@
 
 
         //RESTABLECES LOS HORARIOS DE TRABAJO
-        document.getElementById('resetButton').addEventListener('click', function() {
-            ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'].forEach(function(dia) {
-                document.getElementById(dia + '_entrada').value = "";
-                document.getElementById(dia + '_salida').value = "";
-            });
-        }); //AQUI FINALIZA EL RESTABLECER
+        // document.getElementById('resetButton').addEventListener('click', function() {
+        //     // ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'].forEach(function(dia) {
+        //     ['Lunes', 'Sabado', 'Domingo'].forEach(function(dia) {
+        //         document.getElementById(dia + '_entrada').value = "";
+        //         document.getElementById(dia + '_salida').value = "";
+        //     });
+        // }); //AQUI FINALIZA EL RESTABLECER
 
-        //Abrir modal si es de Lunes a Viernes
-        document.getElementById('lunesAViernes').addEventListener('click', function() {
-            document.getElementById('modalHorario').classList.remove('hidden');
-        });
-        document.querySelector('#cerrarmodalhorario').addEventListener('click', function() {
-            document.getElementById('modalHorario').classList.add('hidden');
-        });
+        // //Abrir modal si es de Lunes a Viernes
+        // document.getElementById('lunesAViernes').addEventListener('click', function() {
+        //     document.getElementById('modalHorario').classList.remove('hidden');
+        // });
+        // document.querySelector('#cerrarmodalhorario').addEventListener('click', function() {
+        //     document.getElementById('modalHorario').classList.add('hidden');
+        // });
 
-        document.querySelector('#botonLunesAViernesAceptar').addEventListener('click', function() {
-            entrada = document.getElementById('_entrada').value;
-            salida = document.getElementById('_salida').value;
+        // document.querySelector('#botonLunesAViernesAceptar').addEventListener('click', function() {
+        //     entrada = document.getElementById('_entrada').value;
+        //     salida = document.getElementById('_salida').value;
 
-            inputLunesEntrada.val(entrada).prop('disabled', false);
-            inputLunesSalida.val(salida).prop('disabled', false);
-            inputMartesEntrada.val(entrada).prop('disabled', false);
-            inputMartesSalida.val(salida).prop('disabled', false);
-            inputMiercolesEntrada.val(entrada).prop('disabled', false);
-            inputMiercolesSalida.val(salida).prop('disabled', false);
-            inputJuevesEntrada.val(entrada).prop('disabled', false);
-            inputJuevesSalida.val(salida).prop('disabled', false);
-            inputViernesEntrada.val(entrada).prop('disabled', false);
-            inputViernesSalida.val(salida).prop('disabled', false);
+        //     inputLunesEntrada.val(entrada).prop('disabled', false);
+        //     inputLunesSalida.val(salida).prop('disabled', false);
+        //     inputMartesEntrada.val(entrada).prop('disabled', false);
+        //     inputMartesSalida.val(salida).prop('disabled', false);
+        //     inputMiercolesEntrada.val(entrada).prop('disabled', false);
+        //     inputMiercolesSalida.val(salida).prop('disabled', false);
+        //     inputJuevesEntrada.val(entrada).prop('disabled', false);
+        //     inputJuevesSalida.val(salida).prop('disabled', false);
+        //     inputViernesEntrada.val(entrada).prop('disabled', false);
+        //     inputViernesSalida.val(salida).prop('disabled', false);
 
-            document.getElementById('modalHorario').classList.add('hidden');
-        });
+        //     document.getElementById('modalHorario').classList.add('hidden');
+        // });
 
 
         //ENTRA LA FUNCION CUANDO LE DAMOS AL CHECKBOX QUE REQUERIMOS UN RFC POR QUE QUIERE FACTURA
@@ -917,9 +924,9 @@
         document.getElementById('Detalle').addEventListener('click', function() {
             let productoSeleccionado = document.getElementById('producto').value;
 
-            //let datosProductos = @json($productos);
-            let datosProductos = datosDeProductos.productos;
 
+            let datosProductos = datosDeProductos.productos;
+            console.log(datosProductos);
             let titulo = document.querySelector('#tituloDetalle');
             let categoria = document.querySelector('#CategoriaDetalle');
             let modelo = document.querySelector('#ModeloDetalle');
@@ -964,7 +971,8 @@
              *
              * */
 
-            var dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+            // var dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+            var dias = ['Lunes', 'Sabado', 'Domingo'];
             for (var i = 0; i < dias.length; i++) {
                 var dia = dias[i];
                 var entrada = document.getElementById(dia + '_entrada').value;

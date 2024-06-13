@@ -5,7 +5,8 @@
     </div>
     <div class=" flex lg:flex-row flex-col justify-center">
 
-        @foreach (['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'] as $dia)
+        {{-- @foreach (['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'] as $dia) --}}
+        @foreach (['Lunes', 'Sabado', 'Domingo'] as $dia)
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2 mr-3" for="{{ $dia }}_entrada">
                     {{ $dia }} - Hora de entrada
@@ -23,11 +24,11 @@
             </div>
         @endforeach
     </div>
-    <div class="text-center mt-4">
+    {{-- <div class="text-center mt-4">
         <button type="button" id="lunesAViernes"
             class="px-4 py-2 bg-green-500 hover:bg-green-700 text-white rounded">Lunes a
             Viernes</button>
-    </div>
+    </div> --}}
     <div class="text-center mt-4">
         <button type="button" id="resetButton" class="px-4 py-2 bg-blue-500 text-white rounded">Restablecer
             horarios</button>

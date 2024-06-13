@@ -36,31 +36,6 @@ class OrdenEntregaController extends Controller
         $marca = $request->marca;
         $tipo = $request->tipo;
 
-        $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
-            ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
-            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
-            ->join('colors', 'colors.id', '=', 'productos.id_color')
-            ->join('modos', 'modos.id', '=', 'productos.id_modo')
-            ->where('productos.estatus', 1)
-            ->where('precios_productos.estatus', 1)
-            // ->where('marcas.id', 'LIKE', "%{$marca}%")
-            // ->where('tipos.id', 'LIKE', "%{$tipo}%")
-            ->select(
-                'productos.id',
-                'productos.nombre_comercial',
-                'productos.descripcion',
-                'productos.modelo',
-                'tipos.nombre as nombre_categoria',
-                'colors.id as idColor',
-                'colors.nombre as nombre_color',
-                'modos.id as modo_id',
-                'modos.nombre as nombre_modo',
-                'marcas.nombre as nombre_marca',
-                'precios_productos.precio',
-                'marcas.id as marca_id',
-                'tipos.id as tipo_id'
-            )
-            ->orderBy('productos.updated_at', 'desc')->get();
 
         $marcas = Marcas::orderBy('nombre')->get();
         $tipos = Tipo::orderBy('nombre')->get();
@@ -114,7 +89,7 @@ class OrdenEntregaController extends Controller
 
         $descuentos = Descuentos::select('*')->orderBy('nombre', 'asc')->get();
 
-        return view('Principal.ordenEntrega.tienda', compact('productos', 'marcas', 'tipos', 'modos', 'colores', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion', 'HorarioTrabajo', 'descuentos'));
+        return view('Principal.ordenEntrega.tienda', compact('marcas', 'tipos', 'modos', 'colores', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion', 'HorarioTrabajo', 'descuentos'));
     }
 
     /**
@@ -167,6 +142,7 @@ class OrdenEntregaController extends Controller
     public function store(Request $request)
     {
 
+
         /* $request->validate([
             'txtnombreCliente' => 'required',
             // otras reglas de validación...
@@ -211,40 +187,43 @@ class OrdenEntregaController extends Controller
             $pagaCon = $request->input('pagaCon'); //paga con
             $LunesEntrada = $request->input('Lunes_entrada');
             $LunesSalida = $request->input('Lunes_salida');
-            $MartesEntrada = $request->input('Lunes_entrada');
-            $MartesSalida = $request->input('Lunes_salida');
-            $MiercolesEntrada = $request->input('Lunes_entrada');
-            $MiercolesSalida = $request->input('Lunes_salida');
-            $JuevesEntrada = $request->input('Lunes_entrada');
-            $JuevesSalida = $request->input('Lunes_salida');
-            $ViernesEntrada = $request->input('Lunes_entrada');
-            $ViernesSalida = $request->input('Lunes_salida');
+            // $MartesEntrada = $request->input('Lunes_entrada');
+            // $MartesSalida = $request->input('Lunes_salida');
+            // $MiercolesEntrada = $request->input('Lunes_entrada');
+            // $MiercolesSalida = $request->input('Lunes_salida');
+            // $JuevesEntrada = $request->input('Lunes_entrada');
+            // $JuevesSalida = $request->input('Lunes_salida');
+            // $ViernesEntrada = $request->input('Lunes_entrada');
+            // $ViernesSalida = $request->input('Lunes_salida');
             $SabadoEntrada = $request->input('Sabado_entrada');
             $SabadoSalida = $request->input('Sabado_salida');
             $DomingoEntrada = $request->input('Domingo_entrada');
             $DomingoSalida = $request->input('Domingo_salida');
 
-            $horarioTrabajoInicio = $LunesEntrada . ',' . $MartesEntrada . ',' . $MiercolesEntrada . ',' . $JuevesEntrada . ',' . $ViernesEntrada . ',' . $SabadoEntrada . ',' . $DomingoEntrada;
-            $horarioTrabajoFinal = $LunesSalida . ',' . $MartesSalida . ',' . $MiercolesSalida . ',' . $JuevesSalida . ',' . $ViernesSalida . ',' . $SabadoSalida . ',' . $DomingoSalida;
+            // $horarioTrabajoInicio = $LunesEntrada . ',' . $MartesEntrada . ',' . $MiercolesEntrada . ',' . $JuevesEntrada . ',' . $ViernesEntrada . ',' . $SabadoEntrada . ',' . $DomingoEntrada;
+            // $horarioTrabajoFinal = $LunesSalida . ',' . $MartesSalida . ',' . $MiercolesSalida . ',' . $JuevesSalida . ',' . $ViernesSalida . ',' . $SabadoSalida . ',' . $DomingoSalida;
+            $horarioTrabajoInicio = $LunesEntrada . ',' . $SabadoEntrada . ',' . $DomingoEntrada;
+            $horarioTrabajoFinal = $LunesSalida . ',' . $SabadoSalida . ',' . $DomingoSalida;
 
 
             $diasConDatos = '';
 
+
             if (!empty($LunesEntrada)) {
                 $diasConDatos .= 'Lunes,';
             }
-            if (!empty($MartesEntrada)) {
-                $diasConDatos .= 'Martes,';
-            }
-            if (!empty($MiercolesEntrada)) {
-                $diasConDatos .= 'Miercoles,';
-            }
-            if (!empty($JuevesEntrada)) {
-                $diasConDatos .= 'Jueves,';
-            }
-            if (!empty($ViernesEntrada)) {
-                $diasConDatos .= 'Viernes,';
-            }
+            // if (!empty($MartesEntrada)) {
+            //     $diasConDatos .= 'Martes,';
+            // }
+            // if (!empty($MiercolesEntrada)) {
+            //     $diasConDatos .= 'Miercoles,';
+            // }
+            // if (!empty($JuevesEntrada)) {
+            //     $diasConDatos .= 'Jueves,';
+            // }
+            // if (!empty($ViernesEntrada)) {
+            //     $diasConDatos .= 'Viernes,';
+            // }
             if (!empty($SabadoEntrada)) {
                 $diasConDatos .= 'Sabado,';
             }
@@ -312,6 +291,8 @@ class OrdenEntregaController extends Controller
                         'tipo_descuento' => $tipoDescuento, //le asignamos Sin descuento si llega hacer null
                         'estatus' => 3 //le asignamos estatus 3
                     ]);
+
+                    //aqui hay que modificar
                 }
 
 

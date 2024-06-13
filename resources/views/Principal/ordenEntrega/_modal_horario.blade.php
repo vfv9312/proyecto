@@ -17,12 +17,12 @@
                             <label for="hora">Hora entrada:</label>
                             <input
                                 class="shadow appearance-none border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="_entrada" type="time" name="_entrada" required>
+                                id="_entrada" type="time" name="_entrada">
 
                             <label for="minuto">Hora Salida:</label>
                             <input
                                 class="shadow appearance-none border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="_salida" type="time" name="_salida" required>
+                                id="_salida" type="time" name="_salida">
 
                             <button type="button" id="botonLunesAViernesAceptar"
                                 class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 flex items-center">
