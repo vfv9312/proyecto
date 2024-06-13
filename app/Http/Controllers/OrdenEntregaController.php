@@ -726,6 +726,76 @@ class OrdenEntregaController extends Controller
         return $pdf->stream();
     }
 
+    public function cambiarProductoRecarga(Request $request)
+    {
+        $productoRecarga = $request->input('productoRecarga');
+
+
+        switch ($productoRecarga) {
+            case '1':
+                $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
+                    ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                    ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                    ->join('colors', 'colors.id', '=', 'productos.id_color')
+                    ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                    ->where('productos.estatus', 2)
+                    ->where('precios_productos.estatus', 2)
+                    // ->where('marcas.id', 'LIKE', "%{$marca}%")
+                    // ->where('tipos.id', 'LIKE', "%{$tipo}%")
+                    ->select(
+                        'productos.id',
+                        'productos.nombre_comercial',
+                        'productos.descripcion',
+                        'productos.modelo',
+                        'tipos.nombre as nombre_categoria',
+                        'colors.id as idColor',
+                        'colors.nombre as nombre_color',
+                        'modos.id as modo_id',
+                        'modos.nombre as nombre_modo',
+                        'marcas.nombre as nombre_marca',
+                        'precios_productos.precio',
+                        'marcas.id as marca_id',
+                        'tipos.id as tipo_id'
+                    )
+                    ->orderBy('productos.updated_at', 'desc')->get();
+                info($productos);
+                // Retornar una respuesta JSON
+                return response()->json(['productos' => $productos]);
+                break;
+
+            default:
+                $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
+                    ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                    ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                    ->join('colors', 'colors.id', '=', 'productos.id_color')
+                    ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                    ->where('productos.estatus', 1)
+                    ->where('precios_productos.estatus', 1)
+                    // ->where('marcas.id', 'LIKE', "%{$marca}%")
+                    // ->where('tipos.id', 'LIKE', "%{$tipo}%")
+                    ->select(
+                        'productos.id',
+                        'productos.nombre_comercial',
+                        'productos.descripcion',
+                        'productos.modelo',
+                        'tipos.nombre as nombre_categoria',
+                        'colors.id as idColor',
+                        'colors.nombre as nombre_color',
+                        'modos.id as modo_id',
+                        'modos.nombre as nombre_modo',
+                        'marcas.nombre as nombre_marca',
+                        'precios_productos.precio',
+                        'marcas.id as marca_id',
+                        'tipos.id as tipo_id'
+                    )
+                    ->orderBy('productos.updated_at', 'desc')->get();
+                info($productos);
+                // Retornar una respuesta JSON
+                return response()->json(['productos' => $productos]);
+                break;
+        }
+    }
+
 
 
     /**

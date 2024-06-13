@@ -55,8 +55,42 @@
 @push('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
+        let datosDeProductos //valor de los datos de producto
         //Cuando entra y carga la pagina entra lo siguiente
         document.addEventListener('DOMContentLoaded', function() {
+
+
+            let productRecargaUrl = "{{ route('product.Recarga') }}";
+            axios.post(productRecargaUrl, {
+                productoRecarga: 'null'
+            }).then(function(response) {
+                // Aquí puedes manejar la respuesta de la solicitud
+
+                datosDeProductos = response.data;
+
+                let select = document.getElementById('producto');
+                select.innerHTML = ''; // Vacía el select
+
+                // Llena el select con los nuevos datos
+                response.data.productos.forEach(function(producto) {
+                    let option = document.createElement('option');
+                    option.value = producto.id;
+                    option.setAttribute('data-precio', producto.precio);
+                    option.textContent = producto.nombre_comercial + '_' + producto.nombre_modo +
+                        '_' + producto.nombre_marca + '_' + producto.nombre_categoria + '_' +
+                        producto.nombre_color;
+                    select.appendChild(option);
+                });
+                // Por ejemplo, actualizar una parte del DOM con los nuevos datos
+            }).catch(function(error) {
+                // Aquí puedes manejar los errores de la solicitud
+                console.error(error);
+            });
+
+
+
+
+
             //lo que escriba en nombre Cliente se escribe en el input del nombre de atencion
             document.getElementById('nombreCliente').addEventListener('input', function() {
                 var checkbox = document.getElementById('tipoDeCliente');
@@ -96,6 +130,7 @@
 
         });
 
+
         //Checbox de persona moral o persona fisica si es persona moral el chebox sera verdadero por lo que ocultara apellido
         let seleccionarTipoCliente = document.getElementById('tipoDeCliente');
         let contenedorCliente = document.querySelector('#tipoCliente');
@@ -109,6 +144,36 @@
                 $('#apellidoCliente').val('').prop('disabled', false);
                 document.getElementById('titulonombre').textContent = 'Nombre';
             }
+        });
+
+
+        document.getElementById('productoRecarga').addEventListener('change', function() {
+            let productRecargaUrl = "{{ route('product.Recarga') }}";
+            axios.post(productRecargaUrl, {
+                productoRecarga: this.checked
+            }).then(function(response) {
+                // Aquí puedes manejar la respuesta de la solicitud
+
+                datosDeProductos = response.data;
+
+                let select = document.getElementById('producto');
+                select.innerHTML = ''; // Vacía el select
+
+                // Llena el select con los nuevos datos
+                response.data.productos.forEach(function(producto) {
+                    let option = document.createElement('option');
+                    option.value = producto.id;
+                    option.setAttribute('data-precio', producto.precio);
+                    option.textContent = producto.nombre_comercial + '_' + producto.nombre_modo +
+                        '_' + producto.nombre_marca + '_' + producto.nombre_categoria + '_' +
+                        producto.nombre_color;
+                    select.appendChild(option);
+                });
+                // Por ejemplo, actualizar una parte del DOM con los nuevos datos
+            }).catch(function(error) {
+                // Aquí puedes manejar los errores de la solicitud
+                console.error(error);
+            });
         });
 
 
@@ -336,7 +401,8 @@
                 let costo = producto.precio * producto.cantidad;
                 if (producto.tipoDescuento == 'cantidad') {
                     celdaDescuento.textContent = '$' + producto.descuento;
-                    costo = costo - producto.descuento;
+                    descuentoCantidadProducto = producto.descuento * producto.cantidad;
+                    costo = costo - descuentoCantidadProducto;
                 } else if (producto.tipoDescuento == 'Porcentaje') {
                     celdaDescuento.textContent = producto.descuento + '%';
                     let descuentoAplicado = costo * (producto.descuento / 100);
@@ -738,7 +804,7 @@
                     var tipodeCliente = document.getElementById('tipoDeCliente');
 
                     if (!tipodeCliente.checked) {
-                        console.log(tipodeCliente.checked);
+
                         document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
                             .getElementById('apellidoCliente').value;
 
@@ -850,7 +916,10 @@
         //mmostrar los datos de detalles del modal
         document.getElementById('Detalle').addEventListener('click', function() {
             let productoSeleccionado = document.getElementById('producto').value;
-            let datosProductos = @json($productos);
+
+            //let datosProductos = @json($productos);
+            let datosProductos = datosDeProductos.productos;
+
             let titulo = document.querySelector('#tituloDetalle');
             let categoria = document.querySelector('#CategoriaDetalle');
             let modelo = document.querySelector('#ModeloDetalle');
@@ -861,6 +930,7 @@
             let descripcion = document.querySelector('#descripcionDetalle');
 
             datosProductos.forEach(element => {
+
                 if (productoSeleccionado == element.id) {
 
                     titulo.innerText = element.nombre_comercial;

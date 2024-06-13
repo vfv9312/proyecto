@@ -86,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('inicio', PrincipalController::class)->middleware(['verified']); //aqui se muestra dos iconos si quiere una orden de servicio o una orden de entrega
     Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['verified']); //index: muestra la vista con todos los datos para hacer una orden de entrega, show: muestra una vista previa
     Route::get('orden_entrega/{id}/vistaprevia', [OrdenEntregaController::class, 'VistaPrevioOrdenEntrega'])->name('orden_recoleccion.vistaPreviaOrdenEntrega')->middleware(['verified']); //muestra el contenido
+    Route::post('/cambiarProductoRecarga', [OrdenEntregaController::class, 'cambiarProductoRecarga'])->name('product.Recarga');
 
     //rutas para restablecer informacion eliminada
     Route::prefix('restablecer')->group(function () {
