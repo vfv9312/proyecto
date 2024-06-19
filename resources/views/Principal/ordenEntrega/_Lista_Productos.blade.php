@@ -15,7 +15,7 @@
         <select name="producto" id="producto"
             class="lg:w-1/2 w-full px-3 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
 
-            <option value="" data-precio="">
+            <option value="" data-precio="" data-estatus="" data-idPrecio="">
             </option>
 
         </select>

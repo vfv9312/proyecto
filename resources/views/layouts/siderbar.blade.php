@@ -15,7 +15,7 @@
                     <span class="ms-3">Inicio</span>
                 </a>
             </li>
-            <li class="text-yellow-500 my-2 text-center">
+            <li class="text-green-500 my-2 text-center">
                 Menu
             </li>
             <li>
@@ -122,7 +122,7 @@
                     </ul>
                 @endif
             </li>
-            <li class="text-yellow-500 my-2 text-center">
+            <li class="text-green-500 my-2 text-center">
                 Vista rapida
             </li>
             <li>
@@ -160,7 +160,7 @@
                 </a>
             </li>
             <li>
-            <li class="text-yellow-500 my-2 text-center">
+            <li class="text-green-500 my-2 text-center">
                 Cuenta
             </li>
             <li>

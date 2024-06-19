@@ -76,6 +76,8 @@
                     let option = document.createElement('option');
                     option.value = producto.id;
                     option.setAttribute('data-precio', producto.precio);
+                    option.setAttribute('data-estatus', producto.estatus);
+                    option.setAttribute('data-idPrecio', producto.idPrecio);
                     option.textContent = producto.nombre_comercial + '_' + producto.nombre_modo +
                         '_' + producto.nombre_marca + '_' + producto.nombre_categoria + '_' +
                         producto.nombre_color;
@@ -85,7 +87,6 @@
             }).catch(function(error) {
                 // Aquí puedes manejar los errores de la solicitud
                 console.error(error);
-                console.log('error');
             });
 
 
@@ -156,7 +157,6 @@
                 // Aquí puedes manejar la respuesta de la solicitud
 
                 datosDeProductos = response.data;
-
                 let select = document.getElementById('producto');
                 select.innerHTML = ''; // Vacía el select
 
@@ -165,6 +165,8 @@
                     let option = document.createElement('option');
                     option.value = producto.id;
                     option.setAttribute('data-precio', producto.precio);
+                    option.setAttribute('data-estatus', producto.estatus);
+                    option.setAttribute('data-idPrecio', producto.idPrecio);
                     option.textContent = producto.nombre_comercial + '_' + producto.nombre_modo +
                         '_' + producto.nombre_marca + '_' + producto.nombre_categoria + '_' +
                         producto.nombre_color;
@@ -195,11 +197,13 @@
             let valorDescuentoPorcentaje = document.querySelector('#porcentaje').value;
             const selectedOption = selectProducto.options[selectProducto.selectedIndex];
             let precio = selectedOption.getAttribute('data-precio');
-
+            let estatus = selectedOption.getAttribute('data-estatus');
+            let idPrecio = selectedOption.getAttribute('data-idPrecio');
+            console.log(idPrecio);
 
             // Luego los pasas a la función
             agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
-                valorDescuentoPorcentaje, precio);
+                valorDescuentoPorcentaje, precio, estatus, idPrecio);
 
             // Oculta ambos divs
             descuentoCantidad.classList.add('hidden');
@@ -287,7 +291,7 @@
         var productosSeleccionados = [];
         // Función para manejar el evento click del botón para agregar productos cuando le de click
         function agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
-            valorDescuentoPorcentaje, valorProducto) {
+            valorDescuentoPorcentaje, valorProducto, estatus, idPrecio) {
             let tipoDescuento;
             let valorDescuento;
 
@@ -339,7 +343,9 @@
                     color: nombreColor,
                     precio: precio,
                     descuento: valorDescuento,
-                    tipoDescuento: tipoDescuento
+                    tipoDescuento: tipoDescuento,
+                    estatus: estatus,
+                    idPrecio: idPrecio,
                 };
                 productosSeleccionados.push(producto);
             }
@@ -576,8 +582,8 @@
         let datosAtencion = @json($listaAtencion);
         let datosHorarioTrabajo = @json($HorarioTrabajo);
 
-        let inputLunesEntrada = $('#Lunes_entrada');
-        let inputLunesSalida = $('#Lunes_salida');
+        let inputLunesEntrada = $('#Lunes-Viernes_entrada');
+        let inputLunesSalida = $('#Lunes-Viernes_salida');
         // let inputMartesEntrada = $('#Martes_entrada');
         // let inputMartesSalida = $('#Martes_salida');
         // let inputMiercolesEntrada = $('#Miercoles_entrada');
@@ -689,7 +695,7 @@
                     let dias = ultimoHorario.dias.split(',');
                     inputrecibe.val(ultimoHorario.recibe);
                     dias.forEach((dia, index) => {
-                        if (dia == 'Lunes') {
+                        if (dia == 'Lunes-Viernes') {
                             inputLunesEntrada.val(horariosEntrada[index]);
                             inputLunesSalida.val(horariosSalida[index]);
                         }
@@ -761,7 +767,8 @@
                             ' #' +
                             direccion.num_exterior + ' - ' + direccion.num_interior + ' referencia: ' +
                             direccion.referencia, direccion
-                            .id));
+                            .id_direccion));
+
                     });
 
                 } else {
@@ -926,7 +933,6 @@
 
 
             let datosProductos = datosDeProductos.productos;
-            console.log(datosProductos);
             let titulo = document.querySelector('#tituloDetalle');
             let categoria = document.querySelector('#CategoriaDetalle');
             let modelo = document.querySelector('#ModeloDetalle');
@@ -972,7 +978,7 @@
              * */
 
             // var dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
-            var dias = ['Lunes', 'Sabado', 'Domingo'];
+            var dias = ['Lunes-Viernes', 'Sabado', 'Domingo'];
             for (var i = 0; i < dias.length; i++) {
                 var dia = dias[i];
                 var entrada = document.getElementById(dia + '_entrada').value;
