@@ -481,6 +481,7 @@ class ordenServicioController extends Controller
                 'preventas.pago_efectivo as pagoEfectivo',
                 'preventas.nombre_atencion as nombreAtencion',
                 'preventas.nombre_quien_recibe as recibe',
+                'preventas.nombre_empleado as nombreEmpleado',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',

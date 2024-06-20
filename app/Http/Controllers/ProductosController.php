@@ -132,6 +132,9 @@ class ProductosController extends Controller
             $precioProducto = precios_productos::create([
                 'id_producto' => $producto->id,
                 'precio' => $request->txtprecio,
+                'alternativo_uno' => $request->txtprecioalternativouno,
+                'alternativo_dos' => $request->txtprecioalternativodos,
+                'alternativo_tres' => $request->txtprecioalternativotres,
                 //'descripcion' => $request->txtdescripcion,
                 'estatus' => 1
             ]);
@@ -139,16 +142,13 @@ class ProductosController extends Controller
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
-            // return $th->getMessage();
-            $precioProducto = 0;
-        }
-        if ($precioProducto == true) {
-            session()->flash("correcto", "Producto registrado correctamente");
-            return redirect()->route('productos.index');
-        } else {
+            return $th->getMessage();
             session()->flash("incorrect", "Error al registrar");
             return redirect()->route('productos.index');
         }
+
+        session()->flash("correcto", "Producto registrado correctamente");
+        return redirect()->route('productos.index');
     }
 
 
@@ -194,15 +194,28 @@ class ProductosController extends Controller
     {
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
+
+            $nComercial = $request->txtnombre;
+            $modelo = $request->txtmodelo;
+            $idColor = $request->txtcolor;
+            $idMarca = $request->txtmarca;
+            $idTipo = $request->txttipo;
+            $idModo = $request->txtmodo;
+            $desc = $request->txtdescripcion;
+            $Precio = $request->txtprecio;
+            $alternativoUno = $request->txtprecioalternativouno;
+            $alternativoDos = $request->txtprecioalternativodos;
+            $alternativoTres = $request->txtprecioalternativotres;
+
             //Actualizar la tabla producto
             $productoActualizado = $producto->update([
-                'nombre_comercial' => $request->txtnombre,
-                'modelo' => $request->txtmodelo,
-                'id_color' => $request->txtcolor,
-                'id_marca' => $request->txtmarca,
-                'id_tipo' => $request->txttipo,
-                'id_modo' => $request->txtmodo,
-                'descripcion' => $request->txtdescripcion,
+                'nombre_comercial' => $nComercial,
+                'modelo' => $modelo,
+                'id_color' => $idColor,
+                'id_marca' => $idMarca,
+                'id_tipo' => $idTipo,
+                'id_modo' => $idModo,
+                'descripcion' => $desc,
                 'estatus' => 1
             ]);
 
@@ -246,8 +259,11 @@ class ProductosController extends Controller
 
             // Obtén el precio actual
             $precioActual = $preciosProductoActualizado->precio;
+            $precioAlternativoUno = $preciosProductoActualizado->alternativo_uno;
+            $precioAlternativoDos = $preciosProductoActualizado->alternativo_dos;
+            $precioAlternativoTres = $preciosProductoActualizado->alternativo_tres;
             //si el precio actual es txt precio es diferente al que esta en el campo txtprecio actualizalo
-            if ($precioActual != $request->txtprecio) {
+            if ($precioActual != $Precio || $precioAlternativoUno != $alternativoUno || $precioAlternativoDos != $alternativoDos || $precioAlternativoTres != $alternativoTres) {
                 //primero cambiamos el estatus del producto estatus
                 $preciosProductoActualizado->update([
                     'estatus' => 0
@@ -255,15 +271,14 @@ class ProductosController extends Controller
                 //ahora creamos el nuevo precio
                 $preciosProductoNuevo =  precios_productos::create([
                     'id_producto' => $producto->id,
-                    'precio' => $request->txtprecio,
+                    'precio' => $Precio,
+                    'alternativo_uno' => $alternativoUno,
+                    'alternativo_dos' => $alternativoDos,
+                    'alternativo_tres' => $alternativoTres,
                     //'descripcion' => $request->txtdescripcion,
                     'estatus' => 1
                 ]);
-            } else {
-                // Si el precio no ha cambiado, no crees un nuevo registro
-                $preciosProductoNuevo = true; // Para que la comprobación final siga funcionando
             }
-
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
         } catch (\Throwable $th) {
@@ -271,15 +286,11 @@ class ProductosController extends Controller
             /*si retorna un error de sql lo veremos en pantalla*/
             // return $th->getMessage();
             //y que la ultima consulta sea false para mandar msj que salio mal la consulta
-            $preciosProductoActualizado = false;
-        }
-        if ($productoActualizado && $preciosProductoActualizado && $preciosProductoNuevo) {
-            session()->flash("correcto", "Producto actualizado correctamente");
-            return redirect()->route('productos.index');
-        } else {
             session()->flash("incorrect", "Error al actualizar el registro");
             return redirect()->route('productos.index');
         }
+        session()->flash("correcto", "Producto actualizado correctamente");
+        return redirect()->route('productos.index');
     }
 
     public function desactivar(productos $id)

@@ -728,7 +728,7 @@ class OrdenEntregaController extends Controller
 
         $diasSemana = explode(',', $ordenRecoleccion->diaSemana);
 
-        if (count($diasSemana) > 5) {
+        if (count($diasSemana) > 1) {
             $largoDelTicket += 50;
         }
 

@@ -4,6 +4,7 @@
     <table class="overflow-x-auto min-w-full" id="tablaProductos">
         <thead>
             <tr>
+                <th>Tipo Producto</th>
                 <th>Nombre</th>
                 <th>Marca</th>
                 <th>Tipo</th>
@@ -21,7 +22,7 @@
         </tbody>
         <tfoot>
             <tr id="filaSuma">
-                <td colspan="8">Total</td>
+                <td colspan="9">Total</td>
                 <td id="sumaTotal"></td>
             </tr>
         </tfoot>

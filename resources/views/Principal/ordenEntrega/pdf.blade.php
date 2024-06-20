@@ -150,7 +150,7 @@ opacity: 0.5;">
                 <tr>
                     @foreach ($dias as $index => $dia)
                         <td class="dias">
-                            @if ($dia == 'Lunes' || $dia == 'Martes' || $dia == 'Miercoles' || $dia == 'Jueves' || $dia == 'Viernes')
+                            @if ($dia == 'Lunes-Viernes')
                                 {{ $dia }} {{ $horariosInicio[$index] }} - {{ $horariosFinal[$index] }}
                             @endif
                         </td>

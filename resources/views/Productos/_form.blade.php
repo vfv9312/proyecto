@@ -50,8 +50,26 @@
 <label class="text-sm text-gray-500 flex flex-col items-start">
     <span>precio</span>
     <input name="txtprecio" type="number" step="any"
-        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none h-8"
         value="{{ $precioProducto->precio }}" />
+</label>
+<label class="text-sm text-gray-500 flex flex-col items-start">
+    <span>precio alternativo 1</span>
+    <input name="txtprecioalternativouno" type="number" min="1" step="0.01"
+        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none h-8"
+        value="{{ $precioProducto->alternativo_uno }}" />
+</label>
+<label class="text-sm text-gray-500 flex flex-col items-start">
+    <span>precio alternativo 2</span>
+    <input name="txtprecioalternativodos" type="number" min="1" step="0.01"
+        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none h-8"
+        value="{{ $precioProducto->alternativo_dos }}" />
+</label>
+<label class="text-sm text-gray-500 flex flex-col items-start">
+    <span>precio alternativo 3</span>
+    <input name="txtprecioalternativotres" type="number" min="1" step="0.01"
+        class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none h-8"
+        value="{{ $precioProducto->alternativo_tres }}" />
 </label>
 
 <div class=" w-3/4">

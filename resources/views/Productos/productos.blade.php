@@ -104,13 +104,34 @@
                             <label class="text-sm text-gray-500 flex flex-col items-start">
                                 <span>precio</span>
                                 <input name="txtprecio" type="number" min="1" step="0.01"
-                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none h-8"
                                     required />
                             </label>
                             <label class="text-sm text-gray-500 flex flex-col items-start">
-                                <span>Descripcion</span>
-                                <input name="txtdescripcion" type="text"
-                                    class="border-2 mb-5 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none" />
+                                <span>precio alternativo 1</span>
+                                <input name="txtprecioalternativouno" type="number" min="1" step="0.01"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none h-8"
+                                    required />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>precio alternativo 2</span>
+                                <input name="txtprecioalternativodos" type="number" min="1" step="0.01"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none h-8"
+                                    required />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <span>precio alternativo 3</span>
+                                <input name="txtprecioalternativotres" type="number" min="1" step="0.01"
+                                    class="border-2 border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none h-8"
+                                    required />
+                            </label>
+                            <label class="text-sm text-gray-500 flex flex-col items-start">
+                                <label for="message"
+                                    class="text-lg text-gray-500 flex flex-col items-start">Descripcion</label>
+                                <textarea id="message" rows="4" name="txtdescripcion"
+                                    class="block mb-3 p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-2 border-blue-500 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Escribe aqui la descripcion ...."></textarea>
+
                             </label>
 
                             <button type="submit" id="enviarmodal"

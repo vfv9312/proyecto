@@ -199,7 +199,7 @@
             let precio = selectedOption.getAttribute('data-precio');
             let estatus = selectedOption.getAttribute('data-estatus');
             let idPrecio = selectedOption.getAttribute('data-idPrecio');
-            console.log(idPrecio);
+
 
             // Luego los pasas a la función
             agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
@@ -348,6 +348,7 @@
                     idPrecio: idPrecio,
                 };
                 productosSeleccionados.push(producto);
+
             }
 
             // Limpia el input de cantidad
@@ -369,7 +370,7 @@
         function agregarProductosATabla(productos) {
             var tabla = document.getElementById('cuerpoTabla');
             var totalCosto = 0;
-
+            let tipoProducto = '';
             // Elimina todas las filas existentes
             while (tabla.firstChild) {
                 tabla.removeChild(tabla.firstChild);
@@ -377,27 +378,35 @@
             //creamos las celdas y le ponemos el valor segun la cantidad de array
             for (var i = 0; i < productos.length; i++) {
                 let producto = productos[i];
+                if (producto.estatus == 1) {
+                    tipoProducto = 'Producto';
+                } else {
+                    tipoProducto = 'Recarga';
+                }
                 let fila = tabla.insertRow(-1);
                 fila.id = 'filaProducto_' + i; // Asigna un identificador único a la fila
-                let celdaNombre = fila.insertCell(0);
+                let celdaTipoProducto = fila.insertCell(0);
+                celdaTipoProducto.style.textAlign = "center";
+                let celdaNombre = fila.insertCell(1);
                 celdaNombre.style.textAlign = "center";
-                let celdaMarca = fila.insertCell(1);
+                let celdaMarca = fila.insertCell(2);
                 celdaMarca.style.textAlign = "center";
-                let celdaTipo = fila.insertCell(2);
+                let celdaTipo = fila.insertCell(3);
                 celdaTipo.style.textAlign = "center";
-                let celdaModo = fila.insertCell(3);
+                let celdaModo = fila.insertCell(4);
                 celdaModo.style.textAlign = "center";
-                let celdaColor = fila.insertCell(4);
+                let celdaColor = fila.insertCell(5);
                 celdaColor.style.textAlign = "center";
-                let celdaCantidad = fila.insertCell(5);
+                let celdaCantidad = fila.insertCell(6);
                 celdaCantidad.style.textAlign = "center";
-                let celdaPrecio = fila.insertCell(6);
+                let celdaPrecio = fila.insertCell(7);
                 celdaPrecio.style.textAlign = "center";
-                let celdaDescuento = fila.insertCell(7);
+                let celdaDescuento = fila.insertCell(8);
                 celdaDescuento.style.textAlign = "center";
-                let celdaCosto = fila.insertCell(8);
+                let celdaCosto = fila.insertCell(9);
                 celdaCosto.style.textAlign = "center";
-                let celdaEliminar = fila.insertCell(9); // Nueva celda para el botón "Eliminar"
+                let celdaEliminar = fila.insertCell(10); // Nueva celda para el botón "Eliminar"
+                celdaTipoProducto.textContent = tipoProducto;
                 celdaNombre.textContent = producto.nombre;
                 celdaMarca.textContent = producto.marca;
                 celdaTipo.textContent = producto.tipo;
