@@ -23,6 +23,10 @@ class ServiciosController extends Controller
     public function index(Request $request)
     {
         $busqueda = $request->query('adminlteSearch');
+        $busquedaMarca = $request->query('marca');
+        $busquedaTipo = $request->query('tipo');
+        $busquedaColor = $request->query('color');
+        $busquedaCategoria = $request->query('categoria');
 
         $productos = productos::join('precios_productos', 'productos.id', '=', 'precios_productos.id_producto')
             ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
@@ -36,9 +40,21 @@ class ServiciosController extends Controller
                     ->orWhere('marcas.nombre', 'LIKE', "%{$busqueda}%")
                     ->orWhere('modos.nombre', 'LIKE', "%{$busqueda}%");
             })
+            ->when($busquedaMarca, function ($query, $busquedaMarca) {
+                return $query->where('marcas.id', 'LIKE', "%{$busquedaMarca}%");
+            })
+            ->when($busquedaTipo, function ($query, $busquedaTipo) {
+                return $query->where('modos.id', 'LIKE', "%{$busquedaTipo}%");
+            })
+            ->when($busquedaColor, function ($query, $busquedaColor) {
+                return $query->where('colors.id', 'LIKE', "%{$busquedaColor}%");
+            })
+            ->when($busquedaCategoria, function ($query, $busquedaCategoria) {
+                return $query->where('tipos.id', 'LIKE', "%{$busquedaCategoria}%");
+            })
             ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'precios_productos.precio')
             ->orderBy('productos.updated_at', 'desc')
-            ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
+            ->paginate(10)->appends(['adminlteSearch' => $busqueda, 'marca' => $busquedaMarca, 'tipo' => $busquedaTipo, 'color' => $busquedaColor, 'categoria' => $busquedaCategoria]); // Mueve paginate() aquí para que funcione correctamente
 
         $marcas = Marcas::orderBy('nombre')->get();
         $categorias = Tipo::orderBy('nombre')->get();
@@ -46,7 +62,7 @@ class ServiciosController extends Controller
         $colores = Color::all();
 
 
-        return view('servicios.index', compact('productos', 'marcas', 'categorias', 'modos', 'colores'));
+        return view('servicios.index', compact('productos', 'marcas', 'categorias', 'modos', 'colores', 'busqueda', 'busquedaMarca', 'busquedaTipo', 'busquedaColor', 'busquedaCategoria'));
     }
 
     /**

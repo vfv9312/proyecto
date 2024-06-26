@@ -1,5 +1,5 @@
 <section class="flex flex-col border-4 mt-8 px-3 pb-3">
-    <h1 class="text-2xl text-center text-gray-600 mb-3">Seleccione los productos</h1>
+    <h1 class="text-2xl text-center font-bold text-green-700 mb-3">Seleccione los productos</h1>
 
     <label class="flex items-center cursor-pointer mb-2 mt-2">
         <span class="ms-3 mr-2 text-sm font-medium
@@ -15,7 +15,8 @@
         <select name="producto" id="producto"
             class="lg:w-1/2 w-full px-3 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
 
-            <option value="" data-precio="" data-estatus="" data-idPrecio="">
+            <option value="" data-precio="" data-estatus="" data-idPrecio="" data-alternativoUno=""
+                data-alternativoDos="" data-alternativoTres="">
             </option>
 
         </select>
@@ -24,12 +25,12 @@
             placeholder="Cantidad">
         <button type="button" id="agregarProducto"
             class=" lg:ml-3 px-4 sm:mt-4
-            bg-gray-800 text-white text-sm font-medium rounded hover:bg-gray-700 focus:outline-none focus:bg-gray-700
+            bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 focus:outline-none focus:bg-green-800
             focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
             <i class="fas fa-plus"></i>Agregar producto
         </button>
         <button type="button" id="Detalle"
-            class="lg:ml-3 px-4 sm:mt-4  bg-gray-800 text-white text-sm font-medium rounded hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+            class="lg:ml-3 px-4 sm:mt-4  bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 focus:outline-none focus:bg-green-800 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
 
             <i class="fas fa-info-circle"></i> Detalles
         </button>

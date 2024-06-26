@@ -194,6 +194,7 @@ class OrdenEntregaController extends Controller
             $factura = $request->input('factura'); //es el checkbox por si queremos factura
             $metodoPago = $request->input('metodoPago'); //metodo de pago
             $pagaCon = $request->input('pagaCon'); //paga con
+            $pagaRecarga = $request->input('pagaConRecarga'); //el pago de una recarga
             $LunesEntrada = $request->input('Lunes-Viernes_entrada');
             $LunesSalida = $request->input('Lunes-Viernes_salida');
             // $MartesEntrada = $request->input('Lunes_entrada');
@@ -314,6 +315,7 @@ class OrdenEntregaController extends Controller
                 'pagaCon' => $pagaCon,
                 'recibe' => $recibe,
                 'nuevaDireccion' => $nuevaDireccion,
+                'pagaRecarga' => $pagaRecarga,
             ];
 
 
@@ -450,7 +452,7 @@ class OrdenEntregaController extends Controller
         $preventa->dia_semana = $data['diasConDatos'];
         $preventa->metodo_pago = $data['metodoPago'];
         $preventa->factura = $data['factura'] === 'on' ? 1 : 0;
-        $preventa->pago_efectivo = $data['pagaCon'];
+        $preventa->pago_efectivo = $estatus === 3 ? $data['pagaCon'] : $data['pagaRecarga'];
         $preventa->estatus = $estatus;
         $preventa->nombre_quien_recibe = $data['recibe'];
         $preventa->id_direccion = $data['nuevaDireccion'];
@@ -775,6 +777,9 @@ class OrdenEntregaController extends Controller
                         'marcas.nombre as nombre_marca',
                         'precios_productos.precio',
                         'precios_productos.id as idPrecio',
+                        'precios_productos.alternativo_uno',
+                        'precios_productos.alternativo_dos',
+                        'precios_productos.alternativo_tres',
                         'precios_productos.estatus',
                         'marcas.id as marca_id',
                         'tipos.id as tipo_id',
@@ -808,11 +813,13 @@ class OrdenEntregaController extends Controller
                         'modos.nombre as nombre_modo',
                         'marcas.nombre as nombre_marca',
                         'precios_productos.precio',
+                        'precios_productos.alternativo_uno',
+                        'precios_productos.alternativo_dos',
+                        'precios_productos.alternativo_tres',
                         'precios_productos.id as idPrecio',
                         'precios_productos.estatus',
                         'marcas.id as marca_id',
                         'tipos.id as tipo_id',
-
                     )
                     ->orderBy('productos.updated_at', 'desc')->get();
 

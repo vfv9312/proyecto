@@ -1,7 +1,7 @@
 <section class=" w-full border-4 mt-8 px-3 pb-3">
     <div>
         <h1 class="text-2xl
-    text-center text-gray-600 mb-2">Horario de Trabajo</h1>
+    text-center font-bold text-green-700 mb-2">Horario de Trabajo</h1>
     </div>
     <div class=" flex lg:flex-row flex-col justify-center">
 
@@ -30,7 +30,8 @@
             Viernes</button>
     </div> --}}
     <div class="text-center mt-4">
-        <button type="button" id="resetButton" class="px-4 py-2 bg-blue-500 text-white rounded">Restablecer
+        <button type="button" id="resetButton"
+            class="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded">Restablecer
             horarios</button>
     </div>
 </section>

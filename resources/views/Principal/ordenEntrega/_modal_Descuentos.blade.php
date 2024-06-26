@@ -21,6 +21,7 @@
                                 <option value="1">Sin descuento</option>
                                 <option value="2">Descuento por cantidad</option>
                                 <option value="3">Descuento por porcentaje</option>
+                                <option value="4">Precio Alternativo</option>
                             </select>
                         </div>
                         <div id="descuentoProducto" class=" flex mx-auto flex-col mt-4">
@@ -39,6 +40,13 @@
                                     @foreach ($descuentos as $descuento)
                                         <option value="{{ $descuento->porcentaje }}">{{ $descuento->nombre }}</option>
                                     @endforeach
+                                </select>
+                            </div>
+                            <div class="mt-4 hidden" id="preciosAlternativos">
+                                <label for="preciosAlternativos" class="block text-sm font-medium text-gray-700">Precios
+                                    alternativos:</label>
+                                <select name="preciosAlternativos" id="Alternativos"
+                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md mb-4">
                                 </select>
                             </div>
                             <button type="button" id="botonAgregar"

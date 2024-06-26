@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <h1 class=" text-center">Registro de Orden de Entrega</h1>
+    <h1 class=" text-center font-bold text-green-700">Registro de Orden de Entrega/Recoleccion</h1>
     <!-- mensaje de aviso que se registro el producto-->
     @if (session('correcto'))
         <div class=" flex justify-center">
@@ -33,7 +33,7 @@
 
         <div class="mt-4 flex justify-center">
             <button id="botonGuardar" type="submit"
-                class="px-4 py-2 bg-green-500
+                class="px-4 py-2 bg-green-600
                 text-white rounded hover:bg-green-700">
                 <i class="fas fa-save mr-2"></i>
                 Guardar
@@ -55,7 +55,8 @@
 @push('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
-        let datosDeProductos //valor de los datos de producto
+        let datosDeProductos; //valor de los datos de producto
+
         //Cuando entra y carga la pagina entra lo siguiente
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -78,6 +79,9 @@
                     option.setAttribute('data-precio', producto.precio);
                     option.setAttribute('data-estatus', producto.estatus);
                     option.setAttribute('data-idPrecio', producto.idPrecio);
+                    option.setAttribute('data-alternativoUno', producto.alternativo_uno);
+                    option.setAttribute('data-alternativoDos', producto.alternativo_dos);
+                    option.setAttribute('data-alternativoTres', producto.alternativo_tres);
                     option.textContent = producto.nombre_comercial + '_' + producto.nombre_modo +
                         '_' + producto.nombre_marca + '_' + producto.nombre_categoria + '_' +
                         producto.nombre_color;
@@ -88,9 +92,6 @@
                 // Aquí puedes manejar los errores de la solicitud
                 console.error(error);
             });
-
-
-
 
 
             //lo que escriba en nombre Cliente se escribe en el input del nombre de atencion
@@ -167,6 +168,9 @@
                     option.setAttribute('data-precio', producto.precio);
                     option.setAttribute('data-estatus', producto.estatus);
                     option.setAttribute('data-idPrecio', producto.idPrecio);
+                    option.setAttribute('data-alternativoUno', producto.alternativo_uno);
+                    option.setAttribute('data-alternativoDos', producto.alternativo_dos);
+                    option.setAttribute('data-alternativoTres', producto.alternativo_tres);
                     option.textContent = producto.nombre_comercial + '_' + producto.nombre_modo +
                         '_' + producto.nombre_marca + '_' + producto.nombre_categoria + '_' +
                         producto.nombre_color;
@@ -183,6 +187,7 @@
 
         const modalDescuentos = document.querySelector('#modalDescuentos')
         const cancelarModalDescuento = document.querySelector('.cerrarmodalDescuento');
+
         // Agrega el evento click al botón para que al darle aceptar al modal de descuento ya agregue a un array los productos
         document.getElementById('agregarProducto').addEventListener('click', botonAgregar);
 
@@ -195,25 +200,34 @@
             let cantidad = cantidadInput.value;
             let valorDescuentoCantidad = document.querySelector('#Cantidaddescuento').value;
             let valorDescuentoPorcentaje = document.querySelector('#porcentaje').value;
+            let valorAlternativo = document.getElementById("Alternativos").value;
             const selectedOption = selectProducto.options[selectProducto.selectedIndex];
             let precio = selectedOption.getAttribute('data-precio');
             let estatus = selectedOption.getAttribute('data-estatus');
             let idPrecio = selectedOption.getAttribute('data-idPrecio');
 
 
+
             // Luego los pasas a la función
             agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
-                valorDescuentoPorcentaje, precio, estatus, idPrecio);
+                valorDescuentoPorcentaje, precio, estatus, idPrecio, valorAlternativo);
+
+
+
 
             // Oculta ambos divs
             descuentoCantidad.classList.add('hidden');
             descuentoPorcentaje.classList.add('hidden');
+            document.querySelector('#preciosAlternativos').classList.add('hidden');
+
 
             //restauramos el select del modal a sin descuento
             document.getElementById('elejirdescuento').value = '1';
+
             //restauramos el valor delos descuentos
             document.querySelector('#Cantidaddescuento').value = '';
             document.querySelector('#porcentaje').value = '';
+            document.getElementById("Alternativos").innerHTML = '';
 
 
             // Oculta el modal
@@ -227,6 +241,45 @@
             var idProducto = selectProducto.value;
             let cantidadInput = document.getElementById('cantidad');
             let cantidad = cantidadInput.value;
+            // Obtén el select por su id
+            let alternativoSeleccionado = document.querySelector('#producto');
+            // Obtén la opción seleccionada
+            const selectedOption = alternativoSeleccionado.options[alternativoSeleccionado.selectedIndex];
+            let alternativouno = selectedOption.getAttribute('data-alternativoUno');
+            let alternativoDos = selectedOption.getAttribute('data-alternativoDos');
+            let alternativoTres = selectedOption.getAttribute('data-alternativoTres');
+
+
+            // Obtén el select por su id
+            var selectAlternativo = document.getElementById("Alternativos");
+            // Crea un nuevo option
+            var option = document.createElement("option");
+            option.value = '';
+            option.text = 'Seleccione nuevo precio';
+            // Añade el option al select
+            selectAlternativo.appendChild(option);
+            if (alternativouno != null && alternativouno != 0 && alternativouno != "null") {
+                // Crea un nuevo option
+                var option = document.createElement("option");
+                option.value = alternativouno;
+                option.text = alternativouno;
+                // Añade el option al select
+                selectAlternativo.appendChild(option);
+            }
+            if (alternativoDos != null && alternativoDos != 0 && alternativouno != "null") {
+                // Repite los pasos anteriores para añadir más opciones
+                option = document.createElement("option");
+                option.value = alternativoDos;
+                option.text = alternativoDos;
+                selectAlternativo.appendChild(option);
+            }
+            if (alternativoTres != null && alternativoTres != 0 && alternativouno != "null") {
+                // Repite los pasos anteriores para añadir más opciones
+                option = document.createElement("option");
+                option.value = alternativoTres;
+                option.text = alternativoTres;
+                selectAlternativo.appendChild(option);
+            }
 
 
             // Verificar si la cantidad es menor que 1
@@ -246,11 +299,15 @@
                 // Si el campo es válido, limpiar cualquier mensaje de error anterior
                 cantidadInput.setCustomValidity('');
 
+
                 //Abre el modal de los descuentos
                 modalDescuentos.classList.remove('hidden');
 
                 // Escucha el evento de click en el botón cancelar Modal de registro
                 cancelarModalDescuento.addEventListener('click', function() {
+                    selectAlternativo.value = '';
+                    selectAlternativo.innerHTML = "";
+
                     // Oculta el modal
                     modalDescuentos.classList.add('hidden');
                 });
@@ -260,27 +317,51 @@
                     // Obtén el valor seleccionado
                     var seleccion = this.value;
 
-                    // Muestra el div correspondiente
-                    if (seleccion == '2') {
-                        descuentoCantidad.classList.remove('hidden');
-                        descuentoPorcentaje.classList.add('hidden');
-                        //restauramos el valor de porcentaje por si cambia de vista se borre lo que pusiera en porcentaje
-                        document.querySelector('#porcentaje').value = '';
+                    switch (seleccion) {
+                        case '1': //sin descuento
+                            // Oculta ambos divs
+                            descuentoCantidad.classList.add('hidden');
+                            descuentoPorcentaje.classList.add('hidden');
+                            document.querySelector('#preciosAlternativos').classList.add('hidden');
 
-                    } else if (seleccion == '3') {
-                        descuentoCantidad.classList.add('hidden');
-                        descuentoPorcentaje.classList.remove('hidden');
-                        //restauramos el valor del descuento por cantidad por si cambia por porcentaje
-                        document.querySelector('#Cantidaddescuento').value = '';
+                            //restauramos el valor delos descuentos por si pone datos y despues decide no poner descuentos
+                            document.querySelector('#Cantidaddescuento').value = '';
+                            document.querySelector('#porcentaje').value = '';
+                            selectAlternativo.value = '';
+                            seleccion = 1;
+                            break;
+                        case '2': // Cantidad
+                            descuentoCantidad.classList.remove('hidden');
+                            descuentoPorcentaje.classList.add('hidden');
+                            document.querySelector('#preciosAlternativos').classList.add('hidden');
 
-                    } else if (seleccion == '1') {
-                        // Oculta ambos divs
-                        descuentoCantidad.classList.add('hidden');
-                        descuentoPorcentaje.classList.add('hidden');
-                        //restauramos el valor delos descuentos por si pone datos y despues decide no poner descuentos
-                        document.querySelector('#Cantidaddescuento').value = '';
-                        document.querySelector('#porcentaje').value = '';
+                            //restauramos el valor de porcentaje por si cambia de vista se borre lo que pusiera en porcentaje
+                            document.querySelector('#porcentaje').value = '';
+                            selectAlternativo.value = '';
+                            seleccion = 1;
+                            break;
+                        case '3': //porcentaje
+                            descuentoCantidad.classList.add('hidden');
+                            descuentoPorcentaje.classList.remove('hidden');
+                            document.querySelector('#preciosAlternativos').classList.add('hidden');
+                            //restauramos el valor del descuento por cantidad por si cambia por porcentaje
+                            document.querySelector('#Cantidaddescuento').value = '';
+                            selectAlternativo.value = '';
+                            break;
+                        case '4': //precios alternativos
+                            // Oculta ambos divs
+                            document.querySelector('#preciosAlternativos').classList.remove('hidden');
+                            descuentoCantidad.classList.add('hidden');
+                            descuentoPorcentaje.classList.add('hidden');
+                            //restauramos el valor delos descuentos por si pone datos y despues decide no poner descuentos
+                            document.querySelector('#Cantidaddescuento').value = '';
+                            document.querySelector('#porcentaje').value = '';
+                            break;
+
+                        default:
+                            break;
                     }
+
                 });
             }
 
@@ -291,7 +372,7 @@
         var productosSeleccionados = [];
         // Función para manejar el evento click del botón para agregar productos cuando le de click
         function agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
-            valorDescuentoPorcentaje, valorProducto, estatus, idPrecio) {
+            valorDescuentoPorcentaje, valorProducto, estatus, idPrecio, valorAlternativo) {
             let tipoDescuento;
             let valorDescuento;
 
@@ -303,6 +384,9 @@
             } else if (valorDescuentoPorcentaje) {
                 tipoDescuento = 'Porcentaje';
                 valorDescuento = valorDescuentoPorcentaje;
+            } else if (valorAlternativo) {
+                tipoDescuento = 'alternativo';
+                valorDescuento = valorAlternativo;
             } else {
                 tipoDescuento = 'null';
                 valorDescuento = 'null';
@@ -370,6 +454,8 @@
         function agregarProductosATabla(productos) {
             var tabla = document.getElementById('cuerpoTabla');
             var totalCosto = 0;
+            let productoSuma = 0;
+            let recargaSuma = 0;
             let tipoProducto = '';
             // Elimina todas las filas existentes
             while (tabla.firstChild) {
@@ -380,8 +466,10 @@
                 let producto = productos[i];
                 if (producto.estatus == 1) {
                     tipoProducto = 'Producto';
+
                 } else {
                     tipoProducto = 'Recarga';
+
                 }
                 let fila = tabla.insertRow(-1);
                 fila.id = 'filaProducto_' + i; // Asigna un identificador único a la fila
@@ -415,21 +503,37 @@
                 celdaCantidad.textContent = producto.cantidad;
                 celdaPrecio.textContent = producto.precio;
                 let costo = producto.precio * producto.cantidad;
-                if (producto.tipoDescuento == 'cantidad') {
-                    celdaDescuento.textContent = '$' + producto.descuento;
-                    descuentoCantidadProducto = producto.descuento * producto.cantidad;
-                    costo = costo - descuentoCantidadProducto;
-                } else if (producto.tipoDescuento == 'Porcentaje') {
-                    celdaDescuento.textContent = producto.descuento + '%';
-                    let descuentoAplicado = costo * (producto.descuento / 100);
-                    costo = costo - descuentoAplicado;
-                } else {
-                    celdaDescuento.textContent = 'Sin descuentos'
-                }
 
+                switch (producto.tipoDescuento) {
+                    case 'cantidad':
+                        celdaDescuento.textContent = '$' + producto.descuento;
+                        let descuentoCantidadProducto = producto.descuento * producto.cantidad;
+                        costo = costo - descuentoCantidadProducto;
+                        break;
+                    case 'Porcentaje':
+                        celdaDescuento.textContent = producto.descuento + '%';
+                        let descuentoAplicado = costo * (producto.descuento / 100);
+                        costo = costo - descuentoAplicado;
+                        break;
+                    case 'alternativo':
+                        let restanteDelDescuento = producto.precio - producto.descuento;
+                        celdaDescuento.textContent = '$' + restanteDelDescuento;
+                        let decuentoAlternativo = producto.descuento * producto.cantidad;
+                        costo = decuentoAlternativo;
+                        break;
+
+                    default:
+                        celdaDescuento.textContent = 'Sin descuentos'
+                        break;
+                }
                 celdaCosto.textContent = costo.toFixed(2);
                 totalCosto += costo;
 
+                if (producto.estatus == 1) {
+                    productoSuma += costo;
+                } else {
+                    recargaSuma += costo;
+                }
 
                 // Agrega el botón "Eliminar" a la celda
                 let botonEliminar = document.createElement('button');
@@ -452,6 +556,7 @@
 
                     Actualizararray(productosSeleccionados)
 
+
                 });
                 celdaEliminar.appendChild(botonEliminar);
                 // Agrega la fila al cuerpo de la tabla
@@ -459,12 +564,25 @@
 
             }
 
+
             // Obtiene el elemento y luego actualiza su contenido y estilo
             let sumaTotalElement = document.getElementById('sumaTotal');
             sumaTotalElement.textContent = totalCosto.toFixed(2);
             sumaTotalElement.style.fontWeight = 'bold'; // Hace el texto en negrita
             sumaTotalElement.style.fontSize = '1.5em'; // Hace el texto un 50% más grande
+
+            let SumaRecargas = document.querySelector('#SumaRecarga');
+            let SumaProductos = document.querySelector('#SumaProducto');
+            SumaProductos.textContent = productoSuma.toFixed(2);
+            SumaRecargas.textContent = recargaSuma.toFixed(2);
+            SumaRecargas.style.fontWeight = 'bold'; // Hace el texto en negrita
+            SumaProductos.style.fontWeight = 'bold'; // Hace el texto en negrita
+            SumaRecargas.style.fontSize = '1em'; // Hace el texto un 50% más grande
+            SumaProductos.style.fontSize = '1em'; // Hace el texto un 50% más grande
+
+
         } //Finaliza la impresion en la tabla
+
 
 
         function Actualizararray(productosSeleccionados) { //actualizamoms el array de los productos
@@ -478,6 +596,8 @@
         function recalcularSumaTotal() {
             var tabla = document.getElementById('cuerpoTabla');
             var totalCosto = 0;
+            let productoSuma = 0;
+            let recargaSuma = 0;
 
             let pagaConInput = document.getElementById('pagaCon');
             // Asegúrate de reemplazar 'idDelTotal' e 'idDelCambio' con los ids reales de tus elementos
@@ -486,22 +606,46 @@
             // Recorre todas las filas de la tabla y suma los costos de los productos
             for (var i = 0; i < tabla.rows.length; i++) {
                 //recordar que se se mueve las celdas se tendra que modificar para que calcule las celtas que tienen los costos
-                var costo = parseFloat(tabla.rows[i].cells[8].textContent);
+                var costo = parseFloat(tabla.rows[i].cells[9].textContent);
                 totalCosto += costo;
+
+                //calcular producto y recarga
+                var tipoProducto = parseFloat(tabla.rows[i].cells[0].textContent);
+
+                if (tipoProducto == 1) {
+                    productoSuma += costo;
+                } else {
+                    recargaSuma += costo;
+                }
             }
 
             // Obtiene el elemento y luego actualiza su contenido y estilo
             let sumaTotalElement = document.getElementById('sumaTotal');
             sumaTotalElement.textContent = totalCosto.toFixed(2);
             sumaTotalElement.style.fontWeight = 'bold'; // Hace el texto en negrita
-            sumaTotalElement.style.fontSize = '1.5em'; // Hace el texto un 50% más grande
+            sumaTotalElement.style.fontSize = '1em'; // Hace el texto un 50% más grande
+
+            let SumaRecargas = document.querySelector('#SumaRecarga');
+            let SumaProductos = document.querySelector('#SumaProducto');
+            SumaProductos.textContent = productoSuma.toFixed(2);
+            SumaRecargas.textContent = recargaSuma.toFixed(2);
+            SumaRecargas.style.fontWeight = 'bold'; // Hace el texto en negrita
+            SumaProductos.style.fontWeight = 'bold'; // Hace el texto en negrita
+            SumaRecargas.style.fontSize = '1em'; // Hace el texto un 50% más grande
+            SumaProductos.style.fontSize = '1em'; // Hace el texto un 50% más grande
+
             calcularCambio();
         }
 
         // Obtiene los elementos
         let pagaConElement = document.getElementById('pagaCon');
-        let sumaTotalElement = document.getElementById('sumaTotal');
+        let sumaTotalElement = document.getElementById('SumaProducto');
         let cambioInput = document.getElementById('cambioInput');
+        let PagoRecarga = document.getElementById('pagaConRecarga');
+        let cambioRecarga = document.getElementById('cambioInputRecarga');
+        let sumaRecarga = document.getElementById('SumaRecarga');
+
+
 
         // Agrega el evento input al elemento pagaConElement
         pagaConElement.addEventListener('input', function() {
@@ -509,11 +653,20 @@
             let pagaCon = Number(pagaConElement.value);
             let sumaTotal = Number(sumaTotalElement.textContent);
 
+
             // Realiza la resta
             let cambio = pagaCon - sumaTotal;
 
             // Muestra el resultado en el input cambioInput
             cambioInput.value = cambio.toFixed(2);
+
+        });
+        PagoRecarga.addEventListener('input', function() {
+
+            let pagaConRecarga = Number(PagoRecarga.value);
+            let sumaTotalRecarga = Number(sumaRecarga.textContent);
+            let cambioDeRecarga = pagaConRecarga - sumaTotalRecarga;
+            cambioRecarga.value = cambioDeRecarga.toFixed(2);
         });
 
         // Define la función calcularCambio
@@ -522,22 +675,44 @@
             let pagaCon = Number(pagaConElement.value);
             let sumaTotal = Number(sumaTotalElement.textContent);
 
+            let pagaConRecarga = Number(PagoRecarga.value);
+            let sumaTotalRecarga = Number(sumaRecarga.textContent);
+
             // Realiza la resta
             let cambio = pagaCon - sumaTotal;
 
+            let cambioDeRecarga = pagaConRecarga - sumaTotalRecarga;
+
             // Muestra el resultado en el input cambioInput
             cambioInput.value = cambio.toFixed(2);
+
+            cambioRecarga.value = cambio.toFixed(2);
         } //finaliza el calculo de los costos
 
 
         //funcion para mostrar o ocultar las vistas del efectivo
         document.getElementById('metodoPago').addEventListener('change', function() {
+            let sumaTotalProducto = Number(sumaTotalElement.textContent);
+            let sumaTotalRecarga = Number(sumaRecarga.textContent);
+            //aqui mostrammos las opciones si pagammos en efectivo
             if (this.value === 'Efectivo') {
-                document.getElementById('pagoEfectivo').style.display = 'block';
-                document.getElementById('cambio').style.display = 'block';
+                //solo si se paga productos mostrara este
+                if (sumaTotalProducto > 0) {
+                    document.getElementById('pagoEfectivo').style.display = 'block';
+                } else {
+                    document.getElementById('pagoEfectivo').style.display = 'none';
+                }
+
+                if (sumaTotalRecarga > 0) {
+                    document.getElementById('pagoEfectivoRecarga').style.display = 'block';
+                } else {
+                    document.getElementById('pagoEfectivoRecarga').style.display = 'none';
+                }
+
+
             } else {
                 document.getElementById('pagoEfectivo').style.display = 'none';
-                document.getElementById('cambio').style.display = 'none';
+                document.getElementById('pagoEfectivoRecarga').style.display = 'none';
             }
         });
 

@@ -54,7 +54,7 @@ class ProductosController extends Controller
             })
             ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'precios_productos.precio')
             ->orderBy('productos.updated_at', 'desc')
-            ->paginate(5)->appends(['adminlteSearch' => $busqueda, 'marca' => $busquedaMarca, 'tipo' => $busquedaTipo, 'color' => $busquedaColor, 'categoria' => $busquedaCategoria]); // Mueve paginate() aquí para que funcione correctamente
+            ->paginate(10)->appends(['adminlteSearch' => $busqueda, 'marca' => $busquedaMarca, 'tipo' => $busquedaTipo, 'color' => $busquedaColor, 'categoria' => $busquedaCategoria]); // Mueve paginate() aquí para que funcione correctamente
 
         $marcas = Marcas::orderBy('nombre')->get();
         $categorias = Tipo::orderBy('nombre')->get();

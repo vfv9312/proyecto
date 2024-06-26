@@ -1,6 +1,6 @@
 <section class=" overflow-x-auto w-full border-4 mt-8 px-3 pb-3">
     <h1 class="text-2xl
-    text-center text-gray-600 mb-2">Productos requeridos</h1>
+    text-center font-bold text-green-700 mb-2">Productos requeridos</h1>
     <table class="overflow-x-auto min-w-full" id="tablaProductos">
         <thead>
             <tr>
@@ -21,11 +21,17 @@
             <!-- Aquí se insertarán las filas de la tabla con JavaScript -->
         </tbody>
         <tfoot>
-            <tr id="filaSuma">
-                <td colspan="9">Total</td>
-                <td id="sumaTotal"></td>
+            <tr id="filaRecargas">
+                <td colspan="4"></td>
+                <td class=" text-center text-green-600 font-semibold">Total de Productos</td>
+                <td id="SumaProducto" class=" text-center bg-green-700 text-white rounded-xl"></td>
+                <td class=" text-center text-green-600 font-semibold">Total de Recargas</td>
+                <td id="SumaRecarga" class=" text-center bg-green-700 text-white rounded-xl"></td>
+                <td class=" text-center text-green-600 font-semibold">Total</td>
+                <td id="sumaTotal" class=" text-center bg-green-700 text-white rounded-xl"></td>
             </tr>
         </tfoot>
+
     </table>
 
     <div class="flex flex-col w-full md:w-1/2">
@@ -46,15 +52,33 @@
                 <!-- Agrega más opciones según sea necesario -->
             </select>
         </label>
-        <label class="block" id="pagoEfectivo" style="display: none;">
-            <span class="text-gray-700">Paga con</span>
-            <input type="number" class="form-input mt-1 block w-full" id="pagaCon" name="pagaCon">
-        </label>
-        <label class="block" id="cambio" style="display: none;">
-            <span class="text-gray-700">Cambio</span>
-            <input type="number" class="form-input mt-1 block w-full" id="cambioInput" name="cambioInput" disabled
-                readonly>
-        </label>
+        <div id="PagosEnEfectivo" class=" flex flex-row">
+            <div id="pagoEfectivo" class="overflow-x-auto w-full border-4 mt-8 px-3 pb-3 hidden">
+                <h1 class=" text-center text-green-600 font-bold">Producto</h1>
+                <label class="block">
+                    <span class="text-gray-700">Paga Con</span>
+                    <input type="number" class="form-input mt-1 block w-full" id="pagaCon" name="pagaCon">
+                </label>
+                <label class="block" id="cambio">
+                    <span class="text-gray-700">Cambio</span>
+                    <input type="number" class="form-input mt-1 block w-full" id="cambioInput" name="cambioInput"
+                        disabled readonly>
+                </label>
+            </div>
+            <div id="pagoEfectivoRecarga" class="overflow-x-auto w-full border-4 mt-8 px-3 pb-3 hidden">
+                <h1 class=" text-center text-green-600 font-bold">Recarga</h1>
+                <label class="block">
+                    <span class="text-gray-700">Paga Con</span>
+                    <input type="number" class="form-input mt-1 block w-full" id="pagaConRecarga"
+                        name="pagaConRecarga">
+                </label>
+                <label class="block" id="cambioRecarga">
+                    <span class="text-gray-700">Cambio</span>
+                    <input type="number" class="form-input mt-1 block w-full" id="cambioInputRecarga"
+                        name="cambioInputRecarga" disabled readonly>
+                </label>
+            </div>
+        </div>
     </div>
     <div>
 

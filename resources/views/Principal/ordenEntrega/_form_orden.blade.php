@@ -48,7 +48,7 @@
 
 <section class=" border-4 mt-8 px-3 pb-3">
 
-    <h1 class="text-2xl text-center text-gray-600 mb-3">Datos del Cliente</h1>
+    <h1 class="text-2xl text-center font-bold text-green-700 mb-3">Datos del Cliente</h1>
 
     <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
         <div class="flex flex-col w-full md:w-1/3">
@@ -127,7 +127,7 @@
 <section id="nuevaDireccion" class=" border-4 mb-3 px-3 pb-3" style="display: none;">
 
     <h1 class="text-2xl
-    text-center text-gray-600 mb-2">Agregar nueva direccion</h1>
+    text-center font-bold text-green-700 mb-2">Agregar nueva direccion</h1>
 
 
 
