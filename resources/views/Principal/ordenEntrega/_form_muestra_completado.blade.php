@@ -120,6 +120,8 @@
                     $total += $producto->precio * $producto->cantidad - $producto->descuento;
                 } elseif ($producto->tipoDescuento == 'Sin descuento') {
                     $total += $producto->precio * $producto->cantidad;
+                } elseif ($producto->tipoDescuento == 'alternativo') {
+                    $total += $producto->descuento * $producto->cantidad;
                 }
             }
         @endphp
@@ -217,6 +219,8 @@
                                         {{ intval($producto->descuento) }}%
                                     @elseif ($producto->tipoDescuento == 'cantidad')
                                         ${{ $producto->descuento }}
+                                    @elseif ($producto->tipoDescuento == 'alternativo')
+                                        ${{ ($producto->precio - $producto->descuento) * $producto->cantidad }}
                                     @elseif ($producto->tipoDescuento == 'Sin descuento')
                                         {{ $producto->tipoDescuento }}
                                     @endif
@@ -226,6 +230,8 @@
                                         ${{ $producto->precio * $producto->cantidad - ($producto->precio * $producto->cantidad * intval($producto->descuento)) / 100 }}
                                     @elseif ($producto->tipoDescuento == 'cantidad')
                                         ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
+                                    @elseif ($producto->tipoDescuento == 'alternativo')
+                                        ${{ $producto->descuento * $producto->cantidad }}
                                     @elseif ($producto->tipoDescuento == 'Sin descuento')
                                         ${{ $producto->precio * $producto->cantidad }}
                                     @endif

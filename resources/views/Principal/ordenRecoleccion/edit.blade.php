@@ -5,7 +5,7 @@
 
 
 @section('content')
-    <h1 class="mb-8">Estatus</h1>
+    <h1 class="mb-8 text-center">Estatus</h1>
     <form class=""
         action="{{ route('orden_recoleccion.edit', ['orden_recoleccion' => $datosEnvio->idOrden_recoleccions]) }}"
         method="GET">
@@ -26,8 +26,6 @@
 @push('js')
     <script>
         var servicio = {!! json_encode($datosEnvio->estatusPreventa) !!};
-
-
 
         function mostrarInputCosto(value) {
             var inputCosto = document.getElementById('inputCosto');
@@ -69,14 +67,22 @@
             }
         }
 
+
+
         function calcularTotal() {
             var inputs = document.querySelectorAll('input[name^="costo_unitario"]');
             var total = 0;
             inputs.forEach(input => {
                 var cantidad = Number(input.dataset.cantidad);
-                total += Number(input.value) * cantidad;
+                total += Number(input.value);
+
             });
             document.querySelector('input[name="costo_total"]').value = total.toFixed(2);
+            let cambio = document.querySelector('#cambio');
+            let costo = document.querySelector('#costo');
+            let pagaCon = document.querySelector('#pagoEfectivo');
+
+            cambio.value = pagaCon.value - costo.value;
         }
 
         // Llama a la función calcularTotal cada vez que cambia un input
@@ -94,9 +100,25 @@
             var inputPagoEfectivo = document.getElementById('inputPagoEfectivo');
             if (this.value == 'Efectivo') {
                 inputPagoEfectivo.style.display = 'block';
+                let cambio = document.querySelector('#cambio');
+                let costo = document.querySelector('#costo');
+                let pagaCon = document.querySelector('#pagoEfectivo');
+
+                cambio.value = pagaCon.value - costo.value;
             } else {
                 inputPagoEfectivo.style.display = 'none';
             }
+        });
+
+        document.querySelector('#pagoEfectivo').addEventListener('input', function() {
+            let cambio = document.querySelector('#cambio');
+            let costo = document.querySelector('#costo');
+            let pagaCon = document.querySelector('#pagoEfectivo');
+
+            cambio.value = pagaCon.value - costo.value;
+
+
+
         });
     </script>
 @endpush

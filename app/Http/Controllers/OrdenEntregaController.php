@@ -151,7 +151,6 @@ class OrdenEntregaController extends Controller
     public function store(Request $request)
     {
 
-
         /* $request->validate([
             'txtnombreCliente' => 'required',
             // otras reglas de validación...
@@ -328,7 +327,8 @@ class OrdenEntregaController extends Controller
                 //si descuento es null entonces valdra 0 y sin descuento para poder ingresarlo a la base de datos
                 switch ($articulo['tipoDescuento']) {
                     case 'cantidad':
-                        $valorDescuento = $articulo['cantidad'] * $articulo['precio'] - $articulo['descuento'];
+                        $cuantoEsDeDescuento = $articulo['descuento'] * $articulo['cantidad'];
+                        $valorDescuento = ($articulo['cantidad'] * $articulo['precio']) - $cuantoEsDeDescuento;
                         $tipoDescuento =   $articulo['tipoDescuento'];
                         $descuento = $articulo['descuento'];
                         break;
@@ -336,6 +336,12 @@ class OrdenEntregaController extends Controller
                     case 'Porcentaje':
                         $descuentoDividido =  intval($articulo['descuento']) / 100;
                         $valorDescuento = (intval($articulo['cantidad']) * $articulo['precio']) * (1 - $descuentoDividido);
+                        $tipoDescuento =   $articulo['tipoDescuento'];
+                        $descuento = $articulo['descuento'];
+                        break;
+                    case 'alternativo':
+                        $cuantoEsDeDescuento = $articulo['descuento'] - $articulo['precio'];
+                        $valorDescuento = $articulo['descuento'] * $articulo['cantidad'];
                         $tipoDescuento =   $articulo['tipoDescuento'];
                         $descuento = $articulo['descuento'];
                         break;

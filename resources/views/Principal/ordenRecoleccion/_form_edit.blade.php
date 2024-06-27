@@ -42,8 +42,15 @@
     <input
         class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         id="direccion" type="text" name="txtdireccion"
-        value="Col.{{ $datosEnvio->colonia }}; {{ $datosEnvio->calle }} #{{ $datosEnvio->num_exterior }} - numero interio {{ $datosEnvio->num_interior }} - Referencia {{ $datosEnvio->referencia }}"
+        value="Col.{{ $datosEnvio->colonia }}; {{ $datosEnvio->calle }} #{{ $datosEnvio->num_exterior }} {{ $datosEnvio->num_interior ? '- numero interior ' . $datosEnvio->num_interior : '' }}"
         readonly>
+    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+        Referencia
+    </label>
+    <input
+        class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        id="direccion" type="text" name="txtdireccion"
+        value=" {{ $datosEnvio->referencia ? 'Referencia ' . $datosEnvio->referencia : 'Sin Referencia' }}" readonly>
 </div>
 <div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -73,7 +80,7 @@
 
 </div>
 <div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
-    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Fecha del pedido
         </label>
@@ -81,7 +88,7 @@
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="fecha" type="text" name="txtfecha" value="{{ $datosEnvio->created_at }}" readonly>
     </div>
-    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0 ">
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0 ">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Fecha de recoleccion
         </label>
@@ -94,7 +101,7 @@ value="hasta el momento no ha sido recolectado"
 value="{{ $datosEnvio->fechaRecoleccion }}" @endif
         @elseif($datosEnvio->estatusPreventa == 3) value="Solo es un pedido para envio" @endif >
     </div>
-    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Fecha para entrega
         </label>
@@ -106,6 +113,14 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
             @elseif($datosEnvio->estatusRecoleccion == 2) value="{{ $datosEnvio->fechaEntrega }}"
             @elseif($datosEnvio->estatusRecoleccion == 1) value="{{ $datosEnvio->fechaEntrega }}" @endif
             readonly>
+    </div>
+    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Paga Con
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="pagaCon" type="text" name="txtfecha" value="{{ $datosEnvio->pago_efectivo }}" readonly>
     </div>
 </div>
 
@@ -170,7 +185,9 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                     @if ($producto->tipoDescuento == 'Porcentaje')
                                         {{ intval($producto->descuento) }}%
                                     @elseif ($producto->tipoDescuento == 'cantidad')
-                                        ${{ $producto->descuento }}
+                                        ${{ $producto->descuento * $producto->cantidad }}
+                                    @elseif ($producto->tipoDescuento == 'alternativo')
+                                        ${{ ($producto->precio - $producto->descuento) * $producto->cantidad }}
                                     @elseif ($producto->tipoDescuento == 'Sin descuento')
                                         {{ $producto->tipoDescuento }}
                                     @endif
@@ -184,6 +201,8 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                             ${{ $producto->precio * $producto->cantidad - ($producto->precio * intval($producto->descuento)) / 100 }}
                                         @elseif ($producto->tipoDescuento == 'cantidad')
                                             ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
+                                        @elseif($producto->tipoDescuento == 'alternativo')
+                                            ${{ $producto->descuento * $producto->cantidad }}
                                         @elseif ($producto->tipoDescuento == 'Sin descuento')
                                             ${{ $producto->precio * $producto->cantidad }}
                                         @endif
@@ -191,7 +210,7 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                         <input type="number" name="costo_unitario[{{ $producto->id }}]"
                                             data-cantidad="{{ $producto->cantidad }}" step="0.01"
                                             class="form-input mt-1 block w-full" placeholder="Costo unitario"
-                                            value="{{ $producto->precio_unitario * $producto->cantidad }}" readonly>
+                                            value="{{ $producto->precio_unitario }}" readonly>
                                         {{-- @if ($producto->porcentaje === null)
                                     <td>
                                         Sin descuento
@@ -259,7 +278,7 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
             <div id="inputCosto" style="display: none;" class=" mr-4">
                 <label for="costo">Costo total:</label>
                 <input type="number" id="costo" name="costo_total" step="0.01"
-                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-6"
                     readonly>
             </div>
 
@@ -291,10 +310,14 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
 
         </div>
         <div id="inputPagoEfectivo" style="display: none;" class="mr-4">
-            <label for="pagoEfectivo">Cantidad pagada:</label>
+            <label for="pagoEfectivo">Paga con:</label>
             <input id="pagoEfectivo" name="txtpagoEfectivo" type="number" step="0.01"
                 class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Ingrese la cantidad pagada">
+                placeholder="Ingrese la cantidad pagada" value="{{ $datosEnvio->pago_efectivo }}">
+            <label for="pagoEfectivo">Cambio:</label>
+            <input id="cambio" name="txtcambio" type="number" step="0.01"
+                class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="cambio" value="">
         </div>
 
 

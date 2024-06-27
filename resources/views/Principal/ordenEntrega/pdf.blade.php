@@ -197,8 +197,14 @@ opacity: 0.5;">
                         @php
                             $total += $producto->precio * $producto->cantidad - $producto->descuento;
                         @endphp
+                    @elseif ($producto->tipoDescuento == 'alternativo')
+                        Descuento : ${{ ($producto->precio - $producto->descuento) * $producto->cantidad }}
+                        Costo : ${{ $producto->descuento * $producto->cantidad }}
+                        @php
+                            $total += $producto->descuento * $producto->cantidad;
+                        @endphp
                     @elseif ($producto->tipoDescuento == 'Sin descuento')
-                        Costo : {{ $producto->precio * $producto->cantidad }}
+                        Costo : ${{ $producto->precio * $producto->cantidad }}
                         @php
                             $total += $producto->precio * $producto->cantidad;
                         @endphp

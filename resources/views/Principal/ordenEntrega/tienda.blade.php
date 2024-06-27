@@ -506,8 +506,8 @@
 
                 switch (producto.tipoDescuento) {
                     case 'cantidad':
-                        celdaDescuento.textContent = '$' + producto.descuento;
                         let descuentoCantidadProducto = producto.descuento * producto.cantidad;
+                        celdaDescuento.textContent = '$' + descuentoCantidadProducto;
                         costo = costo - descuentoCantidadProducto;
                         break;
                     case 'Porcentaje':
@@ -517,8 +517,10 @@
                         break;
                     case 'alternativo':
                         let restanteDelDescuento = producto.precio - producto.descuento;
-                        celdaDescuento.textContent = '$' + restanteDelDescuento;
+                        let sumaDeDescuento = restanteDelDescuento * producto.cantidad;
                         let decuentoAlternativo = producto.descuento * producto.cantidad;
+                        celdaDescuento.textContent = '$' + sumaDeDescuento;
+
                         costo = decuentoAlternativo;
                         break;
 

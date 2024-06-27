@@ -160,9 +160,9 @@ opacity: 0.5;">
                     @endif
                     @if ($ordenRecoleccion->estatus === 2 || $ordenRecoleccion->estatus === 1)
                         <p style="margin-bottom: 10px;">
-                            {{ $producto->precio ? 'Precio unitario: $' . $producto->precio : '' }}</p>
+                            {{ $producto->precio ? 'Precio : $' . $producto->precio : '' }}</p>
                         @php
-                            $total += $producto->precio * $producto->cantidad;
+                            $total += $producto->precio;
                         @endphp
                     @endif
                     <p style="margin-bottom: 10px;"></p>

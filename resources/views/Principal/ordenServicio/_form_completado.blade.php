@@ -114,7 +114,7 @@
             id="atencion" type="text" name="txtatencion"
             value="@php $total = 0;
             foreach ($listaProductos as $producto) {
-                $total += $producto->precio * $producto->cantidad;} @endphp ${{ $total }}"
+                $total += $producto->precio_unitario;} @endphp ${{ $total }}"
             readonly>
         <input type="hidden" name="total" value="{{ $total }}">
     </div>
@@ -207,7 +207,7 @@
                                     @if ($producto->tipoDescuento == 'Porcentaje')
                                         {{ intval($producto->descuento) }}%
                                     @elseif ($producto->tipoDescuento == 'cantidad')
-                                        ${{ $producto->descuento }}
+                                        ${{ $producto->descuento * $producto->cantidad }}
                                     @elseif ($producto->tipoDescuento == 'Sin descuento')
                                         {{ $producto->tipoDescuento }}
                                     @endif

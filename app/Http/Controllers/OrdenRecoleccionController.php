@@ -178,6 +178,8 @@ class OrdenRecoleccionController extends Controller
                 'preventas.nombre_empleado as nombreEmpleado',
                 'preventas.nombre_atencion as nombreAtencion',
                 'preventas.nombre_quien_recibe as nombreRecibe',
+                'preventas.metodo_pago',
+                'preventas.pago_efectivo',
                 'orden_recoleccions.id as idOrden_recoleccions',
                 'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
                 'orden_recoleccions.id_cancelacion',
@@ -246,6 +248,7 @@ class OrdenRecoleccionController extends Controller
                 )
                 ->get();
         }
+
         return view('Principal.ordenRecoleccion.edit', compact('productos', 'datosEnvio'));
     }
 
@@ -270,6 +273,8 @@ class OrdenRecoleccionController extends Controller
                 'preventas.id as idPreventa',
                 'preventas.estatus as estatusPreventa',
                 'preventas.costo_servicio',
+                'preventas.metodo_pago',
+                'preventas.pago_efectivo',
                 'orden_recoleccions.id as idOrden_recoleccions',
                 'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
                 'orden_recoleccions.Fecha_entrega as fechaEntrega',
@@ -315,6 +320,7 @@ class OrdenRecoleccionController extends Controller
      */
     public function edit(Orden_recoleccion $orden_recoleccion, Request $request)
     {
+
         $costo_unitario = $request->input('costo_unitario');
         $pagaCon = $request->input('txtpagoEfectivo');
         $codigo = $request->input('codigo');
