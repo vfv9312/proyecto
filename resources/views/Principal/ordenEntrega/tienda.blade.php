@@ -3,6 +3,11 @@
 @section('title', 'Inicio')
 
 @section('content')
+    <style>
+        input[type="text"] {
+            text-transform: uppercase;
+        }
+    </style>
 
     <h1 class=" text-center font-bold text-green-700">Registro de Orden de Entrega/Recoleccion</h1>
     <!-- mensaje de aviso que se registro el producto-->
