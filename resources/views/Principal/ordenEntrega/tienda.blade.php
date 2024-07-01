@@ -64,8 +64,6 @@
 
         //Cuando entra y carga la pagina entra lo siguiente
         document.addEventListener('DOMContentLoaded', function() {
-
-
             let productRecargaUrl = "{{ route('product.Recarga') }}";
             axios.post(productRecargaUrl, {
                 productoRecarga: 'null'
@@ -97,6 +95,45 @@
                 // Aquí puedes manejar los errores de la solicitud
                 console.error(error);
             });
+
+            document.querySelector('#seleccionadorCliente').addEventListener('change', selectCliente);
+
+            function selectCliente() {
+                let esNuevoCliente = document.querySelector('#seleccionadorCliente').value;
+                let contenedorOcultoClienteExistente = document.querySelector('#contenedorSelectCliente');
+                let seleccionadorClienteInicio = document.querySelector('#inputCliente');
+                let selectAtencion = $('#inputAtiende');
+                let contenedorCliente = document.querySelector('#tipoCliente');
+
+
+                switch (esNuevoCliente) {
+                    case 'NuevoCliente':
+                        seleccionadorClienteInicio.value = 'null';
+                        seleccionadorClienteInicio.dispatchEvent(new Event('change'));
+                        contenedorCliente.style.display = 'flex';
+                        selectAtencion.empty();
+                        $('#inputDirecciones').empty();
+                        contenedorOcultoClienteExistente.classList.add('hidden');
+                        contenedorOcultoClienteExistente.classList.remove('flex');
+                        $('#telefono').val('');
+                        $('#rfc').val('');
+                        $('#email').val('');
+                        $('#nombreCliente').val('').prop('disabled', false);
+                        $('#apellidoCliente').val('').prop('disabled', false);
+                        $('#inputNombreAtencion').val('').prop('disabled', false);
+                        $('#recibe').val('');
+                        break;
+                    case 'ClienteExistente':
+                        contenedorCliente.style.display = 'none';
+                        contenedorOcultoClienteExistente.classList.remove('hidden');
+                        contenedorOcultoClienteExistente.classList.add('flex');
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+
 
 
             //lo que escriba en nombre Cliente se escribe en el input del nombre de atencion
@@ -822,7 +859,7 @@
                     return horario.idCliente == clienteSeleccionado.id_cliente;
                 });
                 seleccionarTipoCliente.checked = false;
-                contenedorCliente.style.display = 'none';
+
 
             }
 
@@ -968,7 +1005,7 @@
                 }
                 //si clienteSeleccionado es null vacio todos los campos y habilita los bloqueados
             } else if (!clienteSeleccionado) {
-                contenedorCliente.style.display = 'flex';
+
 
                 $('#telefono').val('');
                 $('#rfc').val('');
@@ -1251,14 +1288,6 @@
 
 
             //chebox de funciones
-
-
-
-
-
-
-
-
 
             // Si el formulario no es válido, detén la ejecución de la función
             if (!form.checkValidity()) {

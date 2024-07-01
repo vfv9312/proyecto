@@ -80,15 +80,15 @@ class ClientesController extends Controller
              * Para convertir la primera letra de cada palabra a mayúscula, puedes usar la función ucwords() de PHP
              */
             $persona = personas::create([
-                'nombre' => ucwords(strtolower($request->txtnombre)),
-                'apellido' => ucwords(strtolower($request->txtapellido)),
+                'nombre' => strtoupper($request->txtnombre),
+                'apellido' => strtoupper($request->txtapellido),
                 'telefono' => $request->txttelefono,
                 'email' => strtolower($request->txtemail),
                 'estatus' => 1,
             ]);
             if ($request->txtapellido) {
                 $persona->update([
-                    'apellido' => ucwords(strtolower($request->txtapellido)),
+                    'apellido' => strtoupper($request->txtapellido),
                 ]);
             } else {
                 $persona->update([

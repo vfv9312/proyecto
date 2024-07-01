@@ -252,8 +252,8 @@ class OrdenEntregaController extends Controller
 
             if ($idCliente == "null") {
                 $clientePersona = personas::create([
-                    'nombre' => ucwords(strtolower($nuevoCliente)),
-                    'apellido' => ucwords(strtolower($nuevoApeCliente)),
+                    'nombre' => strtoupper($nuevoCliente),
+                    'apellido' => strtoupper($nuevoApeCliente),
                     'telefono' => $telefono,
                     'email' => strtolower($email),
                     'estatus' => 1,

@@ -1,11 +1,18 @@
-<div class="flex flex-col md:flex-row">
+<div class=" flex flex-col w-full md:w-1/4 h-12 mb-5">
+    <label class="">Seleccione el tipo de cliente</label>
+    <select id="seleccionadorCliente" class=" h-full">
+        <option value="NuevoCliente">Nuevo Cliente</option>
+        <option value="ClienteExistente">Cliente existente</option>
+    </select>
+</div>
+<div id="contenedorSelectCliente" class=" flex-col md:flex-row hidden">
 
     <div class="flex flex-col w-full md:w-1/2 md:mr-2">
         <label class="">Cliente</label>
         <select
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="inputCliente" name="cliente" oninput="rellenarFormulario()">
-            <option value="null">Nuevo Cliente</option>
+            <option value="null">Selecciona un cliente</option>
             @foreach ($listaClientes as $cliente)
                 <option value="{{ $cliente->id_cliente }}">{{ $cliente->nombre_cliente }} {{ $cliente->apellido }} -
                     {{ $cliente->telefono_cliente }}- {{ $cliente->email }}</option>
@@ -20,20 +27,6 @@
             id="inputAtiende" name="txtatencion">
         </select>
     </div>
-
-    {{--  <label class="">Empleado</label>
-        <select
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="inputAtencion" name="txtempleado" required
-            oninvalid="this.setCustomValidity('Por favor, selecciona un empleado.')"
-            oninput="this.setCustomValidity('')">
-            <option value="">Seleccione un empleado</option>
-            @foreach ($listaEmpleados as $empleado)
-                <option value="{{ $empleado->id }}">{{ $empleado->nombre_empleado }} {{ $empleado->apellido }}-
-                    {{ $empleado->nombre_rol }}</option>
-            @endforeach
-        </select> --}}
-
 
 </div>
 
