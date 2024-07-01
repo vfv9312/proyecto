@@ -104,6 +104,8 @@
                 let seleccionadorClienteInicio = document.querySelector('#inputCliente');
                 let selectAtencion = $('#inputAtiende');
                 let contenedorCliente = document.querySelector('#tipoCliente');
+                var checkTipoCliente = document.getElementById('tipoDeCliente');
+
 
 
                 switch (esNuevoCliente) {
@@ -112,6 +114,7 @@
                         seleccionadorClienteInicio.dispatchEvent(new Event('change'));
                         contenedorCliente.style.display = 'flex';
                         selectAtencion.empty();
+                        checkTipoCliente.value = false;
                         $('#inputDirecciones').empty();
                         contenedorOcultoClienteExistente.classList.add('hidden');
                         contenedorOcultoClienteExistente.classList.remove('flex');
@@ -120,6 +123,8 @@
                         $('#email').val('');
                         $('#nombreCliente').val('').prop('disabled', false);
                         $('#apellidoCliente').val('').prop('disabled', false);
+
+                        contenedorEmpresaOCliente();
                         $('#inputNombreAtencion').val('').prop('disabled', false);
                         $('#recibe').val('');
                         break;
@@ -137,7 +142,9 @@
 
 
             //lo que escriba en nombre Cliente se escribe en el input del nombre de atencion
-            document.getElementById('nombreCliente').addEventListener('input', function() {
+            document.getElementById('nombreCliente').addEventListener('input', cambioTipoCliente);
+
+            function cambioTipoCliente() {
                 var checkbox = document.getElementById('tipoDeCliente');
                 if (!checkbox.checked) {
                     document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
@@ -146,9 +153,11 @@
                     document.getElementById('recibe').value = this.value + ' ' + document
                         .getElementById('apellidoCliente').value;
                 }
-            });
+            };
 
-            document.getElementById('apellidoCliente').addEventListener('input', function() {
+            document.getElementById('apellidoCliente').addEventListener('input', empresaOPersona);
+
+            function empresaOPersona() {
                 var checkbox = document.getElementById('tipoDeCliente');
                 if (!checkbox.checked) {
                     document.getElementById('inputNombreAtencion').value = document.getElementById(
@@ -158,7 +167,7 @@
                     document.getElementById('recibe').value = document.getElementById('nombreCliente')
                         .value + ' ' + this.value;
                 }
-            });
+            };
             // Escuchar cambios en los campos txtcolonia y calle para limpiar los mensajes de error cuando se corrijan
             document.querySelector('#txtcolonia').addEventListener('input', function() {
                 let inputDirecciones = document.querySelector('#inputDirecciones');
@@ -179,7 +188,9 @@
         //Checbox de persona moral o persona fisica si es persona moral el chebox sera verdadero por lo que ocultara apellido
         let seleccionarTipoCliente = document.getElementById('tipoDeCliente');
         let contenedorCliente = document.querySelector('#tipoCliente');
-        seleccionarTipoCliente.addEventListener('change', function() {
+        seleccionarTipoCliente.addEventListener('change', contenedorEmpresaOCliente);
+
+        function contenedorEmpresaOCliente() {
             if (this.checked) {
                 $('#apellidoCliente').val('.').prop('disabled', true);
                 $('#tituloApellido').css('display', 'none');
@@ -189,7 +200,7 @@
                 $('#apellidoCliente').val('').prop('disabled', false);
                 document.getElementById('titulonombre').textContent = 'Nombre';
             }
-        });
+        };
 
 
         document.getElementById('productoRecarga').addEventListener('change', function() {
