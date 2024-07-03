@@ -62,7 +62,7 @@
     function togglePassword() {
         var passwordInput = document.getElementById('password');
         var toggleBtn = document.querySelector('.toggle-password');
-        console.log(passwordInput.type);
+
         if (passwordInput.type === "password") {
             passwordInput.type = "text";
             toggleBtn.innerHTML = `
