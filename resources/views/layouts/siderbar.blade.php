@@ -118,6 +118,17 @@
                                 <span class="flex-1 ms-3 whitespace-nowrap">Datos de contacto</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('eliminacion.index') }}"
+                                class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    fill="currentColor" class="bi bi-key-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2M2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
+                                </svg>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Clave de eliminación</span>
+                            </a>
+                        </li>
                         <!-- Agrega más enlaces aquí -->
                     </ul>
                 @endif
