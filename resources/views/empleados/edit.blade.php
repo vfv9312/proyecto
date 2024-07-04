@@ -30,6 +30,8 @@
     <link rel="stylesheet" href="/css/admin_custom.css">
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!--Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
 @endpush
 
 @push('js')
