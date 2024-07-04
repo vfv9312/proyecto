@@ -21,14 +21,14 @@
                             <div class="flex mb-2 space-x-2 rtl:space-x-reverse">
                                 <div>
                                     <label for="code-1" class="sr-only">First code</label>
-                                    <input type="text" maxlength="1" data-focus-input-init
+                                    <input type="password" maxlength="1" data-focus-input-init
                                         data-focus-input-next="code-2" id="code-1" name="code-1"
                                         class="block w-9 h-9 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                         required />
                                 </div>
                                 <div>
                                     <label for="code-2" class="sr-only">Second code</label>
-                                    <input type="text" maxlength="1" data-focus-input-init
+                                    <input type="password" maxlength="1" data-focus-input-init
                                         data-focus-input-prev="code-1" data-focus-input-next="code-3" id="code-2"
                                         name="code-2"
                                         class="block w-9 h-9 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -36,7 +36,7 @@
                                 </div>
                                 <div>
                                     <label for="code-3" class="sr-only">Third code</label>
-                                    <input type="text" maxlength="1" data-focus-input-init
+                                    <input type="password" maxlength="1" data-focus-input-init
                                         data-focus-input-prev="code-2" data-focus-input-next="code-4" id="code-3"
                                         name="code-3"
                                         class="block w-9 h-9 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -44,7 +44,7 @@
                                 </div>
                                 <div>
                                     <label for="code-4" class="sr-only">Fourth code</label>
-                                    <input type="text" maxlength="1" data-focus-input-init
+                                    <input type="password" maxlength="1" data-focus-input-init
                                         data-focus-input-prev="code-3" data-focus-input-next="code-5" id="code-4"
                                         name="code-4"
                                         class="block w-9 h-9 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -52,7 +52,7 @@
                                 </div>
                                 <div>
                                     <label for="code-5" class="sr-only">Fifth code</label>
-                                    <input type="text" maxlength="1" data-focus-input-init
+                                    <input type="password" maxlength="1" data-focus-input-init
                                         data-focus-input-prev="code-4" data-focus-input-next="code-6" id="code-5"
                                         name="code-5"
                                         class="block w-9 h-9 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -60,7 +60,7 @@
                                 </div>
                                 <div>
                                     <label for="code-6" class="sr-only">Sixth code</label>
-                                    <input type="text" maxlength="1" data-focus-input-init
+                                    <input type="password" maxlength="1" data-focus-input-init
                                         data-focus-input-prev="code-5" id="code-6" name="code-6"
                                         class="block w-9 h-9 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                         required />
