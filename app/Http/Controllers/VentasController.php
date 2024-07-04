@@ -32,6 +32,7 @@ class VentasController extends Controller
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+            ->whereNull('preventas.deleted_at')
             ->where(function ($query) use ($busqueda) {
                 $query->where('clientePersona.telefono', 'LIKE', "%{$busqueda}%")
                     ->orWhere('clientePersona.nombre', 'LIKE', "%{$busqueda}%")

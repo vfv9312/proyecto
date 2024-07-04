@@ -7,6 +7,7 @@ use App\Http\Controllers\DireccionesClientesController;
 use App\Http\Controllers\DireccionesController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClaveEliminacionController;
+use App\Http\Controllers\EliminacionController;
 use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\EnviarCorreoController;
 use App\Http\Controllers\InfoTicketsController;
@@ -169,6 +170,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('direcciones', DireccionesClientesController::class)->middleware(['verified']);
 
     Route::resource('eliminacion', ClaveEliminacionController::class)->middleware(['verified', 'rol']);
+
+    Route::resource('ordeneliminacion', EliminacionController::class)->middleware(['verified']);
 
     Route::resource('ventas', VentasController::class)->middleware(['verified']);
     //Lista de clientes

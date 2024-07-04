@@ -46,6 +46,7 @@ class OrdenRecoleccionController extends Controller
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('orden_recoleccions', 'orden_recoleccions.id_preventa', '=', 'preventas.id')
+            ->whereNull('preventas.deleted_at')
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
             ->WhereIn('orden_recoleccions.estatus', [4, 3, 2, 1])
@@ -535,8 +536,8 @@ class OrdenRecoleccionController extends Controller
             $ordenCancelada = $id->save();
 
 
-            $preventa->deleted_at = now();
-            $preventaCancelada = $preventa->save();
+            //$preventa->deleted_at = now();
+            //$preventaCancelada = $preventa->save();
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
@@ -544,16 +545,13 @@ class OrdenRecoleccionController extends Controller
             //throw $th;
             DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
             //si retorna un error de sql lo veremos en pantalla
-            return $th->getMessage();
-            $preventaCancelada = false;
-        }
-        if ($preventaCancelada && $ordenCancelada) {
-            session()->flash("correcto", "Cacelacion ejecutada correctamente");
-            return redirect()->route('orden_recoleccion.index');
-        } else {
+            //return $th->getMessage();
             session()->flash("incorrect", "Error al cancelar el registro");
             return redirect()->route('orden_recoleccion.index');
         }
+
+        session()->flash("correcto", "Cacelacion ejecutada correctamente");
+        return redirect()->route('orden_recoleccion.index');
     }
 
     public function generarPdf2(string $id)

@@ -26,6 +26,7 @@ class CancelacionesController extends Controller
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personasClientes', 'personasClientes.id', '=', 'clientes.id_persona')
+            ->whereNull('preventas.deleted_at')
             ->where(function ($query) use ($busqueda) {
                 $query->where('personasClientes.telefono', 'LIKE', "%{$busqueda}%")
                     ->orWhere('personasClientes.nombre', 'LIKE', "%{$busqueda}%")

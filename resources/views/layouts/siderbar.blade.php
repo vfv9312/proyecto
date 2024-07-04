@@ -44,6 +44,13 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('ordeneliminacion.index') }}"
+                    class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
+                    <i class="fas fa-trash"></i>
+                    <span class="flex-1 ms-3 whitespace-nowrap">Eliminacion</span>
+                </a>
+            </li>
+            <li>
                 <a href="#"
                     class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group menu-desplegable-siderbar">
                     <i class="fas fa-hourglass-half"></i>
