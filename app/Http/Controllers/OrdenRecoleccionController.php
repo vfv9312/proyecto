@@ -637,6 +637,7 @@ class OrdenRecoleccionController extends Controller
             ->join('orden_recoleccions', 'orden_recoleccions.id_preventa', '=', 'preventas.id')
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->leftJoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
+            ->whereNull('preventas.deleted_at')
             ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
             ->WhereIn('orden_recoleccions.estatus', [4, 3, 2, 1])
             //->where('id_cancelacion', null)
