@@ -321,13 +321,14 @@ class OrdenRecoleccionController extends Controller
      */
     public function edit(Orden_recoleccion $orden_recoleccion, Request $request)
     {
-
+        //dd($request);
         $costo_unitario = $request->input('costo_unitario');
         $pagaCon = $request->input('txtpagoEfectivo');
         $codigo = $request->input('codigo');
         $nRecarga = $request->input('numero_recarga');
         $observaciones = $request->input('observacionesDetalle');
-
+        $recibe = $request->input('recibe');
+        $horaEntrega = $request->input('HoraFechaEntregado');
         $comentario = $request->input('observaciones');
         // Recuperar el ID de la orden de recolección
         $ordenRecoleccion = $orden_recoleccion;
@@ -348,66 +349,78 @@ class OrdenRecoleccionController extends Controller
 
         try {
             //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
-            if ($estatus == 3) {
-                //cambiamos el estatus de la recoleccion
-                $ordenRecoleccion->update([
-                    'Fecha_recoleccion' => now(),
-                    'estatus' => $estatus,
-                ]);
-                $preventa->update([
-                    'codigo' => $codigo,
-                    'numero_recarga' => $nRecarga,
-                ]);
-            } else if ($estatus == 2) {
-                $ordenRecoleccion->update([
-                    'Fecha_entrega' => now(),
-                    'estatus' => $estatus,
-                    // Agrega aquí cualquier otro campo que desees actualizar
-                ]);
-
-                if ($preventa->estatus == 4) {
-
-                    foreach ($serviciosPreventas as $index => $servicioPreventa) {
-                        // Obtén el costo unitario correspondiente a este servicio preventa
-
-
-                        // Actualiza el servicio preventa con el nuevo costo unitario
-                        $servicioPreventa->update(['precio_unitario' => $costo_unitario[$index]]);
-                    }
-
-                    $preventa->update([
-                        'metodo_pago' => $request->input('txtmetodoPago'),
-                        'factura' => $request->input('txtfactura') == 'on' ? 1 : 0,
-                        'costo_servicio' => $request->input('costo_total'),
-                        'pago_efectivo' => $pagaCon
+            switch ($estatus) {
+                case 1:
+                    //actualizamos orden de recoleccion
+                    $ordenRecoleccion->update([
+                        'Fecha_entrega' => $horaEntrega,
+                        'estatus' => $estatus,
+                        // Agrega aquí cualquier otro campo que desees actualizar
                     ]);
 
-                    if ($request->input('txtfactura') == 'on') {
-                        $cliente->update([
-                            'comentario' => $request->input('txtrfc'),
+                    $preventa->update([
+                        'comentario' => $comentario,
+                        'nombre_quien_recibe' => strtoupper($recibe),
+                    ]);
+
+                    //actualizamos ventas
+                    $ventaConcluida = ventas::create([
+                        'id_recoleccion' => $ordenRecoleccion->id,
+                    ]);
+                    break;
+                case 2:
+                    $ordenRecoleccion->update([
+                        'Fecha_entrega' => now(),
+                        'estatus' => $estatus,
+                        // Agrega aquí cualquier otro campo que desees actualizar
+                    ]);
+
+                    if ($preventa->estatus == 4) {
+
+                        foreach ($serviciosPreventas as $index => $servicioPreventa) {
+                            // Obtén el costo unitario correspondiente a este servicio preventa
+
+
+                            // Actualiza el servicio preventa con el nuevo costo unitario
+                            $servicioPreventa->update(['precio_unitario' => $costo_unitario[$index]]);
+                        }
+
+                        $preventa->update([
+                            'metodo_pago' => $request->input('txtmetodoPago'),
+                            'factura' => $request->input('txtfactura') == 'on' ? 1 : 0,
+                            'costo_servicio' => $request->input('costo_total'),
+                            'pago_efectivo' => $pagaCon
                         ]);
+
+                        if ($request->input('txtfactura') == 'on') {
+                            $cliente->update([
+                                'comentario' => $request->input('txtrfc'),
+                            ]);
+                        }
                     }
-                }
-            } else if ($estatus == 5) {
-                $preventa->update([
-                    'observacion' => $observaciones,
-                ]);
-            } else if ($estatus == 1) {
-                //actualizamos orden de recoleccion
-                $ordenRecoleccion->update([
-                    'estatus' => $estatus,
-                    // Agrega aquí cualquier otro campo que desees actualizar
-                ]);
+                    break;
+                case 3:
+                    //cambiamos el estatus de la recoleccion
+                    $ordenRecoleccion->update([
+                        'Fecha_recoleccion' => now(),
+                        'estatus' => $estatus,
+                    ]);
+                    $preventa->update([
+                        'codigo' => $codigo,
+                        'numero_recarga' => $nRecarga,
+                    ]);
+                    break;
+                case 5:
+                    $preventa->update([
+                        'observacion' => $observaciones,
+                    ]);
+                    break;
 
-                $preventa->update([
-                    'comentario' => $comentario,
-                ]);
-
-                //actualizamos ventas
-                $ventaConcluida = ventas::create([
-                    'id_recoleccion' => $ordenRecoleccion->id,
-                ]);
+                default:
+                    # code...
+                    break;
             }
+
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
 
         } catch (\Throwable $th) {

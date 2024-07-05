@@ -301,11 +301,25 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                     id="factura">
             </div>
 
-            <div id="personaRecibe" style="display: none;" class="flex flex-col items-center">
-                <label for="recibe">Observaciones:</label>
-                <input
-                    class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    type="text" name="observaciones" placeholder="Obervaciones">
+            <div id="personaRecibe" class=" flex-row justify-center items-center hidden">
+                <div class=" flex flex-col">
+                    <label for="recibe">Observaciones : </label>
+                    <input
+                        class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        type="text" name="observaciones" placeholder="Obervaciones">
+                </div>
+                <div class=" flex flex-col">
+                    <label for="recibe">Fecha y hora de entrega:</label>
+                    <input
+                        class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        type="datetime-local" name="HoraFechaEntregado">
+                </div>
+                <div class=" flex flex-col">
+                    <label for="recibe">Quien recibe ? : </label>
+                    <input
+                        class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        type="text" name="recibe" placeholder="Recibe">
+                </div>
             </div>
 
         </div>

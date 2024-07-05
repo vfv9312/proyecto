@@ -56,7 +56,7 @@
             } else if (value == '3') {
                 codigo.style.display = 'block';
             } else if (value == '5') {
-                observaciones.style.display = 'block';
+                observaciones.clasList.add('flex');
             } else {
                 inputCosto.style.display = 'none';
                 inputFactura.style.display = 'none';
