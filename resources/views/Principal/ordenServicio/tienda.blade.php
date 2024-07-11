@@ -1,10 +1,15 @@
 @extends('layouts.admin')
 
-@section('title', 'Inicio')
+@section('title', 'Orden servicio')
 
 @section('content')
+    <style>
+        input[type="text"] {
+            text-transform: uppercase;
+        }
+    </style>
 
-    <h1 class=" text-center">Registro de Orden de Entrega</h1>
+    <h1 class=" text-center font-bold text-xl">Registro de Orden de Servicio</h1>
     <!-- mensaje de aviso que se registro el producto-->
     @if (session('correcto'))
         <div class=" flex justify-center">
@@ -24,10 +29,11 @@
         @csrf
 
         @include('Principal.ordenServicio._form_cliente')
-        @include('Principal.ordenEntrega._modal')
-        @include('Principal.ordenEntrega._modal_Descuentos')
-        @include('Principal.ordenEntrega._Lista_Productos')
-        @include('Principal.ordenEntrega._carro_campras')
+        @include('Principal.ordenServicio._modal')
+        @include('Principal.ordenServicio._modal_Descuentos')
+        @include('Principal.ordenServicio._Lista_Productos')
+        @include('Principal.ordenServicio._carro_campras')
+        @include('Principal.ordenServicio._form_datos_adicionales')
 
 
         <div class="mt-4 flex justify-center">
@@ -54,15 +60,114 @@
 @push('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
-        //Direccion funcion para validar si hay alguna direccion y si el cambio es menor a 0
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('#formulario').addEventListener('submit', function(event) {
+        let datosDeProductos; //valor de los datos de producto
 
+        //Cuando entra y carga la pagina entra lo siguiente
+        document.addEventListener('DOMContentLoaded', function() {
+            let productRecargaUrl = "{{ route('product.Recarga') }}";
+            axios.post(productRecargaUrl, {
+                productoRecarga: '1'
+            }).then(function(response) {
+                // Aquí puedes manejar la respuesta de la solicitud
+
+                datosDeProductos = response.data;
+
+                let select = document.getElementById('producto');
+                select.innerHTML = ''; // Vacía el select
+
+                // Llena el select con los nuevos datos
+                response.data.productos.forEach(function(producto) {
+                    let option = document.createElement('option');
+                    option.value = producto.id;
+                    option.setAttribute('data-precio', producto.precio);
+                    option.setAttribute('data-estatus', producto.estatus);
+                    option.setAttribute('data-idPrecio', producto.idPrecio);
+                    option.setAttribute('data-alternativoUno', producto.alternativo_uno);
+                    option.setAttribute('data-alternativoDos', producto.alternativo_dos);
+                    option.setAttribute('data-alternativoTres', producto.alternativo_tres);
+                    option.textContent = producto.nombre_comercial + '_' + producto.nombre_modo +
+                        '_' + producto.nombre_marca + '_' + producto.nombre_categoria + '_' +
+                        producto.nombre_color;
+                    select.appendChild(option);
+                });
+                // Por ejemplo, actualizar una parte del DOM con los nuevos datos
+            }).catch(function(error) {
+                // Aquí puedes manejar los errores de la solicitud
+                console.error(error);
             });
 
+            document.querySelector('#seleccionadorCliente').addEventListener('change', selectCliente);
+
+            function selectCliente() {
+                let esNuevoCliente = document.querySelector('#seleccionadorCliente').value;
+                let contenedorOcultoClienteExistente = document.querySelector('#contenedorSelectCliente');
+                let seleccionadorClienteInicio = document.querySelector('#inputCliente');
+                let selectAtencion = $('#inputAtiende');
+                let contenedorCliente = document.querySelector('#tipoCliente');
+                var checkTipoCliente = document.getElementById('tipoDeCliente');
 
 
 
+                switch (esNuevoCliente) {
+                    case 'NuevoCliente':
+                        seleccionadorClienteInicio.value = 'null';
+                        seleccionadorClienteInicio.dispatchEvent(new Event('change'));
+                        contenedorCliente.style.display = 'flex';
+                        selectAtencion.empty();
+                        checkTipoCliente.value = false;
+                        $('#inputDirecciones').empty();
+                        contenedorOcultoClienteExistente.classList.add('hidden');
+                        contenedorOcultoClienteExistente.classList.remove('flex');
+                        $('#telefono').val('');
+                        $('#rfc').val('');
+                        $('#email').val('');
+                        $('#nombreCliente').val('').prop('disabled', false);
+                        $('#apellidoCliente').val('').prop('disabled', false);
+
+                        contenedorEmpresaOCliente();
+                        $('#inputNombreAtencion').val('').prop('disabled', false);
+                        $('#recibe').val('');
+                        break;
+                    case 'ClienteExistente':
+                        contenedorCliente.style.display = 'none';
+                        contenedorOcultoClienteExistente.classList.remove('hidden');
+                        contenedorOcultoClienteExistente.classList.add('flex');
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+
+
+
+            //lo que escriba en nombre Cliente se escribe en el input del nombre de atencion
+            document.getElementById('nombreCliente').addEventListener('input', cambioTipoCliente);
+
+            function cambioTipoCliente() {
+                var checkbox = document.getElementById('tipoDeCliente');
+                if (!checkbox.checked) {
+                    document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
+                        .getElementById('apellidoCliente').value;
+
+                    document.getElementById('recibe').value = this.value + ' ' + document
+                        .getElementById('apellidoCliente').value;
+                }
+            };
+
+            document.getElementById('apellidoCliente').addEventListener('input', empresaOPersona);
+
+            function empresaOPersona() {
+                var checkbox = document.getElementById('tipoDeCliente');
+                if (!checkbox.checked) {
+                    document.getElementById('inputNombreAtencion').value = document.getElementById(
+                            'nombreCliente')
+                        .value + ' ' + this.value;
+
+                    document.getElementById('recibe').value = document.getElementById('nombreCliente')
+                        .value + ' ' + this.value;
+                }
+            };
             // Escuchar cambios en los campos txtcolonia y calle para limpiar los mensajes de error cuando se corrijan
             document.querySelector('#txtcolonia').addEventListener('input', function() {
                 let inputDirecciones = document.querySelector('#inputDirecciones');
@@ -74,13 +179,35 @@
             });
             document.querySelector('#inputDirecciones').addEventListener('input', function() {
                 this.setCustomValidity('');
-            });
-        }); //Finaliza la funcion para las direcciones
+            }); //Finaliza la funcion para las direcciones
+
+
+        });
+
+
+        //Checbox de persona moral o persona fisica si es persona moral el chebox sera verdadero por lo que ocultara apellido
+        let seleccionarTipoCliente = document.getElementById('tipoDeCliente');
+        let contenedorCliente = document.querySelector('#tipoCliente');
+        seleccionarTipoCliente.addEventListener('change', contenedorEmpresaOCliente);
+
+        function contenedorEmpresaOCliente() {
+            if (this.checked) {
+                $('#apellidoCliente').val('.').prop('disabled', true);
+                $('#tituloApellido').css('display', 'none');
+                document.getElementById('titulonombre').textContent = 'Razon Social';
+            } else {
+                $('#tituloApellido').css('display', 'flex');
+                $('#apellidoCliente').val('').prop('disabled', false);
+                document.getElementById('titulonombre').textContent = 'Nombre';
+            }
+        };
+
 
 
 
         const modalDescuentos = document.querySelector('#modalDescuentos')
         const cancelarModalDescuento = document.querySelector('.cerrarmodalDescuento');
+
         // Agrega el evento click al botón para que al darle aceptar al modal de descuento ya agregue a un array los productos
         document.getElementById('agregarProducto').addEventListener('click', botonAgregar);
 
@@ -93,21 +220,34 @@
             let cantidad = cantidadInput.value;
             let valorDescuentoCantidad = document.querySelector('#Cantidaddescuento').value;
             let valorDescuentoPorcentaje = document.querySelector('#porcentaje').value;
+            let valorAlternativo = document.getElementById("Alternativos").value;
+            const selectedOption = selectProducto.options[selectProducto.selectedIndex];
+            let precio = selectedOption.getAttribute('data-precio');
+            let estatus = selectedOption.getAttribute('data-estatus');
+            let idPrecio = selectedOption.getAttribute('data-idPrecio');
+
 
 
             // Luego los pasas a la función
             agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
-                valorDescuentoPorcentaje);
+                valorDescuentoPorcentaje, precio, estatus, idPrecio, valorAlternativo);
+
+
+
 
             // Oculta ambos divs
             descuentoCantidad.classList.add('hidden');
             descuentoPorcentaje.classList.add('hidden');
+            document.querySelector('#preciosAlternativos').classList.add('hidden');
+
 
             //restauramos el select del modal a sin descuento
             document.getElementById('elejirdescuento').value = '1';
+
             //restauramos el valor delos descuentos
             document.querySelector('#Cantidaddescuento').value = '';
             document.querySelector('#porcentaje').value = '';
+            document.getElementById("Alternativos").innerHTML = '';
 
 
             // Oculta el modal
@@ -121,6 +261,45 @@
             var idProducto = selectProducto.value;
             let cantidadInput = document.getElementById('cantidad');
             let cantidad = cantidadInput.value;
+            // Obtén el select por su id
+            let alternativoSeleccionado = document.querySelector('#producto');
+            // Obtén la opción seleccionada
+            const selectedOption = alternativoSeleccionado.options[alternativoSeleccionado.selectedIndex];
+            let alternativouno = selectedOption.getAttribute('data-alternativoUno');
+            let alternativoDos = selectedOption.getAttribute('data-alternativoDos');
+            let alternativoTres = selectedOption.getAttribute('data-alternativoTres');
+
+
+            // Obtén el select por su id
+            var selectAlternativo = document.getElementById("Alternativos");
+            // Crea un nuevo option
+            var option = document.createElement("option");
+            option.value = '';
+            option.text = 'Seleccione nuevo precio';
+            // Añade el option al select
+            selectAlternativo.appendChild(option);
+            if (alternativouno != null && alternativouno != 0 && alternativouno != "null") {
+                // Crea un nuevo option
+                var option = document.createElement("option");
+                option.value = alternativouno;
+                option.text = alternativouno;
+                // Añade el option al select
+                selectAlternativo.appendChild(option);
+            }
+            if (alternativoDos != null && alternativoDos != 0 && alternativouno != "null") {
+                // Repite los pasos anteriores para añadir más opciones
+                option = document.createElement("option");
+                option.value = alternativoDos;
+                option.text = alternativoDos;
+                selectAlternativo.appendChild(option);
+            }
+            if (alternativoTres != null && alternativoTres != 0 && alternativouno != "null") {
+                // Repite los pasos anteriores para añadir más opciones
+                option = document.createElement("option");
+                option.value = alternativoTres;
+                option.text = alternativoTres;
+                selectAlternativo.appendChild(option);
+            }
 
 
             // Verificar si la cantidad es menor que 1
@@ -140,11 +319,15 @@
                 // Si el campo es válido, limpiar cualquier mensaje de error anterior
                 cantidadInput.setCustomValidity('');
 
+
                 //Abre el modal de los descuentos
                 modalDescuentos.classList.remove('hidden');
 
                 // Escucha el evento de click en el botón cancelar Modal de registro
                 cancelarModalDescuento.addEventListener('click', function() {
+                    selectAlternativo.value = '';
+                    selectAlternativo.innerHTML = "";
+
                     // Oculta el modal
                     modalDescuentos.classList.add('hidden');
                 });
@@ -154,27 +337,51 @@
                     // Obtén el valor seleccionado
                     var seleccion = this.value;
 
-                    // Muestra el div correspondiente
-                    if (seleccion == '2') {
-                        descuentoCantidad.classList.remove('hidden');
-                        descuentoPorcentaje.classList.add('hidden');
-                        //restauramos el valor de porcentaje por si cambia de vista se borre lo que pusiera en porcentaje
-                        document.querySelector('#porcentaje').value = '';
+                    switch (seleccion) {
+                        case '1': //sin descuento
+                            // Oculta ambos divs
+                            descuentoCantidad.classList.add('hidden');
+                            descuentoPorcentaje.classList.add('hidden');
+                            document.querySelector('#preciosAlternativos').classList.add('hidden');
 
-                    } else if (seleccion == '3') {
-                        descuentoCantidad.classList.add('hidden');
-                        descuentoPorcentaje.classList.remove('hidden');
-                        //restauramos el valor del descuento por cantidad por si cambia por porcentaje
-                        document.querySelector('#Cantidaddescuento').value = '';
+                            //restauramos el valor delos descuentos por si pone datos y despues decide no poner descuentos
+                            document.querySelector('#Cantidaddescuento').value = '';
+                            document.querySelector('#porcentaje').value = '';
+                            selectAlternativo.value = '';
+                            seleccion = 1;
+                            break;
+                        case '2': // Cantidad
+                            descuentoCantidad.classList.remove('hidden');
+                            descuentoPorcentaje.classList.add('hidden');
+                            document.querySelector('#preciosAlternativos').classList.add('hidden');
 
-                    } else if (seleccion == '1') {
-                        // Oculta ambos divs
-                        descuentoCantidad.classList.add('hidden');
-                        descuentoPorcentaje.classList.add('hidden');
-                        //restauramos el valor delos descuentos por si pone datos y despues decide no poner descuentos
-                        document.querySelector('#Cantidaddescuento').value = '';
-                        document.querySelector('#porcentaje').value = '';
+                            //restauramos el valor de porcentaje por si cambia de vista se borre lo que pusiera en porcentaje
+                            document.querySelector('#porcentaje').value = '';
+                            selectAlternativo.value = '';
+                            seleccion = 1;
+                            break;
+                        case '3': //porcentaje
+                            descuentoCantidad.classList.add('hidden');
+                            descuentoPorcentaje.classList.remove('hidden');
+                            document.querySelector('#preciosAlternativos').classList.add('hidden');
+                            //restauramos el valor del descuento por cantidad por si cambia por porcentaje
+                            document.querySelector('#Cantidaddescuento').value = '';
+                            selectAlternativo.value = '';
+                            break;
+                        case '4': //precios alternativos
+                            // Oculta ambos divs
+                            document.querySelector('#preciosAlternativos').classList.remove('hidden');
+                            descuentoCantidad.classList.add('hidden');
+                            descuentoPorcentaje.classList.add('hidden');
+                            //restauramos el valor delos descuentos por si pone datos y despues decide no poner descuentos
+                            document.querySelector('#Cantidaddescuento').value = '';
+                            document.querySelector('#porcentaje').value = '';
+                            break;
+
+                        default:
+                            break;
                     }
+
                 });
             }
 
@@ -185,23 +392,24 @@
         var productosSeleccionados = [];
         // Función para manejar el evento click del botón para agregar productos cuando le de click
         function agregarProducto(selectProducto, idProducto, cantidadInput, cantidad, valorDescuentoCantidad,
-            valorDescuentoPorcentaje) {
+            valorDescuentoPorcentaje, valorProducto, estatus, idPrecio, valorAlternativo) {
             let tipoDescuento;
             let valorDescuento;
 
+
             //verificar que descuento fue positivo o ninguno
-            switch (true) {
-                case Boolean(valorDescuentoCantidad):
-                    tipoDescuento = 'cantidad';
-                    valorDescuento = valorDescuentoCantidad;
-                    break;
-                case Boolean(valorDescuentoPorcentaje):
-                    tipoDescuento = 'Porcentaje';
-                    valorDescuento = valorDescuentoPorcentaje;
-                    break;
-                default:
-                    tipoDescuento = 'null';
-                    valorDescuento = 'null';
+            if (valorDescuentoCantidad) {
+                tipoDescuento = 'cantidad';
+                valorDescuento = valorDescuentoCantidad;
+            } else if (valorDescuentoPorcentaje) {
+                tipoDescuento = 'Porcentaje';
+                valorDescuento = valorDescuentoPorcentaje;
+            } else if (valorAlternativo) {
+                tipoDescuento = 'alternativo';
+                valorDescuento = valorAlternativo;
+            } else {
+                tipoDescuento = 'null';
+                valorDescuento = 'null';
             }
 
 
@@ -212,8 +420,7 @@
             var nombreMarca = productoSeleccionado[2];
             var nombreCategoria = productoSeleccionado[3];
             var nombreColor = productoSeleccionado[4];
-            var precio = productoSeleccionado[5].replace('$', '');
-
+            var precio = valorProducto.replace('$', '');
 
             // Verifica si el producto ya está en el array
             var productoExistente = productosSeleccionados.find(function(producto) {
@@ -224,15 +431,12 @@
             if (productoExistente) {
                 // Si el producto ya está en el array, actualiza la cantidad y el descuento
 
-
                 productoExistente.cantidad = cantidad;
                 productoExistente.descuento = valorDescuento;
                 productoExistente.tipoDescuento = tipoDescuento;
 
-
             } else {
                 // Si el producto no está en el array, lo agrega
-
                 var producto = {
                     id: idProducto,
                     cantidad: cantidad,
@@ -243,7 +447,9 @@
                     color: nombreColor,
                     precio: precio,
                     descuento: valorDescuento,
-                    tipoDescuento: tipoDescuento
+                    tipoDescuento: tipoDescuento,
+                    estatus: estatus,
+                    idPrecio: idPrecio,
                 };
                 productosSeleccionados.push(producto);
 
@@ -268,7 +474,9 @@
         function agregarProductosATabla(productos) {
             var tabla = document.getElementById('cuerpoTabla');
             var totalCosto = 0;
-
+            let productoSuma = 0;
+            let recargaSuma = 0;
+            let tipoProducto = '';
             // Elimina todas las filas existentes
             while (tabla.firstChild) {
                 tabla.removeChild(tabla.firstChild);
@@ -276,27 +484,37 @@
             //creamos las celdas y le ponemos el valor segun la cantidad de array
             for (var i = 0; i < productos.length; i++) {
                 let producto = productos[i];
+                if (producto.estatus == 1) {
+                    tipoProducto = 'Producto';
+
+                } else {
+                    tipoProducto = 'Recarga';
+
+                }
                 let fila = tabla.insertRow(-1);
                 fila.id = 'filaProducto_' + i; // Asigna un identificador único a la fila
-                let celdaNombre = fila.insertCell(0);
+                let celdaTipoProducto = fila.insertCell(0);
+                celdaTipoProducto.style.textAlign = "center";
+                let celdaNombre = fila.insertCell(1);
                 celdaNombre.style.textAlign = "center";
-                let celdaMarca = fila.insertCell(1);
+                let celdaMarca = fila.insertCell(2);
                 celdaMarca.style.textAlign = "center";
-                let celdaTipo = fila.insertCell(2);
+                let celdaTipo = fila.insertCell(3);
                 celdaTipo.style.textAlign = "center";
-                let celdaModo = fila.insertCell(3);
+                let celdaModo = fila.insertCell(4);
                 celdaModo.style.textAlign = "center";
-                let celdaColor = fila.insertCell(4);
+                let celdaColor = fila.insertCell(5);
                 celdaColor.style.textAlign = "center";
-                let celdaCantidad = fila.insertCell(5);
+                let celdaCantidad = fila.insertCell(6);
                 celdaCantidad.style.textAlign = "center";
-                let celdaPrecio = fila.insertCell(6);
+                let celdaPrecio = fila.insertCell(7);
                 celdaPrecio.style.textAlign = "center";
-                let celdaDescuento = fila.insertCell(7);
+                let celdaDescuento = fila.insertCell(8);
                 celdaDescuento.style.textAlign = "center";
-                let celdaCosto = fila.insertCell(8);
+                let celdaCosto = fila.insertCell(9);
                 celdaCosto.style.textAlign = "center";
-                let celdaEliminar = fila.insertCell(9); // Nueva celda para el botón "Eliminar"
+                let celdaEliminar = fila.insertCell(10); // Nueva celda para el botón "Eliminar"
+                celdaTipoProducto.textContent = tipoProducto;
                 celdaNombre.textContent = producto.nombre;
                 celdaMarca.textContent = producto.marca;
                 celdaTipo.textContent = producto.tipo;
@@ -305,20 +523,39 @@
                 celdaCantidad.textContent = producto.cantidad;
                 celdaPrecio.textContent = producto.precio;
                 let costo = producto.precio * producto.cantidad;
-                if (producto.tipoDescuento == 'cantidad') {
-                    celdaDescuento.textContent = '$' + producto.descuento;
-                    costo = costo - producto.descuento;
-                } else if (producto.tipoDescuento == 'Porcentaje') {
-                    celdaDescuento.textContent = producto.descuento + '%';
-                    let descuentoAplicado = costo * (producto.descuento / 100);
-                    costo = costo - descuentoAplicado;
-                } else {
-                    celdaDescuento.textContent = 'Sin descuentos'
-                }
 
+                switch (producto.tipoDescuento) {
+                    case 'cantidad':
+                        let descuentoCantidadProducto = producto.descuento * producto.cantidad;
+                        celdaDescuento.textContent = '$' + descuentoCantidadProducto;
+                        costo = costo - descuentoCantidadProducto;
+                        break;
+                    case 'Porcentaje':
+                        celdaDescuento.textContent = producto.descuento + '%';
+                        let descuentoAplicado = costo * (producto.descuento / 100);
+                        costo = costo - descuentoAplicado;
+                        break;
+                    case 'alternativo':
+                        let restanteDelDescuento = producto.precio - producto.descuento;
+                        let sumaDeDescuento = restanteDelDescuento * producto.cantidad;
+                        let decuentoAlternativo = producto.descuento * producto.cantidad;
+                        celdaDescuento.textContent = '$' + sumaDeDescuento;
+
+                        costo = decuentoAlternativo;
+                        break;
+
+                    default:
+                        celdaDescuento.textContent = 'Sin descuentos'
+                        break;
+                }
                 celdaCosto.textContent = costo.toFixed(2);
                 totalCosto += costo;
 
+                if (producto.estatus == 1) {
+                    productoSuma += costo;
+                } else {
+                    recargaSuma += costo;
+                }
 
                 // Agrega el botón "Eliminar" a la celda
                 let botonEliminar = document.createElement('button');
@@ -341,6 +578,7 @@
 
                     Actualizararray(productosSeleccionados)
 
+
                 });
                 celdaEliminar.appendChild(botonEliminar);
                 // Agrega la fila al cuerpo de la tabla
@@ -348,12 +586,25 @@
 
             }
 
+
             // Obtiene el elemento y luego actualiza su contenido y estilo
             let sumaTotalElement = document.getElementById('sumaTotal');
             sumaTotalElement.textContent = totalCosto.toFixed(2);
             sumaTotalElement.style.fontWeight = 'bold'; // Hace el texto en negrita
             sumaTotalElement.style.fontSize = '1.5em'; // Hace el texto un 50% más grande
+
+            let SumaRecargas = document.querySelector('#SumaRecarga');
+            let SumaProductos = document.querySelector('#SumaProducto');
+            SumaProductos.textContent = productoSuma.toFixed(2);
+            SumaRecargas.textContent = recargaSuma.toFixed(2);
+            SumaRecargas.style.fontWeight = 'bold'; // Hace el texto en negrita
+            SumaProductos.style.fontWeight = 'bold'; // Hace el texto en negrita
+            SumaRecargas.style.fontSize = '1em'; // Hace el texto un 50% más grande
+            SumaProductos.style.fontSize = '1em'; // Hace el texto un 50% más grande
+
+
         } //Finaliza la impresion en la tabla
+
 
 
         function Actualizararray(productosSeleccionados) { //actualizamoms el array de los productos
@@ -367,6 +618,8 @@
         function recalcularSumaTotal() {
             var tabla = document.getElementById('cuerpoTabla');
             var totalCosto = 0;
+            let productoSuma = 0;
+            let recargaSuma = 0;
 
             let pagaConInput = document.getElementById('pagaCon');
             // Asegúrate de reemplazar 'idDelTotal' e 'idDelCambio' con los ids reales de tus elementos
@@ -375,22 +628,46 @@
             // Recorre todas las filas de la tabla y suma los costos de los productos
             for (var i = 0; i < tabla.rows.length; i++) {
                 //recordar que se se mueve las celdas se tendra que modificar para que calcule las celtas que tienen los costos
-                var costo = parseFloat(tabla.rows[i].cells[8].textContent);
+                var costo = parseFloat(tabla.rows[i].cells[9].textContent);
                 totalCosto += costo;
+
+                //calcular producto y recarga
+                var tipoProducto = parseFloat(tabla.rows[i].cells[0].textContent);
+
+                if (tipoProducto == 1) {
+                    productoSuma += costo;
+                } else {
+                    recargaSuma += costo;
+                }
             }
 
             // Obtiene el elemento y luego actualiza su contenido y estilo
             let sumaTotalElement = document.getElementById('sumaTotal');
             sumaTotalElement.textContent = totalCosto.toFixed(2);
             sumaTotalElement.style.fontWeight = 'bold'; // Hace el texto en negrita
-            sumaTotalElement.style.fontSize = '1.5em'; // Hace el texto un 50% más grande
+            sumaTotalElement.style.fontSize = '1em'; // Hace el texto un 50% más grande
+
+            let SumaRecargas = document.querySelector('#SumaRecarga');
+            let SumaProductos = document.querySelector('#SumaProducto');
+            SumaProductos.textContent = productoSuma.toFixed(2);
+            SumaRecargas.textContent = recargaSuma.toFixed(2);
+            SumaRecargas.style.fontWeight = 'bold'; // Hace el texto en negrita
+            SumaProductos.style.fontWeight = 'bold'; // Hace el texto en negrita
+            SumaRecargas.style.fontSize = '1em'; // Hace el texto un 50% más grande
+            SumaProductos.style.fontSize = '1em'; // Hace el texto un 50% más grande
+
             calcularCambio();
         }
 
         // Obtiene los elementos
         let pagaConElement = document.getElementById('pagaCon');
-        let sumaTotalElement = document.getElementById('sumaTotal');
+        let sumaTotalElement = document.getElementById('SumaProducto');
         let cambioInput = document.getElementById('cambioInput');
+        let PagoRecarga = document.getElementById('pagaConRecarga');
+        let cambioRecarga = document.getElementById('cambioInputRecarga');
+        let sumaRecarga = document.getElementById('SumaRecarga');
+
+
 
         // Agrega el evento input al elemento pagaConElement
         pagaConElement.addEventListener('input', function() {
@@ -398,11 +675,20 @@
             let pagaCon = Number(pagaConElement.value);
             let sumaTotal = Number(sumaTotalElement.textContent);
 
+
             // Realiza la resta
             let cambio = pagaCon - sumaTotal;
 
             // Muestra el resultado en el input cambioInput
             cambioInput.value = cambio.toFixed(2);
+
+        });
+        PagoRecarga.addEventListener('input', function() {
+
+            let pagaConRecarga = Number(PagoRecarga.value);
+            let sumaTotalRecarga = Number(sumaRecarga.textContent);
+            let cambioDeRecarga = pagaConRecarga - sumaTotalRecarga;
+            cambioRecarga.value = cambioDeRecarga.toFixed(2);
         });
 
         // Define la función calcularCambio
@@ -411,29 +697,56 @@
             let pagaCon = Number(pagaConElement.value);
             let sumaTotal = Number(sumaTotalElement.textContent);
 
+            let pagaConRecarga = Number(PagoRecarga.value);
+            let sumaTotalRecarga = Number(sumaRecarga.textContent);
+
             // Realiza la resta
             let cambio = pagaCon - sumaTotal;
 
+            let cambioDeRecarga = pagaConRecarga - sumaTotalRecarga;
+
             // Muestra el resultado en el input cambioInput
             cambioInput.value = cambio.toFixed(2);
+
+            cambioRecarga.value = cambio.toFixed(2);
         } //finaliza el calculo de los costos
 
 
         //funcion para mostrar o ocultar las vistas del efectivo
         document.getElementById('metodoPago').addEventListener('change', function() {
+            let sumaTotalProducto = Number(sumaTotalElement.textContent);
+            let sumaTotalRecarga = Number(sumaRecarga.textContent);
+            //aqui mostrammos las opciones si pagammos en efectivo
             if (this.value === 'Efectivo') {
-                document.getElementById('pagoEfectivo').style.display = 'block';
-                document.getElementById('cambio').style.display = 'block';
+                //solo si se paga productos mostrara este
+                if (sumaTotalProducto > 0) {
+                    document.getElementById('pagoEfectivo').style.display = 'block';
+                } else {
+                    document.getElementById('pagoEfectivo').style.display = 'none';
+                }
+
+                if (sumaTotalRecarga > 0) {
+                    document.getElementById('pagoEfectivoRecarga').style.display = 'block';
+                } else {
+                    document.getElementById('pagoEfectivoRecarga').style.display = 'none';
+                }
+
+
             } else {
                 document.getElementById('pagoEfectivo').style.display = 'none';
-                document.getElementById('cambio').style.display = 'none';
+                document.getElementById('pagoEfectivoRecarga').style.display = 'none';
             }
         });
+
+
+
 
         $('#mostrarNuevaDireccion').click(function(event) {
             event.preventDefault();
             $('#nuevaDireccion').toggle();
         });
+
+
 
         //este ayuda a buscar en datos en el select
         $(document).ready(function() {
@@ -467,20 +780,18 @@
                 matcher: matchCustom
             });
         });
+
+
         //pasamos los valores recibidos a variables js
         var datosClientes = @json($listaClientes);
         var datosDirecciones = @json($listaDirecciones);
         let datosAtencion = @json($listaAtencion);
-        let datosRecoleccion = @json($datosRecoleccion);
-
 
         let selectAtencion = $('#inputAtiende');
         let inputrecibe = $('#recibe');
-        let inputentrega = $('#entrega');
         //el select de direcciones se lo damos a la variable selectDirecciones
         var selectDirecciones = $('#inputDirecciones');
         //esta funcion entra al momento de interactuar con el select de cliente
-
         function rellenarFormulario() {
 
             //el id que esta en value del select va almacenar en la variable clienteId
@@ -504,22 +815,26 @@
                     return atencion.id_cliente == clienteSeleccionado.id_cliente;
                 });
 
-                var recibeCliente = datosRecoleccion.filter(function(reciben) {
-                    return reciben.idCliente == clienteSeleccionado.id_cliente;
-                });
-            }
 
+                seleccionarTipoCliente.checked = false;
+
+
+            }
 
             // Vacía los campos al incio
             $('#telefono').val('');
             $('#rfc').val('');
             $('#email').val('');
             $('#nombreCliente').val('').prop('disabled', false);
+            $('#tituloApellido').css('display', 'inline');
+            document.getElementById('titulonombre').textContent = 'Nombre';
             $('#apellidoCliente').val('').prop('disabled', false);
             $('#inputDirecciones').empty();
             $('#inputNombreAtencion').val('').prop('disabled', false);
             inputrecibe.val('');
-            inputentrega.val('');
+
+
+
             // Vacía el select de atención
             selectAtencion.empty();
 
@@ -531,13 +846,17 @@
                 $('#rfc').val(clienteSeleccionado.comentario);
                 $('#email').val(clienteSeleccionado.email);
                 $('#nombreCliente').val(clienteSeleccionado.nombre_cliente).prop('disabled', true);
-                $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
-                if (recibeCliente && recibeCliente.length > 0) {
-                    inputrecibe.val(recibeCliente[0].recibe);
-                    inputentrega.val(recibeCliente[0].entrega);
+
+                if (clienteSeleccionado.apellido == ".") {
+                    $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
+                    $('#tituloApellido').css('display', 'none');
+                    document.getElementById('titulonombre').textContent = 'Razon Social';
                 } else {
-                    // Aquí va tu código si el array está vacío
+                    $('#apellidoCliente').val(clienteSeleccionado.apellido).prop('disabled', true);
+                    $('#tituloApellido').css('display', 'flex');
+                    document.getElementById('titulonombre').textContent = 'Nombre';
                 }
+
                 selectAtencion.empty();
 
                 // Si atencionCliente tiene datos, los añade al select de atención
@@ -568,29 +887,29 @@
                         $('#inputNombreAtencion').val('').prop('disabled', false);
                     }
                 });
+
+
                 // Vacía el select de direcciones
                 selectDirecciones.empty();
-
-
-
                 //si direccionesCliente tiene datos entra
                 if (direccionesCliente && clienteSeleccionado) {
-
                     selectDirecciones.append(new Option('Buscar Direccion', ''));
                     direccionesCliente.forEach(function(direccion) {
-                        selectDirecciones.append(new Option(direccion.localidad + ', ' + direccion.calle + ' #' +
+                        selectDirecciones.append(new Option(direccion.localidad + ', ' + direccion.calle +
+                            ' #' +
                             direccion.num_exterior + ' - ' + direccion.num_interior + ' referencia: ' +
-                            direccion.referencia, direccion
-                            .id));
+                            direccion.referencia, direccion.id_direccion));
+
                     });
 
                 } else {
                     // Si el cliente no tiene ninguna dirección registrada
                     selectDirecciones.append(new Option('No hay direcciones disponibles', ''));
                 }
-
                 //si clienteSeleccionado es null vacio todos los campos y habilita los bloqueados
             } else if (!clienteSeleccionado) {
+
+
                 $('#telefono').val('');
                 $('#rfc').val('');
                 $('#email').val('');
@@ -598,10 +917,41 @@
                 $('#apellidoCliente').val('').prop('disabled', false);
                 $('#inputNombreAtencion').val('').prop('disabled', false);
                 inputrecibe.val('');
-                inputentrega.val('');
+
+
+
                 selectDirecciones.append(new Option('No hay direcciones disponibles', ''));
                 // Vacía el select de atención
                 selectAtencion.append(new Option('Nueva persona en atencion', ''));
+
+
+
+
+
+                document.getElementById('nombreCliente').addEventListener('input', function() {
+                    var tipodeCliente = document.getElementById('tipoDeCliente');
+
+                    if (!tipodeCliente.checked) {
+
+                        document.getElementById('inputNombreAtencion').value = this.value + ' ' + document
+                            .getElementById('apellidoCliente').value;
+
+                        document.getElementById('recibe').value = this.value + ' ' + document
+                            .getElementById('apellidoCliente').value;
+                    }
+                });
+
+                document.getElementById('apellidoCliente').addEventListener('input', function() {
+                    var tipodeCliente = document.getElementById('tipoDeCliente');
+                    if (!tipodeCliente.checked) {
+                        document.getElementById('inputNombreAtencion').value = document.getElementById(
+                                'nombreCliente')
+                            .value + ' ' + this.value;
+
+                        document.getElementById('recibe').value = document.getElementById('nombreCliente')
+                            .value + ' ' + this.value;
+                    }
+                });
             }
 
         }
@@ -620,10 +970,12 @@
                 rfcInput.required = true;
                 rfcInput.disabled = false;
                 warning.classList.remove("hidden");
+                //         validarRFC(rfcInput);
             } else {
                 rfcInput.required = false;
                 rfcInput.disabled = true;
                 warning.classList.add("hidden");
+                //                rfcInput.setCustomValidity(''); // Limpia cualquier mensaje de error anterior
             }
         } //FINALIZA LA FUNCION AL DARLE AL CHECKBOX QUE QUIERE RFC
 
@@ -659,7 +1011,9 @@
         //mmostrar los datos de detalles del modal
         document.getElementById('Detalle').addEventListener('click', function() {
             let productoSeleccionado = document.getElementById('producto').value;
-            let datosProductos = @json($productos);
+
+
+            let datosProductos = datosDeProductos.productos;
             let titulo = document.querySelector('#tituloDetalle');
             let categoria = document.querySelector('#CategoriaDetalle');
             let modelo = document.querySelector('#ModeloDetalle');
@@ -670,7 +1024,9 @@
             let descripcion = document.querySelector('#descripcionDetalle');
 
             datosProductos.forEach(element => {
+
                 if (productoSeleccionado == element.id) {
+
                     titulo.innerText = element.nombre_comercial;
                     categoria.innerText = 'Categoria : ' + element.nombre_categoria;
                     modelo.innerText = 'Modelo : ' + element.modelo;
@@ -679,6 +1035,7 @@
                     marca.innerText = 'Marca : ' + element.nombre_marca;
                     precio.innerText = 'Precio : $' + element.precio;
                     descripcion.innerText = 'Descripcion : ' + element.descripcion;
+
 
                 } else if (productoSeleccionado == null) {
                     titulo.innerText = 'Seleccione un producto';
@@ -695,11 +1052,7 @@
             // Obtén el formulario
             var form = document.getElementById('formulario');
 
-            /**
-             *
-             *
-             * */
-
+            //Finaliza funcion para validar si no relleno el horario de salida o entrada
 
             let inputDirecciones = document.querySelector('#inputDirecciones');
             let txtcolonia = document.querySelector('#txtcolonia');
@@ -707,6 +1060,7 @@
             let cambioInput = document.querySelector(
                 '#cambioInput'); // Obtener el campo de entrada de cambio
             let ArrayProductos = document.querySelector('#inputProductosSeleccionados');
+
 
             // Verificar si no se seleccionó una dirección existente y tampoco se ingresó una nueva
             if (inputDirecciones.value === '' && txtcolonia.value === 'null' && calle.value.trim() ===
@@ -721,6 +1075,7 @@
                 // Si los campos son válidos, limpiar cualquier mensaje de error anterior
                 inputDirecciones.setCustomValidity('');
             }
+
             //Verificar que tenga datos el array de productos
             if (!ArrayProductos.value) {
                 alert('No has agregado productos a tu lista de pedidos');
@@ -741,18 +1096,17 @@
                 cambioInput.setCustomValidity('');
             }
 
-
             //ENTRA LA FUNCION CUANDO LE DAMOS AL CHECKBOX QUE REQUERIMOS UN RFC POR QUE QUIERE FACTURA
             var checkbox = document.getElementById("factura");
             var rfcInput = document.getElementById("rfc");
 
-
             if (checkbox.checked) {
                 validarRFC(rfcInput);
             } else {
-
                 rfcInput.setCustomValidity(''); // Limpia cualquier mensaje de error anterior
             }
+
+
             //validar rfc
             //Dentro de la función, se define una expresión regular (regex) que describe el formato de un RFC válido. Un RFC válido comienza con 3 o 4 letras mayúsculas (incluyendo Ñ y &), seguido de 6 dígitos, y opcionalmente termina con 3 caracteres alfanuméricos.
             function validarRFC(input) {
@@ -767,6 +1121,7 @@
             } //FINALIZA FUNCION DE VALIDACION DE RFC
 
 
+            //chebox de funciones
 
             // Si el formulario no es válido, detén la ejecución de la función
             if (!form.checkValidity()) {

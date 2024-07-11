@@ -18,7 +18,9 @@
                 $index++;
             @endphp
             <tr class= " border-b border-gray-200 text-sm">
-                <td class="px-6 py-4">{{ $pendiente->letraActual }}{{ sprintf('%06d', $pendiente->ultimoValor) }}</td>
+                <td class="px-6 py-4">
+                    {{ $pendiente->letraActual ? $pendiente->letraActual : '' }}{{ $pendiente->ultimoValor ? sprintf('%06d', $pendiente->ultimoValor) : sprintf('%06d', $pendiente->ultimoValorServicio) }}
+                </td>
                 <td class="px-6 py-4">
                     {{ $pendiente->nombreCliente }} {{ $pendiente->apellidoCliente }}
                 </td>

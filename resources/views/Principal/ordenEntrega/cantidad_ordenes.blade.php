@@ -11,7 +11,7 @@
 
         <h1 class=" text-center font-medium">Cliente : {{ $cliente->nombre }}
             {{ $cliente->apellido != '.' ? $cliente->apellido : '' }}</h1>
-        <div class="flex flex-col md:flex-row">
+        <div class="flex flex-col md:flex-row justify-center">
             <span
                 class="inline-block px-2 py-1 mb-0 text-center text-base font-normal leading-normal cursor-text bg-white border border-gray-300 rounded">
                 Telefono : {{ $cliente->telefono }}</span>

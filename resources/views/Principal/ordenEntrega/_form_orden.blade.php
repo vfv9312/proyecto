@@ -62,7 +62,7 @@
         </div>
         <div class="flex flex-col w-full md:w-1/3 md:mr-2">
             <label class="mr-4">Atención</label>
-            <input
+            <input type="text"
                 class="w-full px-3 py-1  border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="inputNombreAtencion" name="txtatencion" placeholder="Nombre de la persona que atiende" required>
             </input>
@@ -93,7 +93,6 @@
                 class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="email" name="txtemail" placeholder="ecotoner@example.com">
         </div>
-
     </div>
     <div>
         <div class="flex flex-col w-full md:w-1/3">

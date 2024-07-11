@@ -104,9 +104,7 @@
                 let seleccionadorClienteInicio = document.querySelector('#inputCliente');
                 let selectAtencion = $('#inputAtiende');
                 let contenedorCliente = document.querySelector('#tipoCliente');
-                var checkTipoCliente = document.getElementById('tipoDeCliente');
-
-
+                let checkTipoCliente = document.getElementById('tipoDeCliente');
 
                 switch (esNuevoCliente) {
                     case 'NuevoCliente':

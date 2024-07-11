@@ -6,7 +6,8 @@
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="nombre_cliente" type="text" name="txtnombre_cliente"
-            value=" {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}" readonly>
+            value=" {{ strtoupper($ordenRecoleccion->nombreCliente) }} {{ strtoupper($ordenRecoleccion->apellidoCliente) }}"
+            readonly>
     </div>
 
     <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
@@ -92,6 +93,16 @@
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="nombre_cliente" type="text" name="txtnombre_cliente"
             value="{{ $ordenRecoleccion->referencia == null ? 'S/D' : $ordenRecoleccion->referencia }}" readonly>
+    </div>
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Fecha de entrega
+        </label>
+        <input
+            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="atencion" type="text" name="txtatencion"
+            value="{{ $ordenRecoleccion->fechaEntrega ? $ordenRecoleccion->fechaEntrega : 'Por el momento no se ha entregado' }}"
+            readonly>
     </div>
 </div>
 

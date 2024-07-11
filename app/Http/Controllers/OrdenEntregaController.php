@@ -160,7 +160,7 @@ class OrdenEntregaController extends Controller
         ]);*/
 
 
-        $nombreEmpleado = Auth::user()->name;
+        $nombreEmpleado = strtoupper(Auth::user()->name);
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
         try {
@@ -173,14 +173,14 @@ class OrdenEntregaController extends Controller
             $telefono = $request->input('txttelefono'); //telefono del cliente
             $rfc = $request->input('txtrfc'); //rfc del cliente
             $email = $request->input('txtemail'); //correo electronico del cliente
-            $recibe = ucwords(strtolower($request->input('txtrecibe'))); // persona que recibira el pedido
+            $recibe = strtoupper($request->input('txtrecibe')); // persona que recibira el pedido
 
             //si registramos un cliente nuevo recibiremos
             $nuevoCliente = $request->input('txtnombreCliente'); //nombre del cliente
             $nuevoApeCliente = $request->input('txtapellidoCliente'); // apellido del cliente
 
             //datos que iran siempre
-            $atencion = ucwords(strtolower($request->input('txtatencion'))); //persona que atendera cuando llegue el motociclista
+            $atencion = strtoupper($request->input('txtatencion')); //persona que atendera cuando llegue el motociclista
 
             //si no tenemos datos del id direccion entonces recibiremos
             $idNuevacolonia = $request->input('nuevacolonia'); // el id de la colonia
@@ -530,6 +530,7 @@ class OrdenEntregaController extends Controller
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
+                'orden_recoleccions.Fecha_entrega as fechaEntrega',
                 'folios.letra_actual as letraActual',
                 'folios.ultimo_valor as ultimoValor',
                 'preventas.metodo_pago as metodoPago',
@@ -670,6 +671,7 @@ class OrdenEntregaController extends Controller
                 'orden_recoleccions.created_at as fechaCreacion',
                 'orden_recoleccions.id_cancelacion as idCancelacion',
                 'orden_recoleccions.comentario as descripcionCancelacion',
+                'orden_recoleccions.Fecha_entrega as fechaEntrega',
                 'folios.letra_actual as letraActual',
                 'folios.ultimo_valor as ultimoValor',
                 'folios.created_at as fechaDelTiempoAproximado',

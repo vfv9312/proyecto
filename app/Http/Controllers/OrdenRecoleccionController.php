@@ -48,6 +48,7 @@ class OrdenRecoleccionController extends Controller
             ->join('orden_recoleccions', 'orden_recoleccions.id_preventa', '=', 'preventas.id')
             ->whereNull('preventas.deleted_at')
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
             ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
             ->WhereIn('orden_recoleccions.estatus', [4, 3, 2, 1])
             //->where('id_cancelacion', null)
@@ -70,6 +71,14 @@ class OrdenRecoleccionController extends Controller
             $preventas->orWhere(function ($query) use ($letra, $numero) {
                 $query->where('folios.letra_actual', $letra)
                     ->where('folios.ultimo_valor', $numero);
+            });
+        }
+        if (ctype_digit($busqueda)) {
+
+            $numero = (int) $busqueda;
+
+            $preventas->orWhere(function ($query) use ($numero) {
+                $query->where('folios_servicios.ultimo_valor', $numero);
             });
         }
 
@@ -101,6 +110,7 @@ class OrdenRecoleccionController extends Controller
             'orden_recoleccions.created_at',
             'folios.letra_actual as letraActual',
             'folios.ultimo_valor as ultimoValor',
+            'folios_servicios.ultimo_valor as ultimoValorServicio',
             'preventas.id as idPreventa',
             'preventas.estatus as estatusPreventa',
             'preventas.nombre_empleado as nombreEmpleado',
@@ -116,16 +126,22 @@ class OrdenRecoleccionController extends Controller
             'direcciones.referencia',
         )
             ->orderBy('orden_recoleccions.updated_at', 'desc')
-            ->paginate(5)->appends(['adminlteSearch' => $busqueda, 'entrega_servicio' => $filtroES, 'fecha_inicio' => $filtroFecha_inicio, 'fecha_fin' => $fecha_fin, 'estatus' => $filtroEstatus]); // Mueve paginate() aquí para que funcione correctamente
+            ->paginate(100)->appends(['adminlteSearch' => $busqueda, 'entrega_servicio' => $filtroES, 'fecha_inicio' => $filtroFecha_inicio, 'fecha_fin' => $fecha_fin, 'estatus' => $filtroEstatus]); // Mueve paginate() aquí para que funcione correctamente
+
+
         foreach ($preventas as $preventa) {
             $fechaCreacion = \Carbon\Carbon::parse($preventa->fechaCreacion);
             $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
+            $segundoTiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->skip(1)->first();
+
             if ($Tiempo) {
                 $fechaHoraArray = explode(' ', $preventa->fechaCreacion);
                 $fecha = $fechaHoraArray[0];
                 $hora = $fechaHoraArray[1];
                 // Crear un objeto DateTime con la hora inicial
                 $horaInicial = new DateTime($hora);
+
+
                 // Sumar el intervalo de tiempo a la hora inicial
                 list($horas, $minutos, $segundos) = explode(':', $Tiempo->tiempo);
                 $intervalo = new DateInterval(sprintf('PT%dH%dM%dS', $horas, $minutos, $segundos));
@@ -145,6 +161,7 @@ class OrdenRecoleccionController extends Controller
                 ];
             }
         }
+
         return view('Principal.ordenRecoleccion.recolecciones', compact('preventas', 'datosEntregaCompromisos', 'busqueda', 'filtroES', 'filtroFecha_inicio', 'fecha_fin', 'filtroEstatus'));
     }
 
@@ -321,7 +338,7 @@ class OrdenRecoleccionController extends Controller
      */
     public function edit(Orden_recoleccion $orden_recoleccion, Request $request)
     {
-        //dd($request);
+
         $costo_unitario = $request->input('costo_unitario');
         $pagaCon = $request->input('txtpagoEfectivo');
         $codigo = $request->input('codigo');

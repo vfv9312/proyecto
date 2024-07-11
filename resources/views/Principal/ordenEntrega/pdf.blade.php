@@ -135,16 +135,19 @@ opacity: 0.5;">
     <div class="body">
         <div class="datoscliente item">
             <h5> Datos del cliente </h5>
-            <p>Cliente : {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
+            <p>Cliente : {{ strtoupper($ordenRecoleccion->nombreCliente) }}
+                {{ strtoupper($ordenRecoleccion->apellidoCliente) }}</p>
             <p>{{ $ordenRecoleccion->rfc ? 'RFC : ' . $ordenRecoleccion->rfc : '' }}</p>
             <p>Atencion : {{ $ordenRecoleccion->nombreAtencion }}</p>
             <p>Tel : {{ $ordenRecoleccion->telefonoCliente }}</p>
             <p>{{ $ordenRecoleccion->correo ? 'Correo : ' . $ordenRecoleccion->correo : '' }}</p>
-            <p>Direccion de entrega : Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
-                #{{ $ordenRecoleccion->num_exterior }},
-                {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
+            <p>Direccion de entrega : {{ strtoupper($ordenRecoleccion->localidad) }};
+                {{ strtoupper($ordenRecoleccion->calle) }}
+                #{{ strtoupper($ordenRecoleccion->num_exterior) }},
+                {{ $ordenRecoleccion->num_interior ? ' N° INTERIOR ' . $ordenRecoleccion->num_interior : '' }}
+            </p>
             <p>CP :{{ $ordenRecoleccion->cp }}</p>
-            <p> Referencia : {{ $ordenRecoleccion->referencia }}</p>
+            <p> Referencia : {{ strtoupper($ordenRecoleccion->referencia) }}</p>
             <p>Horario de trabajo
             <table>
                 <tr>
@@ -213,8 +216,8 @@ opacity: 0.5;">
                 <p style="margin-bottom: 10px;"></p>
             @endforeach
             <h5> Datos del pago </h5>
-            <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
-            <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
+            <p>Requiere : {{ $ordenRecoleccion->factura ? 'FACTURA' : 'NOTA' }}</p>
+            <p>Metodo de pago : {{ strtoupper($ordenRecoleccion->metodoPago) }}</p>
             Costo total : ${{ number_format($total, 2) }}<br>
             {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
             <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
@@ -232,6 +235,7 @@ opacity: 0.5;">
     <p>{{ $Tiempo ? 'Hora aproximada de entrega : ' . $tiempoPromesa : 'No hay tiempo aproximado de entrega' }}
     </p>
     <p>{{ $ordenRecoleccion->comentario ? 'Observaciones : ' . $ordenRecoleccion->comentario : '' }}</p>
+    <p>{{ $ordenRecoleccion->fechaEntrega ? 'Entregado : ' . $ordenRecoleccion->fechaEntrega : '' }}</p>
 
 </div>
 <div class="ubicacion">
