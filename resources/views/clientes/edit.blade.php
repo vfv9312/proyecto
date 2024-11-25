@@ -3,11 +3,11 @@
 @section('title', 'Editar cliente')
 
 @section('content')
-    <h1 class=" font-bold text-center">Editar cliente</h1>
+    <h1 class="font-bold text-center ">Editar cliente</h1>
 
 
 
-    <form class="mt-8 flex flex-col justify-center items-center"
+    <form class="flex flex-col items-center justify-center mt-8"
         action="{{ route('clientes.update', $cliente, $persona, $direcciones, $catalogo_colonias) }}" method="POST"
         enctype="multipart/form-data">
         @method('PUT')
@@ -24,5 +24,23 @@
 @endpush
 
 @push('js')
-    <script></script>
+    <script>
+            function toggleApellidoInput() {
+        const checkbox = document.getElementById('tipoDeCliente');
+        console.log(checkbox.checked);
+
+        const apellidoInput = document.getElementById('apellidoInput');
+
+        if (!checkbox.checked) {
+            apellidoInput.classList.remove('hidden');
+        } else {
+            apellidoInput.classList.add('hidden');
+        }
+    }
+
+    // Inicializar la visibilidad del input al cargar la página
+    document.addEventListener('DOMContentLoaded', (event) => {
+        toggleApellidoInput();
+    });
+    </script>
 @endpush

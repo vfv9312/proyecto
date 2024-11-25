@@ -41,20 +41,20 @@ class ProductosController extends Controller
                     ->orWhere('modos.nombre', 'LIKE', "%{$busqueda}%");
             })
             ->when($busquedaMarca, function ($query, $busquedaMarca) {
-                return $query->where('marcas.id', 'LIKE', "%{$busquedaMarca}%");
+                return $query->where('productos.id_marca', '=', $busquedaMarca);
             })
             ->when($busquedaTipo, function ($query, $busquedaTipo) {
-                return $query->where('modos.id', 'LIKE', "%{$busquedaTipo}%");
+                return $query->where('modos.id', '=', $busquedaTipo);
             })
             ->when($busquedaColor, function ($query, $busquedaColor) {
-                return $query->where('colors.id', 'LIKE', "%{$busquedaColor}%");
+                return $query->where('colors.id', '=', $busquedaColor);
             })
             ->when($busquedaCategoria, function ($query, $busquedaCategoria) {
-                return $query->where('tipos.id', 'LIKE', "%{$busquedaCategoria}%");
+                return $query->where('tipos.id', '=', $busquedaCategoria);
             })
             ->select('productos.id', 'productos.nombre_comercial', 'productos.modelo', 'marcas.nombre as nombreMarca', 'modos.nombre as nombreModo', 'colors.nombre as nombreColor', 'modos.id as idModo', 'colors.id as idColor', 'marcas.id as idMarca', 'tipos.nombre as nombreTipo', 'tipos.id as idTipos', 'precios_productos.precio')
             ->orderBy('productos.updated_at', 'desc')
-            ->paginate(10)->appends(['adminlteSearch' => $busqueda, 'marca' => $busquedaMarca, 'tipo' => $busquedaTipo, 'color' => $busquedaColor, 'categoria' => $busquedaCategoria]); // Mueve paginate() aquí para que funcione correctamente
+            ->paginate(100)->appends(['adminlteSearch' => $busqueda, 'marca' => $busquedaMarca, 'tipo' => $busquedaTipo, 'color' => $busquedaColor, 'categoria' => $busquedaCategoria]); // Mueve paginate() aquí para que funcione correctamente
 
         $marcas = Marcas::orderBy('nombre')->get();
         $categorias = Tipo::orderBy('nombre')->get();

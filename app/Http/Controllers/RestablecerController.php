@@ -40,17 +40,18 @@ class RestablecerController extends Controller
 
         $datosEnvio = Preventa::leftJoin('orden_recoleccions', function ($join) {
             $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
-                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id')
+                ->orOn('orden_recoleccions.id_preventaOrdenServicio', '=', 'preventas.id');
         })
-            ->join('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
+            ->join('cancelaciones', 'cancelaciones.id', '=', 'preventas.id_cancelacion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('personas as personasClientes', 'personasClientes.id', '=', 'clientes.id_persona')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftjoin('folios as folio_r', 'folio_r.id', '=', 'orden_recoleccions.id_folio_recoleccion')
             ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
-            ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio']) //whereIn para filtrar las preventas
-            ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Cancelado'])
+            ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio','Orden Servicio']) //whereIn para filtrar las preventas
             ->WhereNull('preventas.deleted_at')
             ->where(function ($query) use ($busqueda) {
                 $query->where('personasClientes.telefono', 'LIKE', "%{$busqueda}%")
@@ -60,7 +61,7 @@ class RestablecerController extends Controller
                     ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$busqueda}%");
             });
         if ($filtroMotivo) {
-            $datosEnvio->where('orden_recoleccions.id_cancelacion', $filtroMotivo);
+            $datosEnvio->where('preventas.id_cancelacion', $filtroMotivo);
         }
 
         if ($filtroFecha_inicio && $fecha_fin) {
@@ -68,9 +69,14 @@ class RestablecerController extends Controller
         }
         $datosEnvio = $datosEnvio->select(
             'orden_recoleccions.id as idRecoleccion',
-            'folios.letra_actual as letraAcutal',
+            'orden_recoleccions.id_preventa as idPreventa',
+            'orden_recoleccions.id_preventaServicio as idPreventaServicio',
+            'orden_recoleccions.id_preventaOrdenServicio as idPreventaOrdenServicio',
+            'folios.letra_actual as letraActual',
             'folios.ultimo_valor as ultimoValor',
             'folios_servicios.ultimo_valor as ultimoValorServicio',
+            'folio_r.letra_actual as letraActual_r',
+            'folio_r.ultimo_valor as ultimoValor_r',
             'preventas.tipo_de_venta as tipoVenta',
             'personasClientes.nombre as nombreCliente',
             'personasClientes.apellido as apellidoCliente',
@@ -90,16 +96,15 @@ class RestablecerController extends Controller
         $cancelaciones = Cancelaciones::where('estatus', 1)
             ->orderBy('cancelaciones.nombre', 'desc')->get();
 
-
         return view('Restablecer.cancelaciones', compact('datosEnvio', 'cancelaciones'));
     }
-    public function actualizarCancelacion(Orden_recoleccion $id)
+    public function actualizarCancelacion(Preventa $id)
     {
         DB::beginTransaction();
         try {
-            $ordenRecoleccion = $id;
+            $preventa = $id;
 
-            $ordenRecoleccion->update([
+            $preventa->update([
                 'id_cancelacion' => null
             ]);
             DB::commit();

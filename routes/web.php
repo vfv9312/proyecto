@@ -24,6 +24,9 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TiempoAproximadoController;
 use App\Http\Controllers\VentasController;
 use App\Http\Controllers\WhatsAppController;
+use App\Http\Controllers\ColoniasController;
+use App\Http\Controllers\MetodoPagoController;
+use App\Http\Controllers\TiposController;
 use App\Mail\correoMailable;
 use App\Models\Info_tickets;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -70,7 +73,7 @@ Route::get('/clear-cache', function () {
 
 //generar pdf
 Route::get('orden_entrega_pdf/{id}/generarpdf', [OrdenEntregaController::class, 'generarPdf'])->name('generarpdf.ordenentrega');
-Route::get('orden_entrega_pdf/{id}/generarpdf2', [OrdenRecoleccionController::class, 'generarPdf2'])->name('generarpdf2.ordenentrega');
+Route::get('orden_entrega_pdf/{id}/generarpdf2', [OrdenRecoleccionController::class, 'generarPdf2'])->name('generarpdf2.ordenServicio2');
 Route::get('orden_servicio_pdf/{id}/generarpdf', [ordenServicioController::class, 'generarPdf'])->name('generarpdf.ordenservicio');
 
 
@@ -89,6 +92,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('orden_entrega', OrdenEntregaController::class)->middleware(['verified']); //index: muestra la vista con todos los datos para hacer una orden de entrega, show: muestra una vista previa
     Route::get('orden_entrega/{id}/vistaprevia', [OrdenEntregaController::class, 'VistaPrevioOrdenEntrega'])->name('ordenEntrega.vistaGeneral')->middleware(['verified']); //muestra el contenido
     Route::get('ordenes/{idproducto}/{idservicio}', [OrdenEntregaController::class, 'vistaPreviaTickets'])->name('orden_recoleccion.vistaPreviaTickets')->middleware(['verified']); //muestra el contenido
+    Route::get('/detallesproducto', [OrdenEntregaController::class, 'detallesproducto'])->name('orden_recoleccion.detallesproducto');
+    Route::post('/guardarproducto', [OrdenEntregaController::class, 'guardarProducto'])->name('ordenEntrega.guardarProducto');
+
 
     Route::post('/cambiarProductoRecarga', [OrdenEntregaController::class, 'cambiarProductoRecarga'])->name('product.Recarga');
 
@@ -113,7 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('TiempoAproximado', TiempoAproximadoController::class)->middleware(['verified']);
     Route::get('enviar-correo/{id}/correo', [EnviarCorreoController::class, 'enviarCorreos'])->name('Correo.enviar');
     Route::get('enviar-correo/{error}/{id}/estatus', [EnviarCorreoController::class, 'vistaPrevia'])->name('Correo.vistaPrevia');
-    Route::get('enviar-mensaje/{id}/whatsapp', [WhatsAppController::class, 'enviarMensaje'])->name('WhatsApp.enviar');
+    Route::get('enviar-mensaje/{id}/{telefono}/whatsapp', [WhatsAppController::class, 'enviarMensaje'])->name('WhatsApp.enviar');
 
     //estatus de las entregas
     Route::get('/orden_recoleccion/generarexcel', [OrdenRecoleccionController::class, 'generarExcel'])->name('ordenentrega.generarExcel'); //hay que ponerlo antes del resource para que jale
@@ -121,12 +127,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orden_recoleccion/{id}/vistacancelar', [OrdenRecoleccionController::class, 'vistacancelar'])->name('orden_recoleccion.vistacancelar')->middleware(['verified']);
     Route::put('/orden_recoleccion/{id}/cancelar', [OrdenRecoleccionController::class, 'cancelar'])->name('orden_recoleccion.cancelar')->middleware(['verified']);
 
-
     // servicios
     Route::resource('orden_servicio', ordenServicioController::class)->middleware(['verified']);
     Route::get('orden_serviciof/{id}/vistaPrevia', [ordenServicioController::class, 'vistaPrevia'])->name('vistaPrevia.ordenservicio');
     Route::get('/orden-servicio/{id}/vista-general', [OrdenServicioController::class, 'vistaGeneral'])->name('ordenServicio.vistaGeneral');
 
+
+    //OrdenServicio
+    Route::get('/orden-servicio/{id}/vistaPreviaordenservicio',[ordenServicioController::class, 'vistaOrdenServicio'])->name('ordenServicio.vistaOrdenServicio');
+    Route::get('/orden-servicio/{id}/vista-general-ordenservicio',[OrdenServicioController::class,'vistaGeneralOrdenServicio'])->name('ordenServicio.vistaGeneralOrdenServicio');
 
     Route::resource('cancelar', CancelacionesController::class)->middleware(['verified']);
     Route::put('/cancelar/{id}/desactivar', [CancelacionesController::class, 'desactivar'])->name('cancelar.desactivar')->middleware(['verified']);
@@ -176,5 +185,14 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('ventas', VentasController::class)->middleware(['verified']);
     //Lista de clientes
     //Route::get('/venta', [VentasController::class, 'index'])->name('ventas.index');
+    
+    //Colonias
+    Route::resource('colonias', ColoniasController::class)->middleware(['verified', 'rol']);
+
+    Route::resource('metodopago', MetodoPagoController::class)->middleware(['verified', 'rol']);
+    Route::put('/metodopago/{id}/desactivar', [MetodoPagoController::class, 'desactivar'])->name('metodopago.desactivar')->middleware(['verified']);
+
+    //Tipos
+    Route::resource('tipos', TiposController::class)->middleware(['verified', 'rol']);
 });
 require __DIR__ . '/auth.php';

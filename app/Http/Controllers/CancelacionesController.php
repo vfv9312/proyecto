@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cancelaciones;
 use App\Models\Orden_recoleccion;
 use App\Models\Preventa;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,70 +16,104 @@ class CancelacionesController extends Controller
      */
     public function index(Request $request)
     {
+
         $busqueda = $request->query('adminlteSearch');
         $filtroMotivo = $request->query('motivo');
         $filtroFecha_inicio = $request->query('fecha_inicio');
         $fecha_fin = $request->query('fecha_fin');
-        //
+        $palabras = explode(' ', $busqueda); // Divide la cadena de búsqueda en palabras
 
-        $datosEnvio = Preventa::leftJoin('orden_recoleccions', function ($join) {
+        //
+        $preventas = Preventa::join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+        ->join('personas', 'personas.id', '=', 'clientes.id_persona')
+        ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+        ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+        ->leftjoin('cancelaciones','cancelaciones.id','=','preventas.id_cancelacion')
+        ->leftJoin('orden_recoleccions', function ($join) {
             $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
                 ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
         })
-            ->join('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
-            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('personas as personasClientes', 'personasClientes.id', '=', 'clientes.id_persona')
-            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
-            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
-            ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
-            ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio']) //whereIn para filtrar las preventas
-            ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Cancelado'])
-            ->whereNull('preventas.deleted_at')
-            ->where(function ($query) use ($busqueda) {
-                $query->where('personasClientes.telefono', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('personasClientes.nombre', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('personasClientes.apellido', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$busqueda}%")
-                    ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$busqueda}%");
-            });
-        if ($filtroMotivo) {
-            $datosEnvio->where('orden_recoleccions.id_cancelacion', $filtroMotivo);
-        }
+        ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+        ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
+        ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio']) //whereIn para filtrar las preventas
+        ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Cancelado'])
+        ->WhereNull('preventas.deleted_at')
+        ->whereNotNull('preventas.id_cancelacion')
+        ->where(function ($query) use ($palabras) {
+            foreach ($palabras as $palabra) {
+                $query->where(function ($query) use ($palabra) {
+                    $query->where('personas.telefono', 'LIKE', "%{$palabra}%")
+                        ->orWhere('personas.nombre', 'LIKE', "%{$palabra}%")
+                        ->orWhere('personas.apellido', 'LIKE', "%{$palabra}%")
+                        ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$palabra}%")
+                        ->orWhere('catalago_ubicaciones.localidad', 'LIKE', "%{$palabra}%");
+                });
+            }
+        });
 
-        if ($filtroFecha_inicio && $fecha_fin) {
-            $datosEnvio->whereBetween('orden_recoleccions.created_at', [$filtroFecha_inicio, $fecha_fin]);
-        }
-        $datosEnvio = $datosEnvio->select(
-            'orden_recoleccions.id as idRecoleccion',
-            'preventas.nombre_empleado as nombreEmpleado',
-            'preventas.nombre_atencion as nombreAtencion',
-            'preventas.nombre_quien_recibe as nombreRecibe',
-            'preventas.id as idPreventa',
-            'preventas.estado as estatusPreventa',
-            'preventas.tipo_de_venta as tipoVenta',
-            'folios.letra_actual as letraAcutal',
-            'folios.ultimo_valor as ultimoValor',
-            'folios_servicios.ultimo_valor as ultimoValorServicio',
-            'personasClientes.nombre as nombreCliente',
-            'personasClientes.apellido as apellidoCliente',
-            'orden_recoleccions.created_at as fechaCreacion',
-            'orden_recoleccions.deleted_at as fechaEliminacion',
-            'catalago_ubicaciones.localidad as colonia',
-            'direcciones.calle',
-            'direcciones.num_exterior',
-            'direcciones.num_interior',
-            'direcciones.referencia',
-            'cancelaciones.nombre as categoriaCancelacion',
-        )
-            ->orderBy('clientes.updated_at', 'desc')
-            ->paginate(5);
+    // Búsqueda por número de folio
+    if (preg_match('/^[A-Z]\d+$/', $busqueda)) {
+        $letra = substr($busqueda, 0, 1);
+        $numero = (int) substr($busqueda, 1);
+
+        $preventas->orWhere(function ($query) use ($letra, $numero) {
+            $query->where('folios.letra_actual', $letra)
+                ->where('folios.ultimo_valor', $numero);
+        });
+    }
+    if (ctype_digit($busqueda)) {
+
+        $numero = (int) $busqueda;
+
+        $preventas->orWhere(function ($query) use ($numero) {
+            $query->where('folios_servicios.ultimo_valor', $numero);
+        });
+    }
+    if($filtroMotivo) {
+        $preventas->where('cancelaciones.id', $filtroMotivo);
+    }
+
+    if ($filtroFecha_inicio && $fecha_fin) {
+
+        $Inicio = Carbon::createFromFormat('Y-m-d', $filtroFecha_inicio)->startOfDay();
+        $Fin = Carbon::createFromFormat('Y-m-d', $fecha_fin)->endOfDay();
+
+        $preventas->whereBetween('orden_recoleccions.created_at', [$Inicio, $Fin]);
+    }
+
+    $preventas = $preventas->select(
+        'orden_recoleccions.id as idRecoleccion',
+        'orden_recoleccions.created_at as fechaCreacion',
+        'orden_recoleccions.created_at',
+        'folios.letra_actual as letraActual',
+        'folios.ultimo_valor as ultimoValor',
+        'folios_servicios.ultimo_valor as ultimoValorServicio',
+        'preventas.id as idPreventa',
+        'preventas.estado as estatusPreventa',
+        'preventas.tipo_de_venta as tipoVenta',
+        'preventas.id_cancelacion',
+        'preventas.nombre_empleado as nombreEmpleado',
+        'personas.nombre as nombreCliente',
+        'personas.apellido as apellidoCliente',
+        'personas.telefono',
+        'personas.email as correo',
+        'clientes.comentario as rfc',
+        'catalago_ubicaciones.localidad as colonia',
+        'direcciones.calle',
+        'direcciones.num_exterior',
+        'direcciones.num_interior',
+        'direcciones.referencia',
+    )
+        ->orderBy('orden_recoleccions.updated_at', 'desc')
+
+        ->paginate(100)->appends(['adminlteSearch' => $busqueda, 'fecha_inicio' => $filtroFecha_inicio, 'fecha_fin' => $fecha_fin, 'filtroMotivo' => $filtroMotivo]); // Mueve paginate() aquí para que funcione correctamente
+
 
         $cancelaciones = Cancelaciones::where('estatus', 1)
             ->orderBy('cancelaciones.nombre', 'desc')->get();
 
 
-        return view('cancelaciones.index', compact('datosEnvio', 'cancelaciones'));
+        return view('cancelaciones.index', compact('preventas', 'cancelaciones', 'filtroMotivo','filtroFecha_inicio','fecha_fin'));
     }
 
     /**

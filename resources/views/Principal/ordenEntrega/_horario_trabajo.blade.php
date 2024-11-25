@@ -1,37 +1,49 @@
-<section class=" w-full border-4 mt-8 px-3 pb-3">
+<section class="w-full px-3 pb-3 mt-8 border-4 ">
     <div>
-        <h1 class="text-2xl
-    text-center font-bold text-green-700 mb-2">Horario de Trabajo</h1>
+        <h1 class="mb-2 text-2xl font-bold text-center text-green-700">Horario de Trabajo</h1>
     </div>
-    <div class=" flex lg:flex-row flex-col justify-center">
+    <div class="flex flex-col justify-center lg:flex-row">
 
         {{-- @foreach (['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'] as $dia) --}}
         @foreach (['Lunes-Viernes', 'Sabado', 'Domingo'] as $dia)
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2 mr-3" for="{{ $dia }}_entrada">
+                <label class="block mb-2 mr-3 text-sm font-bold text-gray-700" for="{{ $dia }}_entrada">
                     {{ $dia }} - Hora de entrada
                 </label>
                 <input
-                    class="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                     id="{{ $dia }}_entrada" type="time" name="{{ $dia }}_entrada">
 
-                <label class="block text-gray-700 text-sm font-bold mb-2 mt-4 mr-3" for="{{ $dia }}_salida">
+                <label class="block mt-4 mb-2 mr-3 text-sm font-bold text-gray-700" for="{{ $dia }}_salida">
                     {{ $dia }} - Hora de salida
                 </label>
                 <input
-                    class="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                     id="{{ $dia }}_salida" type="time" name="{{ $dia }}_salida">
+            </div>
+
+            <div id="horarioDiscontinuo" class="mb-4 border-4 border-green-500 border-double">
+                <h2 class="mt-4 mb-2 text-2xl font-semibold text-green-600 underline">Horario Partido</h2>
+                <label class="block mb-2 mr-3 text-sm font-bold text-gray-700" for="{{ $dia }}Discontinuo_entrada">
+                    {{ $dia }} - Hora de entrada
+                </label>
+                <input
+                    class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                    id="{{ $dia }}Discontinuo_entrada" type="time" name="{{ $dia }}Discontinuo_entrada">
+
+                <label class="block mt-4 mb-2 mr-3 text-sm font-bold text-gray-700" for="{{ $dia }}Discontinuo_salida">
+                    {{ $dia }} - Hora de salida
+                </label>
+                <input
+                    class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                    id="{{ $dia }}Discontinuo_salida" type="time" name="{{ $dia }}Discontinuo_salida">
             </div>
         @endforeach
     </div>
-    {{-- <div class="text-center mt-4">
-        <button type="button" id="lunesAViernes"
-            class="px-4 py-2 bg-green-500 hover:bg-green-700 text-white rounded">Lunes a
-            Viernes</button>
-    </div> --}}
-    <div class="text-center mt-4">
+
+    <div class="mt-4 text-center">
         <button type="button" id="resetButton"
-            class="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded">Restablecer
+            class="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700">Restablecer
             horarios</button>
     </div>
 </section>

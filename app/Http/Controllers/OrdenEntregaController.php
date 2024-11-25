@@ -22,6 +22,7 @@ use App\Models\Servicios_preventas;
 use App\Models\TiempoAproximado;
 use App\Models\Tipo;
 use App\Models\ventas_productos;
+use App\Models\Metodo_pago;
 use App\Models\ventas_servicios;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
@@ -43,11 +44,12 @@ class OrdenEntregaController extends Controller
         $marca = $request->marca;
         $tipo = $request->tipo;
 
-
+        $metodosDePagos = Metodo_pago::where('estatus','Activo')->get();
         $marcas = Marcas::orderBy('nombre')->get();
         $tipos = Tipo::orderBy('nombre')->get();
         $modos = Modo::orderBy('nombre')->get();
         $colores = Color::all();
+
 
         // clientes
         $listaClientes = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
@@ -59,6 +61,7 @@ class OrdenEntregaController extends Controller
                 'personas.email',
                 'clientes.comentario',
                 'clientes.id as id_cliente',
+                'clientes.clave'
             )
             ->orderBy('clientes.updated_at', 'desc')
             ->get();
@@ -99,7 +102,7 @@ class OrdenEntregaController extends Controller
 
         $descuentos = Descuentos::select('*')->orderBy('nombre', 'asc')->get();
 
-        return view('Principal.ordenEntrega.tienda', compact('marcas', 'tipos', 'modos', 'colores', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion', 'HorarioTrabajo', 'descuentos'));
+        return view('Principal.ordenEntrega.tienda', compact('marcas', 'tipos', 'modos', 'colores', 'listaClientes', 'listaDirecciones', 'ListaColonias', 'listaAtencion', 'HorarioTrabajo', 'descuentos','metodosDePagos'));
     }
 
     /**
@@ -152,7 +155,6 @@ class OrdenEntregaController extends Controller
     public function store(Request $request)
     {
 
-
         $nombreEmpleado = strtoupper(Auth::user()->name);
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
@@ -161,6 +163,8 @@ class OrdenEntregaController extends Controller
             // si fue seleccionado el cliente y la direccion tendremos estos datos del id
             $idCliente = $request->input('cliente'); //id del cliente
             $nuevaDireccion = $request->input('id_direccion');
+            $clave = $request->input('txtclave');
+            $ProductooRecoleccion = $request->input('inputcheckProductooRecoleccion');
 
             //si modificamos un dato del cliente podrian ser cualquiera de estos 3
             $telefono = $request->input('txttelefono'); //telefono del cliente
@@ -193,8 +197,15 @@ class OrdenEntregaController extends Controller
             $SabadoSalida = $request->input('Sabado_salida');
             $DomingoEntrada = $request->input('Domingo_entrada');
             $DomingoSalida = $request->input('Domingo_salida');
-            $horarioTrabajoInicio = $LunesEntrada . ',' . $SabadoEntrada . ',' . $DomingoEntrada;
-            $horarioTrabajoFinal = $LunesSalida . ',' . $SabadoSalida . ',' . $DomingoSalida;
+            $LunesDiscontinuoEntrada = $request->input('Lunes-ViernesDiscontinuo_entrada');
+            $LunesDiscontinuoSalida = $request->input('Lunes-ViernesDiscontinuo_salida');
+            $SabadoDiscontinuoEntrada = $request->input('SabadoDiscontinuo_entrada');
+            $SabadoDiscontinuoSalida = $request->input('SabadoDiscontinuo_salida');
+            $DomingoDiscontinuoEntrada = $request->input('DomingoDiscontinuo_entrada');
+            $DomingoDiscontinuoSalida = $request->input('DomingoDiscontinuo_salida');
+
+            $horarioTrabajoInicio = $LunesEntrada . ',' . $SabadoEntrada . ',' . $DomingoEntrada . ',' . $LunesDiscontinuoEntrada . ',' . $SabadoDiscontinuoEntrada . ',' . $DomingoDiscontinuoEntrada;
+            $horarioTrabajoFinal = $LunesSalida . ',' . $SabadoSalida . ',' . $DomingoSalida . ',' . $LunesDiscontinuoSalida . ',' . $SabadoDiscontinuoSalida . ',' . $DomingoDiscontinuoSalida;
 
 
             $diasConDatos = '';
@@ -208,6 +219,15 @@ class OrdenEntregaController extends Controller
             }
             if (!empty($DomingoEntrada)) {
                 $diasConDatos .= 'Domingo,';
+            }
+            if (!empty($LunesDiscontinuoEntrada)){
+                $diasConDatos .= 'Lunes-ViernesDiscontinuo,';
+            }
+            if (!empty($SabadoDiscontinuoEntrada)){
+                $diasConDatos .= 'SabadoDiscontinuo,';
+            }
+            if (!empty($DomingoDiscontinuoEntrada)){
+                $diasConDatos .= 'DomingoDiscontinuo,';
             }
 
             // Eliminar la última coma
@@ -243,6 +263,7 @@ class OrdenEntregaController extends Controller
                 $clienteNuevo = clientes::create([
                     'id_persona' => $clientePersona->id,
                     'comentario' => strtoupper($rfc),
+                    'clave' => $clave,
                     'estatus' => 1,
                 ]);
 
@@ -291,6 +312,18 @@ class OrdenEntregaController extends Controller
             $preventaProducto = null;
             $preventaServicio = null;
             // iteramos en un forech para ir agregando los productos seleccionados en el pedido para agregarlos en ventas_productos
+
+        switch($relacion){
+                case null:
+                    $preventaServicio = is_null($preventaServicio) ? $this->savePresale('Servicio', 'Recolectar', $data) : $preventaServicio;
+
+                break;
+
+                default:
+                    if(in_array($ProductooRecoleccion, ['seleccionadolosdos', 'recoleccion'])){
+                        $preventaServicio = is_null($preventaServicio) ? $this->savePresale('Servicio', 'Recolectar', $data) : $preventaServicio;
+                    }
+
             foreach ($relacion as $articulo) {
 
 
@@ -336,13 +369,15 @@ class OrdenEntregaController extends Controller
                             'tipo_descuento' => $tipoDescuento, //le asignamos Sin descuento si llega hacer null
                             'estatus' => 3 //le asignamos estatus 3
                         ]);
+
+
                         break;
 
                     case '2':
                         $preventaServicio = is_null($preventaServicio) ? $this->savePresale('Servicio', 'Recolectar', $data) : $preventaServicio;
 
                         //ya una vez identificados le agregamos el id del precio actual y cantidad
-                        $servicio_venta = Servicios_preventas::firstOrCreate([
+                        /*$servicio_venta = Servicios_preventas::firstOrCreate([
                             'id_precio_producto' => $articulo['idPrecio'], //id del precio producto que esta relacionado con el producto
                             'id_preventa' => $preventaServicio->id, //le asignamos su nummero de preventa
                             'descuento' => $descuento,
@@ -351,14 +386,17 @@ class OrdenEntregaController extends Controller
                             'cantidad' => $articulo['cantidad'],  //borrar cuando cargue el migration
                             'cantidad_total' => $articulo['cantidad'], //le asignamos su cantidad
                             'estatus' => 1 //le asignamos estatus 1
-                        ]);
+                        ]);*/
                         break;
 
                     default:
                         $producto_venta = 'error';
                         break;
                 }
+
             }
+            break;
+        }
 
 
             $cliente = Clientes::find($idCliente);
@@ -366,6 +404,7 @@ class OrdenEntregaController extends Controller
 
             $cliente->update([
                 'comentario' => strtoupper($rfc),
+                'clave' => $clave
             ]);
 
             $ubicarpersona->update([
@@ -375,14 +414,15 @@ class OrdenEntregaController extends Controller
 
             if (!is_null($preventaServicio) && !is_null($preventaProducto)) {
 
-                $folioServicio =  $this->folioServicio();
+                $folioRecoleccion =  $this->folio();
                 $folio = $this->folio();
 
                 $Ordenderecoleccion = Orden_recoleccion::create([
                     'id_preventa' => $preventaProducto->id,
                     'id_preventaServicio' => $preventaServicio->id,
-                    'id_folio_servicio' => $folioServicio->id,
                     'id_folio' => $folio->id,
+                    'id_folio_recoleccion' => $folioRecoleccion->id,
+
                 ]);
             } else if (!is_null($preventaProducto)) {
                 $folio = $this->folio();
@@ -393,11 +433,12 @@ class OrdenEntregaController extends Controller
                 ]);
             } else if (!is_null($preventaServicio)) {
 
-                $folioServicio =  $this->folioServicio();
+                $folioRecoleccion =  $this->folio();
+                $folio = $this->folio();
 
                 $Ordenderecoleccion = Orden_recoleccion::create([
                     'id_preventaServicio' => $preventaServicio->id,
-                    'id_folio_servicio' => $folioServicio->id,
+                    'id_folio_recoleccion' => $folioRecoleccion->id
 
                 ]);
             }
@@ -468,6 +509,8 @@ class OrdenEntregaController extends Controller
         return $folio;
     }
 
+
+
     public function folioServicio()
     {
         $ultimoFolio = Folio_servicios::orderBy('id', 'desc')->first();
@@ -501,9 +544,10 @@ class OrdenEntregaController extends Controller
 
         $producto = Preventa::find($idproducto) ?  Preventa::find($idproducto) : 0;
         $servicio = Preventa::find($idservicio) ?  Preventa::find($idservicio) : 0;
+        $tipoServicio = $busqueda->tipo_de_venta;
 
 
-        return view('Principal.ordenEntrega.cantidad_ordenes', compact('producto', 'servicio', 'cliente'));
+        return view('Principal.ordenEntrega.cantidad_ordenes', compact('tipoServicio','producto', 'servicio', 'cliente'));
     }
     public function VistaPrevioOrdenEntrega($id)
     {
@@ -556,6 +600,7 @@ class OrdenEntregaController extends Controller
             ->join('colors', 'colors.id', '=', 'productos.id_color')
             ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->join('modos', 'modos.id', '=', 'productos.id_modo')
+            ->whereIn('ventas_productos.estatus', [3])
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
             ->select(
                 'productos.nombre_comercial',
@@ -652,7 +697,7 @@ class OrdenEntregaController extends Controller
     {
         $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
-            ->leftJoin('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
+            ->leftJoin('cancelaciones', 'cancelaciones.id', '=', 'preventas.id_cancelacion')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
@@ -661,12 +706,12 @@ class OrdenEntregaController extends Controller
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
-                'orden_recoleccions.id_cancelacion as idCancelacion',
                 'orden_recoleccions.comentario as descripcionCancelacion',
                 'orden_recoleccions.Fecha_entrega as fechaEntrega',
                 'folios.letra_actual as letraActual',
                 'folios.ultimo_valor as ultimoValor',
                 'folios.created_at as fechaDelTiempoAproximado',
+                'preventas.id_cancelacion as idCancelacion',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
@@ -701,6 +746,7 @@ class OrdenEntregaController extends Controller
             ->join('colors', 'colors.id', '=', 'productos.id_color')
             ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
             ->join('modos', 'modos.id', '=', 'productos.id_modo')
+            ->whereIn('ventas_productos.estatus', [3])
             ->where('preventas.id', $ordenRecoleccion->idPreventa)
             ->select(
                 'productos.nombre_comercial',
@@ -750,6 +796,7 @@ class OrdenEntregaController extends Controller
 
     public function cambiarProductoRecarga(Request $request)
     {
+
         $productoRecarga = $request->input('productoRecarga');
 
 
@@ -828,6 +875,83 @@ class OrdenEntregaController extends Controller
                 break;
         }
     }
+
+    public function detallesproducto(Request $request)
+    {
+
+
+        $marcas = Marcas::orderBy('nombre')->get();
+        $categorias = Tipo::orderBy('nombre')->get();
+        $modos = Modo::orderBy('nombre')->get();
+        $colores = Color::all();
+
+        return response()->json(['marcas' => $marcas, 'categorias' => $categorias, 'modos' => $modos, 'colores' => $colores]);
+    }
+
+    public function guardarProducto(Request $request)
+    {
+
+    $validatedData = $request->validate([
+        'txtnombre' => 'required|string|max:255',
+        'txtmodelo' => 'required|string|max:255',
+        'txtmarca' => 'required|integer',
+        'txttipo' => 'required|integer',
+        'txtmodo' => 'required|integer',
+        'txtcolor' => 'required|integer',
+        'txtprecio' => 'required|numeric',
+        'txtprecioalternativouno' => 'nullable|numeric',
+        'txtprecioalternativodos' => 'nullable|numeric',
+        'txtprecioalternativotres' => 'nullable|numeric',
+        'txtdescripcion' => 'required|string',
+    ]);
+    DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
+
+    //el estatus 2 en precioProducto indica que es un servicio y el 1 es un producto
+    try {
+    if($validatedData['txtprecio'] == '0'){
+        $estatusPrecioProducto = 2;
+
+    }else{
+        $estatusPrecioProducto = 1;
+    }
+
+
+    // Guardar el producto en la base de datos
+       // Insertar en la tabla 'productos'
+       $producto = productos::create([
+        'nombre_comercial' => $validatedData['txtnombre'],
+        'modelo' => $validatedData['txtmodelo'],
+        'id_color' => $validatedData['txtcolor'],
+        'id_tipo' => $validatedData['txttipo'],
+        'id_modo' => $validatedData['txtmodo'],
+        'id_marca' => $validatedData['txtmarca'],
+        'descripcion' => $validatedData['txtdescripcion'],
+        'fotografia' => null,
+        'estatus' => $estatusPrecioProducto,
+    ]);
+
+    // Insertar en la tabla 'precios_productos' usando el ID del producto
+    $precioProducto = precios_productos::create([
+        'id_producto' => $producto->id,
+        'precio' => $validatedData['txtprecio'],
+        'alternativo_uno' => $validatedData['txtprecioalternativouno'],
+        'alternativo_dos' => $validatedData['txtprecioalternativodos'],
+        'alternativo_tres' => $validatedData['txtprecioalternativotres'],
+        'estatus' => $estatusPrecioProducto,
+    ]);
+
+        DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+        return response()->json(['success' => true, 'message' => 'Producto guardado correctamente'], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack(); //El código DB::rollBack(); en Laravel se utiliza para revertir todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
+            //return $th->getMessage();
+            return response()->json(['success' => false, 'message' => 'Error al procesar el registro'], 500);
+            //session()->flash("incorrect", "Error al procesar los productos, posiblemente no registro algun dato");
+            //return redirect()->route('orden_entrega.index');
+        }
+}
+
+
 
 
 

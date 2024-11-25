@@ -129,7 +129,7 @@ opacity: 0.5;">
         <p>Fecha recepcion: {{ $fecha }}</p>
         <p>{{ $ordenRecoleccion->idCancelacion ? 'Motivo de cancelación : ' . $ordenRecoleccion->nombreCancelacion : '' }}
         </p>
-        <p>{{ $ordenRecoleccion->idCancelacion ? 'Descripcion de cancelacion : ' . $ordenRecoleccion->descripcionCancelacion : '' }}
+        <p>{{ $ordenRecoleccion->idCancelacion ? 'Descripcion de cancelacion : ' . $ordenRecoleccion->comentario : '' }}
         </p>
     </div>
     <div class="body">
@@ -149,28 +149,46 @@ opacity: 0.5;">
             <p>CP :{{ $ordenRecoleccion->cp }}</p>
             <p> Referencia : {{ strtoupper($ordenRecoleccion->referencia) }}</p>
             <p>Horario de trabajo
-            <table>
-                <tr>
+
                     @foreach ($dias as $index => $dia)
-                        <td class="dias">
-                            @if ($dia == 'Lunes-Viernes')
+
+                        @if ($dia == 'Lunes-Viernes')
+                    <table>
+                         <tr>
+                            <td class="dias">
                                 {{ $dia }} {{ $horariosInicio[$index] }} - {{ $horariosFinal[$index] }}
-                            @endif
-                        </td>
-                    @endforeach
-                </tr>
-            </table>
-            <table>
-                <tr>
-                    @foreach ($dias as $index => $dia)
-                        <td class="dias">
-                            @if ($dia == 'Sabado' || $dia == 'Domingo')
+                            </td>
+                        </tr>
+                    </table>
+                        @elseif($dia == 'Lunes-ViernesDiscontinuo')
+                    <table>
+                        <tr>
+                            <td class="dias">
+                                {{ str_replace('Discontinuo', '', $dia) }} 2° turno {{ $horariosInicio[$index] }} - {{ $horariosFinal[$index] }}
+                            </td>
+                        </tr>
+                    </table>
+                        @elseif ($dia == 'Sabado' || $dia == 'Domingo')
+                    <table>
+                        <tr>
+                            <td class="dias">
                                 {{ $dia }} {{ $horariosInicio[$index] }} - {{ $horariosFinal[$index] }}
-                            @endif
-                        </td>
+                            </td>
+                        </tr>
+                    </table>
+                    @elseif ($dia == 'SabadoDiscontinuo' || $dia == 'DomingoDiscontinuo')
+                    <table>
+                        <tr>
+                            <td class="dias">
+                                {{ str_replace('Discontinuo', '', $dia) }} 2° Turno {{ $horariosInicio[$index] }} - {{ $horariosFinal[$index] }}
+                            </td>
+                        </tr>
+                    </table>
+
+                        @endif
+
                     @endforeach
-                </tr>
-            </table>
+
             </p>
         </div>
         <div class="item">
@@ -195,11 +213,12 @@ opacity: 0.5;">
                                 ($producto->precio * intval($producto->descuento)) / 100;
                         @endphp
                     @elseif ($producto->tipoDescuento == 'cantidad')
-                        Descuento : ${{ $producto->descuento }}
-                        <p> Costo : ${{ $producto->precio * $producto->cantidad - $producto->descuento }}</p>
-                        @php
-                            $total += $producto->precio * $producto->cantidad - $producto->descuento;
-                        @endphp
+                    @php
+                        $descuentoCantidad = $producto->descuento * $producto->cantidad;
+                        $total += $producto->precio * $producto->cantidad - $descuentoCantidad;
+                    @endphp
+                        Descuento : ${{ $descuentoCantidad}}
+                        <p> Costo : ${{ $producto->precio * $producto->cantidad - $descuentoCantidad }}</p>
                     @elseif ($producto->tipoDescuento == 'alternativo')
                         Descuento : ${{ ($producto->precio - $producto->descuento) * $producto->cantidad }}
                         Costo : ${{ $producto->descuento * $producto->cantidad }}
@@ -234,7 +253,9 @@ opacity: 0.5;">
     <p>Recibe : {{ $ordenRecoleccion->recibe }}</p>
     <p>{{ $Tiempo ? 'Hora aproximada de entrega : ' . $tiempoPromesa : 'No hay tiempo aproximado de entrega' }}
     </p>
+    @if (!$ordenRecoleccion->idCancelacion)
     <p>{{ $ordenRecoleccion->comentario ? 'Observaciones : ' . $ordenRecoleccion->comentario : '' }}</p>
+    @endif
     <p>{{ $ordenRecoleccion->fechaEntrega ? 'Entregado : ' . $ordenRecoleccion->fechaEntrega : '' }}</p>
 
 </div>

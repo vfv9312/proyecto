@@ -43,6 +43,7 @@ class EliminacionController extends Controller
                     ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
             })
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftjoin('folios as folio_r', 'folio_r.id', '=', 'orden_recoleccions.id_folio_recoleccion')
             ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
             ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio']) //whereIn para filtrar las preventas
             ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Cancelado'])
@@ -98,12 +99,14 @@ class EliminacionController extends Controller
         $preventas = $preventas->select(
             'orden_recoleccions.id as idRecoleccion',
             'orden_recoleccions.created_at as fechaCreacion',
-            'orden_recoleccions.id_cancelacion',
             'orden_recoleccions.created_at',
             'folios.letra_actual as letraActual',
             'folios.ultimo_valor as ultimoValor',
             'folios_servicios.ultimo_valor as ultimoValorServicio',
+            'folio_r.letra_actual as letraActual_r',
+            'folio_r.ultimo_valor as ultimoValor_r',
             'preventas.id as idPreventa',
+            'preventas.id_cancelacion',
             'preventas.estado as estatusPreventa',
             'preventas.tipo_de_venta as tipoVenta',
             'preventas.nombre_empleado as nombreEmpleado',

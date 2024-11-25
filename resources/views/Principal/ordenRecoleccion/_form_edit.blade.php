@@ -1,297 +1,196 @@
-<div class="flex flex-wrap -mx-3 mt-4 whitespace-no-wrap border-b border-gray-200">
-    <div class="w-full md:w-1/4 px-3 mb-2 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+<div class="flex flex-wrap mt-4 -mx-3 whitespace-no-wrap border-b border-gray-200">
+    <div class="w-full px-3 mb-2 md:w-1/4 md:mb-0">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Nombre del Cliente
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             id="nombre_cliente" type="text" name="txtnombre_cliente"
-            value="{{ $datosEnvio->nombreCliente }} {{ $datosEnvio->apellidoCliente }}" readonly>
+            value="{{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}" readonly>
     </div>
-    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+    <div class="w-full px-3 mb-6 md:w-1/4 md:mb-0">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Atendido por
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="atencion" type="text" name="txtatencion" value="{{ $datosEnvio->nombreAtencion }}" readonly>
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="atencion" type="text" name="txtatencion" value="{{ $ordenRecoleccion->nombreAtencion }}" readonly>
     </div>
-    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+    <div class="w-full px-3 mb-6 md:w-1/4 md:mb-0">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Recibe
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="recibe" type="text" name="txtrecibe" value="{{ $datosEnvio->nombreRecibe }}" readonly>
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="recibe" type="text" name="txtrecibe" value="{{ $ordenRecoleccion->nombreRecibe }}" readonly>
     </div>
-    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+    <div class="w-full px-3 mb-6 md:w-1/4 md:mb-0">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Recepcionó
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="recepciono" type="text" name="txtrecepciono" value="{{ $datosEnvio->nombreEmpleado }}" readonly>
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="recepciono" type="text" name="txtrecepciono" value="{{ $ordenRecoleccion->nombreEmpleado }}" readonly>
     </div>
 </div>
 
 
-<div class="w-full md:w-full px-3 mb-6 md:mb-0 md:mt-10 whitespace-no-wrap border-b border-gray-200">
-    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+<div class="w-full px-3 mb-6 whitespace-no-wrap border-b border-gray-200 md:w-full md:mb-0 md:mt-10">
+    <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
         Dirección a entregar
     </label>
     <input
-        class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
         id="direccion" type="text" name="txtdireccion"
-        value="Col.{{ $datosEnvio->colonia }}; {{ $datosEnvio->calle }} #{{ $datosEnvio->num_exterior }} {{ $datosEnvio->num_interior ? '- numero interior ' . $datosEnvio->num_interior : '' }}"
+        value="Col.{{ $ordenRecoleccion->colonia }}; {{ $ordenRecoleccion->calle }} #{{ $ordenRecoleccion->num_exterior }} {{ $ordenRecoleccion->num_interior ? '- numero interior ' . $ordenRecoleccion->num_interior : '' }}"
         readonly>
-    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+    <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
         Referencia
     </label>
     <input
-        class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
         id="direccion" type="text" name="txtdireccion"
-        value=" {{ $datosEnvio->referencia ? strtoupper($datosEnvio->referencia) : 'Sin Referencia' }}" readonly>
+        value=" {{ $ordenRecoleccion->referencia ? strtoupper($ordenRecoleccion->referencia) : 'Sin Referencia' }}" readonly>
 </div>
-<div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
-    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+<div class="flex flex-wrap mt-16 -mx-3 whitespace-no-wrap border-b border-gray-200">
+    <div class="w-full px-3 mb-6 md:w-1/3 md:mb-0">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Telefono del cliente
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="telefono" type="text" name="txttelefono" value="{{ $datosEnvio->telefonoCliente }}" readonly>
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="telefono" type="text" name="txttelefono" value="{{ $ordenRecoleccion->telefonoCliente }}" readonly>
     </div>
-    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+    <div class="w-full px-3 mb-6 md:w-1/3 md:mb-0">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             RFC
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="rfc" type="text" name="txtrfc" value="{{ $datosEnvio->rfc }}">
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="rfc" type="text" name="txtrfc" value="{{ $ordenRecoleccion->rfc }}">
     </div>
-    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0 ">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+    <div class="w-full px-3 mb-6 md:w-1/3 md:mb-0 ">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Correo electronico
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="email" type="text" name="txtemail" value="{{ $datosEnvio->emailCliente }}" readonly>
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="email" type="text" name="txtemail" value="{{ $ordenRecoleccion->emailCliente }}" readonly>
     </div>
 
 </div>
-<div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
-    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+<div class="flex flex-wrap mt-16 -mx-3 whitespace-no-wrap border-b border-gray-200">
+    <div class="w-full px-3 mb-6 md:w-1/4 md:mb-0">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Fecha del pedido
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="fecha" type="text" name="txtfecha" value="{{ $datosEnvio->created_at }}" readonly>
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="fecha" type="text" name="txtfecha" value="{{ $ordenRecoleccion->created_at }}" readonly>
     </div>
-    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0 ">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+    <div class="w-full px-3 mb-6 md:w-1/4 md:mb-0 ">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Fecha de recoleccion
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             id="precio" type="text" name="txtprecio"
-            @if ($datosEnvio->tipoVenta === 'Servicio') @if ($datosEnvio->fechaRecoleccion == null)
+            @if ($ordenRecoleccion->tipoVenta === 'Servicio') @if ($ordenRecoleccion->fechaRecoleccion == null)
 value="Pendiente a recolectar"
 @else
-value="{{ $datosEnvio->fechaRecoleccion }}" @endif
-        @elseif($datosEnvio->tipoVenta === 'Entrega') value="Pedido para envio" @endif >
+value="{{ $ordenRecoleccion->fechaRecoleccion }}" @endif
+        @elseif($ordenRecoleccion->tipoVenta === 'Entrega') value="Pedido para envio" @endif >
     </div>
-    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+    <div class="w-full px-3 mb-6 md:w-1/4 md:mb-0">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Fecha para entrega
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             id="fecha" type="text" name="txtfecha"
-            @if ($datosEnvio->estado === 'Recolectar') value="Sin registro"
-            @elseif($datosEnvio->estado === 'Revision') value="En revision"
-            @elseif($datosEnvio->estado === 'Entrega') value="Pendiente de entrega"
-            @elseif($datosEnvio->estado === 'Listo') value="{{ $datosEnvio->fechaEntrega }}" @endif
+            @if ($ordenRecoleccion->estado === 'Recolectar') value="Sin registro"
+            @elseif($ordenRecoleccion->estado === 'Revision') value="En revision"
+            @elseif($ordenRecoleccion->estado === 'Entrega') value="Pendiente de entrega"
+            @elseif($ordenRecoleccion->estado === 'Listo') value="{{ $ordenRecoleccion->fechaEntrega }}" @endif
             readonly>
     </div>
-    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+    <div class="w-full px-3 mb-6 md:w-1/4 md:mb-0">
+        <label class="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">
             Paga Con
         </label>
         <input
-            class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="pagaCon" type="text" name="txtfecha" value="{{ $datosEnvio->pago_efectivo }}" readonly>
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="pagaCon" type="text" name="txtpagaConanterior" value="{{ $ordenRecoleccion->pago_efectivo }}" readonly>
     </div>
 </div>
-
-<div class="mt-7 flex flex-col">
-    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nombre Comercial
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Cantidad Total
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Descripción
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Precio Unitario</th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Descuento</th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Costo</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($productos as $producto)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $producto->nombre_comercial }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @if ($datosEnvio->tipoVenta === 'Entrega')
-                                        {{ $producto->cantidad }}
-                                    @elseif($datosEnvio->tipoVenta === 'Servicio')
-                                        <input type="number" name="cantidad[{{ $producto->id }}]"
-                                            data-cantidad="{{ $producto->cantidad }}" step="1"
-                                            class="form-input mt-1 block w-full" placeholder="Cantidad"
-                                            value="{{ $producto->cantidad }}" readonly>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $producto->marca ? 'Marca : ' . $producto->marca : '' }}
-                                    {{ $producto->tipo ? 'Categoria : ' . $producto->tipo : '' }}
-                                    {{ $producto->color ? 'Color : ' . $producto->color : '' }}
-                                    {{ $producto->modos ? 'Tipo :' . $producto->modos : '' }}
-                                    {{ $producto->descripcion ? 'Descripcion :' . $producto->descripcion : '' }}
-                                </td>
-                                <td>
-                                    ${{ $producto->precio }}
-                                </td>
-                                <td>
-
-                                    @if ($producto->tipoDescuento == 'Porcentaje')
-                                        {{ intval($producto->descuento) }}%
-                                    @elseif ($producto->tipoDescuento == 'cantidad')
-                                        ${{ $producto->descuento * $producto->cantidad }}
-                                    @elseif ($producto->tipoDescuento == 'alternativo')
-                                        ${{ ($producto->precio - $producto->descuento) * $producto->cantidad }}
-                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
-                                        {{ $producto->tipoDescuento }}
-                                    @endif
-
-
-                                </td>
-
-                                <td>
-                                    @if ($datosEnvio->tipoVenta === 'Entrega')
-                                        @if ($producto->tipoDescuento == 'Porcentaje')
-                                            ${{ $producto->precio * $producto->cantidad - ($producto->precio * intval($producto->descuento)) / 100 }}
-                                        @elseif ($producto->tipoDescuento == 'cantidad')
-                                            ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
-                                        @elseif($producto->tipoDescuento == 'alternativo')
-                                            ${{ $producto->descuento * $producto->cantidad }}
-                                        @elseif ($producto->tipoDescuento == 'Sin descuento')
-                                            ${{ $producto->precio * $producto->cantidad }}
-                                        @endif
-                                    @elseif($datosEnvio->tipoVenta === 'Servicio')
-                                        <input type="number" name="costo_unitario[{{ $producto->id }}]"
-                                            data-cantidad="{{ $producto->cantidad }}" step="0.01"
-                                            class="form-input mt-1 block w-full" placeholder="Costo unitario"
-                                            value="{{ $producto->precio_unitario }}" readonly>
-                                        {{-- @if ($producto->porcentaje === null)
-                                    <td>
-                                        Sin descuento
-                                    </td>
-                                @else
-                                    <td>
-                                        {{ $producto->porcentaje }}%
-                                    </td>
-                                @endif --}}
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-@if ($datosEnvio->id_cancelacion == null)
+@include('Principal.ordenRecoleccion.__tabla_productos')
+@if ($ordenRecoleccion->id_cancelacion == null)
 
     <div class="flex flex-col items-center mt-3">
         <div class="flex flex-col items-center">
             <label for="miSelect">Cambia el estatus:</label>
-            <select id="miSelect" name="miSelect" onchange="mostrarInputCosto(this.value)">
-                @if ($datosEnvio->estado === 'Recolectar')
-                    <option value="Recolectar">En recoleccion</option>
+            <select id="miSelect" name="miSelect">
+                @if ($ordenRecoleccion->estado === 'Recolectar')
+                    <option value="EnRevision">En recoleccion</option>
                     <option value="Revision">En revision</option>
-                @elseif($datosEnvio->estado === 'Revision')
-                    <option value="Revision">En revision</option>
+                @elseif($ordenRecoleccion->estado === 'Revision')
+                    <option value="EnRevision">En revision</option>
                     <option value="Entrega">En entrega </option>
-                @elseif($datosEnvio->estado === 'Entrega')
-                    <option value="Entrega">En entrega </option>
-                    {{-- <option value="5">Observaciones</option> --}}
+                @elseif($ordenRecoleccion->estado === 'Entrega')
+                    <option value="EnRevision">Seleccione una opcion</option>
+                    <option value="Entrega">Actualizar</option>
                     <option value="Listo">Venta completa</option>
                 @endif
             </select>
         </div>
 
-        <div id="form_observaciones" class="flex flex-col sm:flex-row justify-between mt-5" style="display: none;">
+        <div id="form_observaciones" class="flex flex-col justify-between mt-5 sm:flex-row" style="display: none;">
             <div class="mr-4">
                 <label for="">Observaciones:</label>
-                <input type="text" id="observaciones" name="observacionesDetalle"
-                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <textarea id="observaciones" name="observacionesDetalle" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escribe aqui..."></textarea>
+
             </div>
         </div>
-
-        <div id="form_codigo" class="flex flex-col sm:flex-row justify-between mt-5" style="display: none;">
+    <div id="form_codigo" class="hidden">
+        <div id="contenedorcodigo"  class="justify-between mt-5 sm:flex-row" >
             <div class="mr-4">
-                <label for="codigo">Código:</label>
-                <input type="text" id="codigo" name="codigo"
-                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <label for="codigo">Entrego:</label>
+                <input type="text" id="entrego" name="entrego"
+                    class="w-full leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline">
             </div>
 
             <div class="mr-4">
-                <label for="numero_recarga">Número de recarga:</label>
-                <input type="text" id="numero_recarga" name="numero_recarga"
-                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <label for="Observaciones">Observaciones :</label>
+                <textarea id="observacionesInicial" name="observacionesInicial" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escribe aqui..."></textarea>
             </div>
             <div class="mr-4">
                 <label for="fecha_recoleccion">Fecha y hora de recoleccion:</label>
-                <input
-                    class=" w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                <input id="fechaRecolecciones"
+                    class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                     type="datetime-local" name="HoraFechaRecoleccion">
             </div>
         </div>
 
+        <div class="mr-4">
+            @include('Principal.ordenEntrega._Lista_Productos')
+            @include('Principal.ordenEntrega._carro_campras')
+        </div>
+    </div>
+
 
 
         <div class="flex justify-between mt-5">
-            <div id="inputCosto" style="display: none;" class=" mr-4">
+            <div id="inputCosto" class="hidden mr-4 ">
                 <label for="costo">Costo total:</label>
                 <input type="number" id="costo" name="costo_total" step="0.01"
-                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-6"
+                    class="w-full h-6 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                     readonly>
             </div>
 
-            <div id="inputmetodopago" style="display: none;" class="mr-4">
+            <div id="inputmetodopago" class="hidden mr-4 ">
                 <label for="metodoPago">Método de pago:</label>
-                <select id="metodoPago" name="txtmetodoPago"
-                    class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <select id="selectmetodoPago" name="txtmetodoPago"
+                    class="w-full leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline">
                     <option value="">Seleccione un método de pago</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Cheque">Cheque</option>
@@ -301,49 +200,47 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                 </select>
             </div>
 
-            <div id="inputFactura" style="display: none;" class="flex flex-col items-center">
+            <div id="inputFactura" class="items-center hidden">
                 <label for="factura" class="text-gray-700">¿Requiere factura?</label>
-                <input type="checkbox" class="form-checkbox h-5 w-5 text-green-500 mt-2" name="txtfactura"
+                <input type="checkbox" class="w-5 h-5 mt-2 text-green-500 form-checkbox" name="txtfactura"
                     id="factura">
             </div>
 
-            <div id="personaRecibe" class=" flex-row justify-center items-center hidden">
-                <div class=" flex flex-col">
+            <div id="personaRecibe" class="flex-row items-center justify-center hidden ">
+                <div class="flex flex-col ">
                     <label for="recibe">Observaciones : </label>
-                    <input
-                        class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        type="text" name="observaciones" placeholder="Obervaciones">
+                    <textarea id="obersaciondeEntrega" name="observaciones" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escribe aqui..."></textarea>
                 </div>
-                <div class=" flex flex-col">
+                <div class="flex flex-col ">
                     <label for="recibe">Fecha y hora de entrega:</label>
-                    <input
-                        class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    <input id="FechadeEntrega"
+                        class="px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none w-72 focus:outline-none focus:shadow-outline"
                         type="datetime-local" name="HoraFechaEntregado">
                 </div>
-                <div class=" flex flex-col">
+                <div class="flex flex-col ">
                     <label for="recibe">Quien recibe ? : </label>
-                    <input
-                        class=" w-72 px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    <input id="recibeenlaEntrega"
+                        class="px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none w-72 focus:outline-none focus:shadow-outline"
                         type="text" name="recibe" placeholder="Recibe">
                 </div>
             </div>
 
         </div>
-        <div id="inputPagoEfectivo" style="display: none;" class="mr-4">
+        <div id="inputPagoEfectivo" class="hidden mr-4">
             <label for="pagoEfectivo">Paga con:</label>
-            <input id="pagoEfectivo" name="txtpagoEfectivo" type="number" step="0.01"
-                class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Ingrese la cantidad pagada" value="{{ $datosEnvio->pago_efectivo }}">
+            <input id="pagoEfectivoApagar" name="txtpagoEfectivo" type="number" step="0.01"
+                class="w-full leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                placeholder="Ingrese la cantidad pagada" value="{{ $ordenRecoleccion->pago_efectivo }}">
             <label for="pagoEfectivo">Cambio:</label>
-            <input id="cambio" name="txtcambio" type="number" step="0.01"
-                class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            <input id="cambiodelEfectivo" name="txtcambio" type="number" step="0.01"
+                class="w-full leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                 placeholder="cambio" value="">
         </div>
 
 
         <button type="submit"
-            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 flex items-center mt-8">
-            <i class="fas fa-sync-alt mr-2"></i>
+            class="flex items-center px-4 py-2 mt-8 text-white bg-green-500 rounded hover:bg-green-700">
+            <i class="mr-2 fas fa-sync-alt"></i>
             Actualizar
         </button>
 
@@ -352,7 +249,7 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
     <div class="flex flex-col items-center mt-3">
         <div class="flex flex-col items-center">
             <label for="miSelect">Estatus:</label>
-            @switch($datosEnvio->estado)
+            @switch($ordenRecoleccion->estado)
                 @case('Recolectar')
                     <span>En recoleccion</span>
                 @break

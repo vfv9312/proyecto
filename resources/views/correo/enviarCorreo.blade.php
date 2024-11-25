@@ -23,9 +23,15 @@
     <p>Número de teléfono: {{ $ordenRecoleccion->telefonoCliente }}</p>
     <p>Correo: {{ $ordenRecoleccion->correo }}</p>
 
-    <a
-        href="https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/{{ $ordenRecoleccion->idRecoleccion }}/generarpdf">Descargue
-        su folio del pedido</a>
+    @php
+    // Definir la parte variable de la URL según el tipo de venta
+    $pdfType = ($ordenRecoleccion->tipoVenta == 'Orden Servicio') ? 'generarpdf2' : 'generarpdf';
+@endphp
+
+<a href="https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/{{ $ordenRecoleccion->idRecoleccion }}/{{ $pdfType }}">
+    Descargue su folio del pedido
+</a>
+
 </body>
 
 </html>

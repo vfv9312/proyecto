@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ticket</title>
+    <title>Folio</title>
     <style>
         .ticket {
             width: 60mm;
             font-family: Arial, sans-serif;
+            font-size: 10px;
             margin: auto;
         }
 
@@ -24,19 +25,42 @@
             height: auto;
         }
 
-        .cliente {
+        .datoscliente {
+            border-bottom: 1px dashed;
+        }
+
+        .datoscliente h5 {
+            font-weight: bold;
+            text-align: center;
+            font-size: 11px;
+            margin: 0;
+        }
+
+        .ubicacion {
             border-top: 1px dashed;
             padding-bottom: 5mm;
         }
 
+        .ubicacion p {
+            font-size: 9px;
+        }
+
         .body {
-            margin-top: 10mm;
+            margin-top: 5mm;
+        }
+
+        .body h5 {
+            font-weight: bold;
+            text-align: center;
+            font-size: 11px;
+            margin: 0;
         }
 
         .footer {
             border-top: 1px dashed;
             padding-top: 5mm;
             text-align: center;
+            font-size: 12px
         }
 
         .item {
@@ -46,45 +70,143 @@
         .item p {
             margin: 0;
         }
+
+        .item h3 {
+            text-align: center;
+        }
+
+        #paginaweb {
+            text-align: center;
+        }
     </style>
 </head>
+
+@if ($ordenRecoleccion->idCancelacion)
+
+    <body
+        style="background: url('cancelado.png') no-repeat center center;
+-webkit-background-size: 50% 50%;
+-moz-background-size: 50% 50%;
+-o-background-size: 50% 50%;
+background-size: 50% 50%;
+opacity: 0.5;">
+    @else
+
+        <body>
+@endif
+
+@php
+    use Carbon\Carbon;
+
+    $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
+    $fecha = $fechaHoraArray[0];
+    $hora = $fechaHoraArray[1];
+        // array values reacomoda el indice despues de que haga el filter para eliminar los datos vacios
+        $horariosInicio = array_values(array_filter(explode(',', $ordenRecoleccion->horarioTrabajoInicio)));
+    $horariosFinal = array_values(array_filter(explode(',', $ordenRecoleccion->horarioTrabajoFinal)));
+    $dias = explode(',', $ordenRecoleccion->diaSemana);
+
+    if ($Tiempo !== null && $Tiempo->tiempo !== null) {
+        $horaRegistro = Carbon::parse($hora);
+        $tiempo = Carbon::parse($Tiempo->tiempo);
+
+        $horaFinal = $horaRegistro
+            ->addHours($tiempo->hour)
+            ->addMinutes($tiempo->minute)
+            ->addSeconds($tiempo->second);
+        $fechaHoraDeTiempoAproximadoEntrega = explode(' ', $horaFinal);
+        $tiempoPromesa = $fechaHoraDeTiempoAproximadoEntrega[1];
+    }
+@endphp
 
 <body>
     <div class="ticket">
         <div class="header">
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-            <h1>Ecotoner</h1>
-            <p>Col. Centro; 4a Norte Poniente 867, Tuxtla Gutiérrez, Chiapas</p>
-            <p>Tel: (961) 61.115.44 o 961.1777.992</p>
+            <h1>{{ $ordenRecoleccion->comentario ? 'Orden Procesada' : 'Orden de servicio' }}</h1>
+            <span>Folio:{{ $ordenRecoleccion->ultimoValor ?  sprintf('%06d', $ordenRecoleccion->ultimoValor) : $ordenRecoleccion->letraActual . sprintf('%06d', $ordenRecoleccion->ultimoValor_r) }}</span>
+            <p>Fecha recepcion: {{ $fecha }}</p>
+            <p>{{ $ordenRecoleccion->idCancelacion ? 'Motivo de cancelación : ' . $ordenRecoleccion->nombreCancelacion : '' }}
+            </p>
+            <p>{{ $ordenRecoleccion->idCancelacion ? 'Descripcion de cancelacion : ' . $ordenRecoleccion->descripcionCancelacion : '' }}
+            </p>
         </div>
         <div class="body">
+            <div class="datoscliente item">
+                <h5> Datos del cliente </h5>
+                <p>Cliente : {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
+                <p>{{ $ordenRecoleccion->rfc ? 'RFC : ' . $ordenRecoleccion->rfc : '' }}</p>
+                <p>Atencion : {{ $ordenRecoleccion->nombreAtencion }}</p>
+                <p>Tel : {{ $ordenRecoleccion->telefonoCliente }}</p>
+                <p>{{ $ordenRecoleccion->correo ? 'Correo : ' . $ordenRecoleccion->correo : '' }}</p>
+                <p>Direccion : Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
+                    #{{ $ordenRecoleccion->num_exterior }},
+                    {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
+                <p>CP :{{ $ordenRecoleccion->cp }}</p>
+                <p> Referencia : {{ strtoupper($ordenRecoleccion->referencia) }}</p>
+
+            </div>
             <div class="item">
-                @foreach ($productos as $produc)
-                    Producto a recolectar : {{ $produc->nombre_comercial }} - {{ $produc->cantidad_total }} -
-                    {{ $produc->descripcion }}
+                @php
+                    $total = 0;
+                @endphp
+                @foreach ($listaProductos as $producto)
+                    <p>Producto: {{ $producto->nombre_comercial }}</p>
+                    <p>Color : {{ $producto->nombreColor }}, Marca : {{ $producto->nombreMarca }}, Tipo :
+                        {{ $producto->nombreModo }}, Categoria : {{ $producto->nombreTipo }}, Cantidad:
+                        {{ $producto->cantidad }},
+                        {{ $producto->descripcion ? 'Descripcion : ' . $producto->descripcion : '' }}
+                    </p>
+
+                    @if ($producto->porcentaje !== null)
+                        <p>Aplica descuento : {{ $producto->porcentaje }}%</p>
+                    @endif
+                        <p style="margin-bottom: 10px;">
+                            {{ $producto->precio ? 'Precio : $' . $producto->precio : '' }}</p>
+                        @php
+                            $total += $producto->precio;
+                        @endphp
+
+                    <p style="margin-bottom: 10px;"></p>
                 @endforeach
-                Costo : ${{ $ordenRecoleccion->costo_servicio }}
+
+                @if ($ordenRecoleccion->codigo)
+                    <p>Codigo : {{ strtoupper($ordenRecoleccion->codigo) }}</p>
+                    <p>Recarga :{{ strtoupper($ordenRecoleccion->nRecarga) }}</p>
+                @endif
+
+                <p style="margin-bottom: 4px;"></p>
+                <h5> Datos del pago </h5>
+                @if ($total)
+                    <p>Requiere : {{ $ordenRecoleccion->factura ? 'FACTURA' : 'NOTA' }}</p>
+                    <p>Metodo de pago : {{ strtoupper($ordenRecoleccion->metodoPago) }}</p>
+                        Costo total : ${{ $total ? $total : 'En revision' }}<br>
+                        {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
+                        <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
+                        </p>
+                @else
+                    <p class="text-center ">Se espera revision para determinar costo del servicio</p>
+                @endif
             </div>
             <!-- Agrega más items aquí -->
         </div>
-        <div class="cliente">
-            <h5> Datos del cliente </h5>
-            <p> {{ $ordenRecoleccion->nombreCliente }} {{ $ordenRecoleccion->apellidoCliente }}</p>
-            <p>Tel: {{ $ordenRecoleccion->telefonoCliente }}</p>
-            <p>RFC : {{ $ordenRecoleccion->rfc }}</p>
-            <p>{{ $ordenRecoleccion->correo }}</p>
-            <p>Col.{{ $ordenRecoleccion->localidad }}; {{ $ordenRecoleccion->calle }}
-                #{{ $ordenRecoleccion->num_exterior }}
-                {{ $ordenRecoleccion->num_interior ? 'num interio #' . $ordenRecoleccion->num_interior : '' }}
-                {{ $ordenRecoleccion->referencia }}</p>
-        </div>
-        <div class="footer">
-            <span>Ticket recoleccion:{{ $ordenRecoleccion->idRecoleccion }}</span>
-            <p>Le atendio:</p>
-            <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
-            <p>Fecha : {{ $ordenRecoleccion->fechaCreacion }}</p>
-            <p>Orden para Entrega!</p>
-        </div>
+
+    </div>
+    <div class="footer item">
+        <p>Recepciono:</p>
+        <p>{{ $ordenRecoleccion->nombreEmpleado }}</p>
+        Hora de recepcion : {{ $hora }}
+        <p>Recibe : {{ $ordenRecoleccion->nombreRecibe }}</p>
+        <p>Entregado por : {{ $ordenRecoleccion->nombreEntrega }}</p>
+        <p>{{$ordenRecoleccion->observacionProductos ? 'Detalles del producto : ' . $ordenRecoleccion->observacionProductos : ''}}</p>
+        <p>{{ $ordenRecoleccion->observacionFinal ? 'Observaciones : ' . $ordenRecoleccion->observacionFinal : ''}}
+        <p>{{ $Tiempo ? 'Hora aproximada de entrega : ' . $tiempoPromesa : 'No hay tiempo aproximado de entrega' }}</p>
+
+    </div>
+    <div class="ubicacion">
+        <p>{{ $DatosdelNegocio->ubicaciones }}; Conmutador: {{ $DatosdelNegocio->telefono }},
+            WhatsApp : {{ $DatosdelNegocio->whatsapp }}</p>
+        <p id="paginaweb">{{ $DatosdelNegocio->pagina_web }}</p>
     </div>
 </body>
 

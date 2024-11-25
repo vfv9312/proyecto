@@ -15,7 +15,7 @@
                     <span class="ms-3">Inicio</span>
                 </a>
             </li>
-            <li class="text-green-500 my-2 text-center">
+            <li class="my-2 text-center text-green-500">
                 Menu
             </li>
             <li>
@@ -24,18 +24,16 @@
                     <i class="fas fa-shipping-fast"></i>
                     <span class="flex-1 ms-3 whitespace-nowrap">Total de Ordenes</span>
                     {{-- <span
-                        class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span> --}}
+                        class="inline-flex items-center justify-center px-2 text-sm font-medium text-gray-800 bg-gray-100 rounded-full ms-3 dark:bg-gray-700 dark:text-gray-300">Pro</span> --}}
                 </a>
             </li>
-            <li>
+            {{-- <li>
                 <a href="{{ route('ventas.index') }}"
                     class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
                     <i class="fas fa-money-bill-wave"></i>
                     <span class="flex-1 ms-3 whitespace-nowrap">Ordenes procesadas</span>
-                    {{-- <span
-                        class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span> --}}
-                </a>
-            </li>
+
+            </li> --}}
             <li>
                 <a href="{{ route('cancelar.index') }}"
                     class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
@@ -56,7 +54,7 @@
                     <i class="fas fa-hourglass-half"></i>
                     <span class="flex-1 ms-3 whitespace-nowrap">Moto Reparto</span> <i class="fas fa-angle-down"></i>
                 </a>
-                <ul class="menu-content hidden">
+                <ul class="hidden menu-content">
                     <li>
                         <a href="{{ route('TiempoAproximado.index') }}"
                             class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
@@ -74,7 +72,7 @@
                         <i class="fas fa-cogs"></i>
                         <span class="flex-1 ms-3 whitespace-nowrap">Ajustes</span> <i class="fas fa-angle-down"></i>
                     </a>
-                    <ul class="menu-content hidden">
+                    <ul class="hidden menu-content">
                         <li>
                             <a href="{{ route('Restablecer.index') }}"
                                 class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
@@ -126,6 +124,27 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('colonias.index') }}"
+                                class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
+                                <i class="fas fa-map"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Colonias</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('metodopago.index') }}"
+                                class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
+                                <i class="fas fa-cash-register"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Metodos de pago</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('tipos.index') }}"
+                                class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
+                                <i class="fas fa-box"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Tipos de productos</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('eliminacion.index') }}"
                                 class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-black dark:hover:bg-gray-700 group">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -140,7 +159,7 @@
                     </ul>
                 @endif
             </li>
-            <li class="text-green-500 my-2 text-center">
+            <li class="my-2 text-center text-green-500">
                 Vista rapida
             </li>
             <li>
@@ -178,7 +197,7 @@
                 </a>
             </li>
             <li>
-            <li class="text-green-500 my-2 text-center">
+            <li class="my-2 text-center text-green-500">
                 Cuenta
             </li>
             <li>

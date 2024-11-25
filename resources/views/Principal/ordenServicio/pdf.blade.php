@@ -101,6 +101,10 @@ opacity: 0.5;">
     $fechaHoraArray = explode(' ', $ordenRecoleccion->fechaCreacion);
     $fecha = $fechaHoraArray[0];
     $hora = $fechaHoraArray[1];
+        // array values reacomoda el indice despues de que haga el filter para eliminar los datos vacios
+        $horariosInicio = array_values(array_filter(explode(',', $ordenRecoleccion->horarioTrabajoInicio)));
+    $horariosFinal = array_values(array_filter(explode(',', $ordenRecoleccion->horarioTrabajoFinal)));
+    $dias = explode(',', $ordenRecoleccion->diaSemana);
 
     if ($Tiempo !== null && $Tiempo->tiempo !== null) {
         $horaRegistro = Carbon::parse($hora);
@@ -119,8 +123,8 @@ opacity: 0.5;">
     <div class="ticket">
         <div class="header">
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
-            <h1>{{ $ordenRecoleccion->comentario ? 'Orden Procesada' : 'Orden de servicio' }}</h1>
-            <span>Folio:{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
+            <h1>{{ $ordenRecoleccion->comentario ? 'Orden Procesada' : 'Orden de recoleccion' }}</h1>
+            <span>Folio:{{ $ordenRecoleccion->ultimoValor ?  sprintf('%06d', $ordenRecoleccion->ultimoValor) : $ordenRecoleccion->letraActual . sprintf('%06d', $ordenRecoleccion->ultimoValor_r) }}</span>
             <p>Fecha recepcion: {{ $fecha }}</p>
             <p>{{ $ordenRecoleccion->idCancelacion ? 'Motivo de cancelación : ' . $ordenRecoleccion->nombreCancelacion : '' }}
             </p>
@@ -140,11 +144,30 @@ opacity: 0.5;">
                     {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
                 <p>CP :{{ $ordenRecoleccion->cp }}</p>
                 <p> Referencia : {{ strtoupper($ordenRecoleccion->referencia) }}</p>
+                <p>Horario de trabajo
+
+                    @foreach ($dias as $index => $dia)
+                    @php
+                        // Eliminar "Discontinuo" del nombre del día
+                        $diaSinDiscontinuo = str_replace('Discontinuo', '', $dia);
+                        // Verificar si es un "2° Turno"
+                        $es2doTurno = strpos($dia, 'Discontinuo') !== false;
+                    @endphp
+
+                    <table>
+                        <tr>
+                            <td class="dias">
+                                {{ $diaSinDiscontinuo }}
+                                @if ($es2doTurno) 2° Turno @endif
+                                {{ $horariosInicio[$index] }} - {{ $horariosFinal[$index] }}
+                            </td>
+                        </tr>
+                    </table>
+                @endforeach
+
+            </p>
             </div>
             <div class="item">
-                @if ($ordenRecoleccion->estatus !== 2)
-                    <h3>En revisión</h3>
-                @endif
                 @php
                     $total = 0;
                 @endphp
@@ -155,16 +178,16 @@ opacity: 0.5;">
                         {{ $producto->cantidad }},
                         {{ $producto->descripcion ? 'Descripcion : ' . $producto->descripcion : '' }}
                     </p>
+
                     @if ($producto->porcentaje !== null)
                         <p>Aplica descuento : {{ $producto->porcentaje }}%</p>
                     @endif
-                    @if ($ordenRecoleccion->estatus === 2 || $ordenRecoleccion->estatus === 1)
                         <p style="margin-bottom: 10px;">
                             {{ $producto->precio ? 'Precio : $' . $producto->precio : '' }}</p>
                         @php
-                            $total += $producto->precio;
+                            $total += $producto->precio * $producto->cantidad ;
                         @endphp
-                    @endif
+
                     <p style="margin-bottom: 10px;"></p>
                 @endforeach
 
@@ -175,17 +198,15 @@ opacity: 0.5;">
 
                 <p style="margin-bottom: 4px;"></p>
                 <h5> Datos del pago </h5>
-                @if ($ordenRecoleccion->metodoPago)
+                @if ($total)
                     <p>Requiere : {{ $ordenRecoleccion->factura ? 'FACTURA' : 'NOTA' }}</p>
                     <p>Metodo de pago : {{ strtoupper($ordenRecoleccion->metodoPago) }}</p>
-                    @if ($ordenRecoleccion->estatus === 2 || $ordenRecoleccion->estatus === 1)
-                        Costo total : ${{ $total }}<br>
+                        Costo total : ${{ $total ? $total : 'En revision' }}<br>
                         {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}
                         <p>{{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Cambio : $' . number_format($ordenRecoleccion->pagoEfectivo - $total, 2) : '' }}
                         </p>
-                    @endif
                 @else
-                    <p class=" text-center">Se espera revision para determinar costo del servicio</p>
+                    <p class="text-center ">Se espera revision para determinar costo del servicio</p>
                 @endif
             </div>
             <!-- Agrega más items aquí -->
@@ -194,12 +215,14 @@ opacity: 0.5;">
     </div>
     <div class="footer item">
         <p>Recepciono:</p>
-        <p>{{ $ordenRecoleccion->nombreEmpleado }} {{ $ordenRecoleccion->apellidoEmpleado }}</p>
+        <p>{{ $ordenRecoleccion->nombreEmpleado }}</p>
         Hora de recepcion : {{ $hora }}
         <p>Recibe : {{ $ordenRecoleccion->nombreRecibe }}</p>
-        <p>Entrega : {{ $ordenRecoleccion->nombreEntrega }}</p>
-        <p>{{ $Tiempo ? 'Hora aproximada de entrega : ' . $tiempoPromesa : 'No hay tiempo aproximado de entrega' }}
-        </p>
+        <p>Entregado por : {{ $ordenRecoleccion->nombreEntrega }}</p>
+        <p>{{$ordenRecoleccion->observacionProductos ? 'Detalles del producto : ' . $ordenRecoleccion->observacionProductos : ''}}</p>
+        <p>{{ $ordenRecoleccion->observacionFinal ? 'Observaciones : ' . $ordenRecoleccion->observacionFinal : ''}}
+        <p>{{ $Tiempo ? 'Hora aproximada de entrega : ' . $tiempoPromesa : 'No hay tiempo aproximado de entrega' }}</p>
+
     </div>
     <div class="ubicacion">
         <p>{{ $DatosdelNegocio->ubicaciones }}; Conmutador: {{ $DatosdelNegocio->telefono }},

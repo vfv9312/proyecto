@@ -3,7 +3,7 @@
 @section('title', 'Envio Correo')
 
 @section('content')
-    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4" role="alert">
+    <div class="p-4 text-green-700 bg-green-100 border-l-4 border-green-500" role="alert">
         <p class="font-bold">
             {{ $error ? $error : '¡Correo enviado con éxito!' }}
         </p>
@@ -23,15 +23,16 @@
             <p>Codigo Postal : {{ $ordenRecoleccion->cp }}</p>
             <p>Número de teléfono: {{ $ordenRecoleccion->telefonoCliente }}</p>
             <p>Correo: {{ $ordenRecoleccion->correo }}</p>
-            @if ($ordenRecoleccion->estatusVenta)
-                <a
-                    href="https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/{{ $ordenRecoleccion->idRecoleccion }}/generarpdf">Descargue
-                    su folio del pedido</a>
-            @else
-                <a
-                    href="https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/{{ $ordenRecoleccion->idRecoleccion }}/generarpdf">Descargue
-                    su folio del pedido</a>
-            @endif
+            @php
+            // Definir la parte variable de la URL según el tipo de venta
+            $pdfType = ($ordenRecoleccion->tipoVenta == 'Orden Servicio') ? 'generarpdf2' : 'generarpdf';
+             $rutaOrden = ($ordenRecoleccion->tipoVenta == 'Entrega') ? 'orden_entrega_pdf' : 'orden_servicio_pdf';
+
+        @endphp
+
+        <a href="https://administrativo.ecotonerdelsureste.com/{{$rutaOrden}}/{{ $ordenRecoleccion->idRecoleccion }}/{{ $pdfType }}">
+            Descargue su folio del pedido
+        </a>
         @endif
 
     </div>

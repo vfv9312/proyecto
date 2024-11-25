@@ -3,8 +3,8 @@
 @section('title', 'Cancelación')
 
 @section('content')
-    <h1 class=" text-center mb-8">Cancelación</h1>
-    <form action="{{ route('orden_recoleccion.cancelar', $datosEnvio->idRecoleccion) }}" method="POST">
+    <h1 class="mb-8 text-center ">Cancelación</h1>
+    <form action="{{ route('orden_recoleccion.cancelar', $datosEnvio->idPreventa) }}" method="POST">
         @csrf
         @method('PUT')
         @include('Principal.ordenRecoleccion._form_cancelado');

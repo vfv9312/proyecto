@@ -1,7 +1,6 @@
-<section class=" overflow-x-auto w-full border-4 mt-8 px-3 pb-3">
-    <h1 class="text-2xl
-    text-center font-bold text-green-700 mb-2">Productos requeridos</h1>
-    <table class="overflow-x-auto min-w-full" id="tablaProductos">
+<section class="w-full px-3 pb-3 mt-8 overflow-x-auto border-4 ">
+    <h1 class="mb-2 text-2xl font-bold text-center text-green-700">Productos requeridos</h1>
+    <table class="min-w-full overflow-x-auto" id="tablaProductos">
         <thead>
             <tr>
                 <th>Tipo Producto</th>
@@ -23,27 +22,27 @@
         <tfoot>
             <tr id="filaRecargas">
                 <td colspan="4"></td>
-                <td class=" text-center text-green-600 font-semibold">Total de Productos</td>
-                <td id="SumaProducto" class=" text-center bg-green-700 text-white rounded-xl"></td>
-                <td class=" text-center text-green-600 font-semibold">Total de Recargas</td>
-                <td id="SumaRecarga" class=" text-center bg-green-700 text-white rounded-xl"></td>
-                <td class=" text-center text-green-600 font-semibold">Total</td>
-                <td id="sumaTotal" class=" text-center bg-green-700 text-white rounded-xl"></td>
+                <td class="font-semibold text-center text-green-600 ">Total de Productos</td>
+                <td id="SumaProducto" class="text-center text-white bg-green-700 rounded-xl"></td>
+                <td class="font-semibold text-center text-green-600 ">Total de Recargas</td>
+                <td id="SumaRecarga" class="text-center text-white bg-green-700 rounded-xl"></td>
+                <td class="font-semibold text-center text-green-600 ">Total</td>
+                <td id="sumaTotal" class="text-center text-white bg-green-700 rounded-xl"></td>
             </tr>
         </tfoot>
 
     </table>
 
-    <div class="flex flex-col w-full md:w-1/2">
+    <div id="datosDeLaVenta" class="hidden w-full md:w-1/2">
         <label class="inline-flex items-center">
             <input type="checkbox" id="factura" name="factura" onchange="RequiereRFC()">
             <span class = "ml-2">Requiere factura</span>
         </label>
-        <span id="warning" class="text-red-500 hidden">Si desea factura deberá ingresar RFC</span>
+        <span id="warning" class="hidden text-red-500">Si desea factura deberá ingresar RFC</span>
 
-        <label class="block">
+       <label class="">
             <span class="text-gray-700">Método de pago</span>
-            <select class="form-select block w-full mt-1" id="metodoPago" name="metodoPago" required>
+            <select class="w-full mt-1  form-select" id="metodoPago" name="metodoPago" required>
                 <option value="">Seleccione un método de pago</option>
                 <option value="Efectivo">Efectivo</option>
                 <option value="Cheque">Cheque</option>
@@ -52,35 +51,33 @@
                 <!-- Agrega más opciones según sea necesario -->
             </select>
         </label>
-        <div id="PagosEnEfectivo" class=" flex flex-row">
-            <div id="pagoEfectivo" class="overflow-x-auto w-full border-4 mt-8 px-3 pb-3 hidden">
-                <h1 class=" text-center text-green-600 font-bold">Producto</h1>
+        <div id="PagosEnEfectivo" class="flex flex-row ">
+            <div id="pagoEfectivo" class="hidden w-full px-3 pb-3 mt-8 overflow-x-auto border-4">
+                <h1 class="font-bold text-center text-green-600 ">Producto</h1>
                 <label class="block">
                     <span class="text-gray-700">Paga Con</span>
-                    <input type="number" class="form-input mt-1 block w-full" id="pagaCon" name="pagaCon">
+                    <input type="number" class="block w-full mt-1 form-input" id="pagaCon" name="pagaCon">
                 </label>
                 <label class="block" id="cambio">
                     <span class="text-gray-700">Cambio</span>
-                    <input type="number" class="form-input mt-1 block w-full" id="cambioInput" name="cambioInput"
+                    <input type="number" class="block w-full mt-1 form-input" id="cambioInput" name="cambioInput"
                         disabled readonly>
                 </label>
             </div>
-            <div id="pagoEfectivoRecarga" class="overflow-x-auto w-full border-4 mt-8 px-3 pb-3 hidden">
-                <h1 class=" text-center text-green-600 font-bold">Recarga</h1>
+            <div id="pagoEfectivoRecarga" class="hidden w-full px-3 pb-3 mt-8 overflow-x-auto border-4">
+                <h1 class="font-bold text-center text-green-600 ">Recarga</h1>
                 <label class="block">
                     <span class="text-gray-700">Paga Con</span>
-                    <input type="number" class="form-input mt-1 block w-full" id="pagaConRecarga"
+                    <input type="number" class="block w-full mt-1 form-input" id="pagaConRecarga"
                         name="pagaConRecarga">
                 </label>
                 <label class="block" id="cambioRecarga">
                     <span class="text-gray-700">Cambio</span>
-                    <input type="number" class="form-input mt-1 block w-full" id="cambioInputRecarga"
+                    <input type="number" class="block w-full mt-1 form-input" id="cambioInputRecarga"
                         name="cambioInputRecarga" disabled readonly>
                 </label>
             </div>
         </div>
     </div>
-    <div>
 
-    </div>
 </section>

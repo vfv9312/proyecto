@@ -7,11 +7,14 @@ use App\Models\Catalago_recepcion;
 use App\Models\clientes;
 use App\Models\Orden_recoleccion;
 use App\Models\precios_productos;
+use App\Models\productos;
 use App\Models\Preventa;
 use App\Models\Servicios_preventas;
 use App\Models\TiempoAproximado;
-use App\Models\ventas;
+use App\Models\Metodo_pago;
+use App\Models\Descuentos;
 use App\Models\ventas_productos;
+use App\Models\Info_tickets;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use DateInterval;
@@ -45,12 +48,14 @@ class OrdenRecoleccionController extends Controller
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->leftJoin('orden_recoleccions', function ($join) {
                 $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
-                    ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+                    ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id')
+                    ->orOn('orden_recoleccions.id_preventaOrdenServicio', '=', 'preventas.id');
             })
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftjoin('folios as folio_r', 'folio_r.id', '=', 'orden_recoleccions.id_folio_recoleccion')
             ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
-            ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio']) //whereIn para filtrar las preventas
-            ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Cancelado'])
+            ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio','Orden Servicio']) //whereIn para filtrar las preventas
+            ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Revisar'])
             ->WhereNull('preventas.deleted_at')
             ->where(function ($query) use ($palabras) {
                 foreach ($palabras as $palabra) {
@@ -72,6 +77,15 @@ class OrdenRecoleccionController extends Controller
             $preventas->orWhere(function ($query) use ($letra, $numero) {
                 $query->where('folios.letra_actual', $letra)
                     ->where('folios.ultimo_valor', $numero);
+            });
+        }
+        if (preg_match('/^[A-Z]\d+$/', $busqueda)) {
+            $letra = substr($busqueda, 0, 1);
+            $numero = (int) substr($busqueda, 1);
+
+            $preventas->orWhere(function ($query) use ($letra, $numero) {
+                $query->where('folio_r.letra_actual', $letra)
+                    ->where('folio_r.ultimo_valor', $numero);
             });
         }
         if (ctype_digit($busqueda)) {
@@ -103,14 +117,16 @@ class OrdenRecoleccionController extends Controller
         $preventas = $preventas->select(
             'orden_recoleccions.id as idRecoleccion',
             'orden_recoleccions.created_at as fechaCreacion',
-            'orden_recoleccions.id_cancelacion',
             'orden_recoleccions.created_at',
             'folios.letra_actual as letraActual',
             'folios.ultimo_valor as ultimoValor',
             'folios_servicios.ultimo_valor as ultimoValorServicio',
+            'folio_r.letra_actual as letraActual_r',
+            'folio_r.ultimo_valor as ultimoValor_r',
             'preventas.id as idPreventa',
             'preventas.estado as estatusPreventa',
             'preventas.tipo_de_venta as tipoVenta',
+            'preventas.id_cancelacion',
             'preventas.nombre_empleado as nombreEmpleado',
             'personas.nombre as nombreCliente',
             'personas.apellido as apellidoCliente',
@@ -180,16 +196,20 @@ class OrdenRecoleccionController extends Controller
         /* $datosEnvio = Orden_recoleccion::all();
         return $datosEnvio[0]->preventas; */
 
-        $datosEnvio = Preventa::leftJoin('orden_recoleccions', function ($join) {
+        $ordenRecoleccion = Preventa::leftJoin('orden_recoleccions', function ($join) {
             $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
-                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id')
+                ->orOn('orden_recoleccions.id_preventaOrdenServicio', '=', 'preventas.id');
         })
+            ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftjoin('folios as folio_r', 'folio_r.id', '=', 'orden_recoleccions.id_folio_recoleccion')
+            ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->leftJoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
-            ->whereIn('preventas.tipo_de_venta', ['Servicio', 'Entrega'])
+            ->whereIn('preventas.tipo_de_venta', ['Servicio', 'Entrega','Orden Servicio'])
             ->where('preventas.id', $id_preventa)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
@@ -222,55 +242,103 @@ class OrdenRecoleccionController extends Controller
             ->first();
 
 
-        if ($datosEnvio->tipoVenta === 'Entrega') {
-            $productos = ventas_productos::join('precios_productos', 'precios_productos.id', '=', 'ventas_productos.id_precio_producto')
-                ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
-                ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-                ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
-                ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
-                ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
-                ->join('modos', 'modos.id', '=', 'productos.id_modo')
-                ->where('precios_productos.estatus', 1)
-                ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select(
-                    'productos.*',
-                    'marcas.nombre as marca',
-                    'tipos.nombre as tipo',
-                    'colors.nombre as color',
-                    'ventas_productos.cantidad',
-                    'ventas_productos.descuento',
-                    'ventas_productos.tipo_descuento as tipoDescuento',
-                    'precios_productos.precio'
-                )
+            switch ($ordenRecoleccion->tipoVenta) {
+                case 'Entrega':
+                    $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+                        ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+                        ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                        ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->join('colors', 'colors.id', '=', 'productos.id_color')
+                        ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                        ->whereIn('ventas_productos.estatus', [3])
+                        ->where('preventas.id', $ordenRecoleccion->idPreventa)
+                        ->select(
+                            'productos.nombre_comercial',
+                            'precios_productos.precio',
+                            'ventas_productos.cantidad',
+                            'ventas_productos.descuento',
+                            'ventas_productos.tipo_descuento as tipoDescuento',
+                            'colors.nombre as nombreColor',
+                            'marcas.nombre as nombreMarca',
+                            'tipos.nombre as nombreTipo',
+                            'modos.nombre as nombreModo',
+                            'precios_productos.id',
 
-                ->get();
-        } else if ($datosEnvio->tipoVenta === 'Servicio') { //leftjoin me devolvera null si no hay relaciones
-            $productos = Servicios_preventas::join('precios_productos', 'precios_productos.id', '=', 'servicios_preventas.id_precio_producto')
-                ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
-                ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-                ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
-                ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
-                ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
-                ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
-                ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select(
-                    'productos.nombre_comercial',
-                    'productos.descripcion',
-                    'modos.nombre as nombreModo',
-                    'servicios_preventas.cantidad_total as cantidad',
-                    'marcas.nombre as marca',
-                    'tipos.nombre as tipo',
-                    'colors.nombre as color',
-                    'servicios_preventas.precio_unitario',
-                    'precios_productos.precio',
-                    'servicios_preventas.descuento',
-                    'servicios_preventas.tipo_descuento as tipoDescuento',
+                        )
+                        ->get();
+                    break;
+                    case 'Orden Servicio':
+                        $listaProductos = precios_productos::leftjoin('servicios_preventas', 'servicios_preventas.id_precio_producto', '=', 'precios_productos.id')
+                        ->leftjoin('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+                        ->leftjoin('preventas as preventasServicio', 'preventasServicio.id', '=', 'servicios_preventas.id_preventa')
+                        ->leftjoin('preventas as preventasProducto', 'preventasProducto.id', '=', 'ventas_productos.id_preventa')
+                        ->leftjoin('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                        ->leftjoin('productos as productoenServicio', 'productoenServicio.id', '=', 'precios_productos.id_producto')
+                        ->leftjoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->leftjoin('colors', 'colors.id', '=', 'productos.id_color')
+                        ->leftjoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->leftjoin('modos', 'modos.id', '=', 'productos.id_modo')
+                        ->leftjoin('marcas as marcasServicio', 'marcasServicio.id', '=', 'productoenServicio.id_marca')
+                        ->leftjoin('colors as colorsServicio', 'colorsServicio.id', '=', 'productoenServicio.id_color')
+                        ->leftjoin('tipos as tiposServicio', 'tiposServicio.id', '=', 'productoenServicio.id_tipo')
+                        ->leftjoin('modos as modoServicios', 'modoServicios.id', '=', 'productoenServicio.id_modo')
+                        ->where('preventasServicio.id', $ordenRecoleccion->idPreventa)
+                        ->orWhere('preventasProducto.id', $ordenRecoleccion->idPreventa)
+                        ->select(
+                            'productos.nombre_comercial',
+                            'servicios_preventas.precio_unitario',
+                            'servicios_preventas.cantidad_total as cantidad',
+                            'ventas_productos.cantidad as cantidadProducto',
+                            'ventas_productos.tipo_descuento',
+                            'ventas_productos.descuento',
+                            'ventas_productos.descipcion',
+                            'servicios_preventas.tipo_descuento as tipoDescuento',
+                            'servicios_preventas.descuento',
+                            'precios_productos.precio',
+                            'colors.nombre as nombreColor',
+                            'marcas.nombre as nombreMarca',
+                            'tipos.nombre as nombreTipo',
+                            'modos.nombre as nombreModo',
+                            'servicios_preventas.descripcion',
+                            'precios_productos.id',
 
-                )
-                ->get();
-        }
+                        )
+                        ->get();
 
-        return view('Principal.ordenRecoleccion.edit', compact('productos', 'datosEnvio'));
+                    break;
+
+                default:
+                    $listaProductos = precios_productos::join('servicios_preventas', 'servicios_preventas.id_precio_producto', '=', 'precios_productos.id')
+                        ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+                        ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                        ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->join('colors', 'colors.id', '=', 'productos.id_color')
+                        ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                        ->whereIn('servicios_preventas.estatus', [1])
+                        ->where('preventas.id', $ordenRecoleccion->idPreventa)
+                        ->select(
+                            'productos.nombre_comercial',
+                            'servicios_preventas.precio_unitario',
+                            'servicios_preventas.cantidad_total as cantidad',
+                            'servicios_preventas.tipo_descuento as tipoDescuento',
+                            'servicios_preventas.descuento',
+                            'precios_productos.precio',
+                            'colors.nombre as nombreColor',
+                            'marcas.nombre as nombreMarca',
+                            'tipos.nombre as nombreTipo',
+                            'modos.nombre as nombreModo',
+                            'precios_productos.id'
+                        )
+                        ->get();
+                    break;
+            }
+
+        $metodosDePagos = Metodo_pago::where('estatus','Activo')->get();
+        $descuentos = Descuentos::select('*')->orderBy('nombre', 'asc')->get();
+
+        return view('Principal.ordenRecoleccion.edit', compact('listaProductos', 'ordenRecoleccion','metodosDePagos','descuentos'));
     }
 
     /**
@@ -326,6 +394,8 @@ class OrdenRecoleccionController extends Controller
             ->where('preventas.id', $datosEnvio->idPreventa)
             ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad')
             ->get();
+
+
         if ($datosEnvio->estatusRecoleccion == 4 || $datosEnvio->estatusRecoleccion == 3) { //4 por recolectar, 3 revision
             return redirect()->route('generarpdf.ordenservicio', ['id' => $orden_recoleccion->id]);
         } else if ($datosEnvio->estatusRecoleccion == 2  && $datosEnvio->estatusPreventa == 4) { // si ya es estatus 2 = entrega  y fue una orden de 4 servicios
@@ -342,15 +412,18 @@ class OrdenRecoleccionController extends Controller
     public function edit(Preventa $orden_recoleccion, Request $request)
     {
 
-
         $costo_unitario = $request->input('costo_unitario');
+        $cantidad = $request->input('cantidad');
         $pagaCon = $request->input('txtpagoEfectivo');
         $codigo = $request->input('codigo');
+        $observacionesInicial =$request->input('observacionesInicial');
         $nRecarga = $request->input('numero_recarga');
         $observaciones = $request->input('observacionesDetalle');
+        $EntregaRecolecta = $request->input('entrego');
         $recibe = $request->input('recibe');
         $horaEntrega = $request->input('HoraFechaEntregado');
         $HoraFechaRecoleccion = $request->input('HoraFechaRecoleccion');
+        $inputProductosSeleccionados= $request->input('inputProductosSeleccionados');
         $comentario = $request->input('observaciones');
         // Recuperar el ID de la orden de recolección
         $preventa = $orden_recoleccion;
@@ -358,15 +431,44 @@ class OrdenRecoleccionController extends Controller
         $ordenRecoleccion = Orden_recoleccion::leftJoin('preventas', function ($join) {
             $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
                 ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
-        })->select('orden_recoleccions.Fecha_recoleccion')
+        })->where('preventas.id', $preventa->id)
+        ->select('orden_recoleccions.Fecha_recoleccion','orden_recoleccions.id_preventaServicio','orden_recoleccions.estatus')
             ->first();
+
         $serviciosPreventas = Servicios_preventas::join('precios_productos', 'precios_productos.id', '=', 'servicios_preventas.id_precio_producto')
-            ->where('servicios_preventas.id_preventa', $preventa->id)->get();
+            ->where('servicios_preventas.id_preventa', $preventa->id)->select('precios_productos.id as idPrecio',
+            'servicios_preventas.id as id_preventaServicio',
+            'servicios_preventas.tipo_descuento',
+            'servicios_preventas.precio_unitario',
+            'servicios_preventas.cantidad_total')->get();
+
+            $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+            ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+            ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+            ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+            ->join('colors', 'colors.id', '=', 'productos.id_color')
+            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+            ->join('modos', 'modos.id', '=', 'productos.id_modo')
+            ->where('preventas.id', $preventa->id)
+            ->select(
+                'productos.nombre_comercial',
+                'precios_productos.precio',
+                'ventas_productos.cantidad',
+                'ventas_productos.descuento',
+                'ventas_productos.id_preventa',
+                'ventas_productos.id as id_ventaproducto',
+                'ventas_productos.tipo_descuento as tipoDescuento',
+                'colors.nombre as nombreColor',
+                'marcas.nombre as nombreMarca',
+                'tipos.nombre as nombreTipo',
+                'modos.nombre as nombreModo',
+                'precios_productos.id',
 
 
+            )
+            ->get();
 
-
-        $cliente = clientes::where('id', $preventa->id_cliente);
+            $cliente = Clientes::find($preventa->id_cliente);
 
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
 
@@ -374,6 +476,9 @@ class OrdenRecoleccionController extends Controller
             //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
             switch ($estatus) {
                 case 'Listo':
+                    $ordenRecoleccion->update([
+                        'estatus' => 1,
+                    ]);
                     //actualizamos estatus
                     $preventa->update([
                         'Fecha_entrega' => $horaEntrega,
@@ -384,6 +489,9 @@ class OrdenRecoleccionController extends Controller
                     ]);
                     break;
                 case 'Entrega':
+                    $ordenRecoleccion->update([
+                        'estatus' => 2,
+                    ]);
                     $preventa->update([
                         'Fecha_entrega' => now(),
                         'estado' => $estatus,
@@ -392,13 +500,49 @@ class OrdenRecoleccionController extends Controller
 
                     if ($preventa->tipo_de_venta === 'Servicio') {
 
+                        $preventa->update([
+                            'metodo_pago' => $request->input('txtmetodoPago'),
+                            'factura' => $request->input('txtfactura') == 'on' ? 1 : 0,
+                            'costo_servicio' => $request->input('costo_total'),
+                            'pago_efectivo' => $pagaCon
+                        ]);
+
+
+                        if ($request->input('txtfactura') == 'on') {
+                            $cliente->update([
+                                'comentario' => $request->input('txtrfc'),
+                            ]);
+                        }
+
                         foreach ($serviciosPreventas as $index => $servicioPreventa) {
-                            // Obtén el costo unitario correspondiente a este servicio preventa
+                             // Obtén el costo unitario correspondiente a este servicio preventa
+                            $Precio = $this->buscarPrecioRecoleccion($servicioPreventa->idPrecio);
+                            $ActualizarserviciosPreventas = Servicios_preventas::where('id', $servicioPreventa->id_preventaServicio)->where('estatus',1)->first();
+
+                            if(isset($costo_unitario[$servicioPreventa->idPrecio])){
+
+
+                            $Precio->update([
+                                'id_producto' => $Precio->id_producto,
+                                'precio' => $costo_unitario[$servicioPreventa->idPrecio],
+                                'estatus' => 2,
+                            ]);
 
 
                             // Actualiza el servicio preventa con el nuevo costo unitario
-                            $servicioPreventa->update(['precio_unitario' => $costo_unitario[$index]]);
+                            $ActualizarserviciosPreventas->update(['precio_unitario' => $costo_unitario[$servicioPreventa->idPrecio],
+                            'tipo_descuento' => 'Sin descuento',
+                            'cantidad_total' => $cantidad[$servicioPreventa->idPrecio],
+                            ]);
+                            }
+                            else{
+                                $ActualizarserviciosPreventas->update(['estatus' => 0,
+                                ]);
+                            }
                         }
+
+                    }
+                    else {
 
                         $preventa->update([
                             'metodo_pago' => $request->input('txtmetodoPago'),
@@ -412,19 +556,102 @@ class OrdenRecoleccionController extends Controller
                                 'comentario' => $request->input('txtrfc'),
                             ]);
                         }
+
+                        foreach($listaProductos as $productos){
+
+                            $Precio = $this->buscarPrecioRecoleccion($productos->id);
+
+                            $ActualizarentregaPreventas = ventas_productos::where('id', $productos->id_ventaproducto)->where('estatus',3)->first();
+
+                            if(isset($costo_unitario[$productos->id])){
+                                if($Precio->precio != $costo_unitario[$productos->id]){
+
+                             // Actualiza el precio con el nuevo costo unitario
+                             $Precio->update(['estatus'=> 0]);
+
+                             $NuevoPrecio = precios_productos::create([
+                                'id_producto' => $Precio->id_producto,
+                                'precio' => $costo_unitario[$productos->id],
+                                'alternativo_uno' =>$Precio->alternativo_uno,
+                                'alternativo_dos' =>$Precio->alternativo_dos,
+                                'alternativo_tres'=>$Precio->alternativo_tres,
+                            ]);
+
+                            $ActualizarentregaPreventas->update(['id_precio_producto'=> $NuevoPrecio->id]);
+
+                                }
+                                else{
+                            $Precio->update(['precio' => $costo_unitario[$productos->id],
+                               'cantidad' => $cantidad[$productos->id],
+                            ]);
+                            }
+
+                             }
+                             else{
+                                 $ActualizarentregaPreventas->update(['estatus' => 0,
+                                 ]);
+                             }
+
+                        }
+
                     }
                     break;
                 case 'Revision':
+
+                    // Decodifica el JSON
+                $productos = json_decode($inputProductosSeleccionados, true);
+
+                $precioenCero = null;
+                foreach ($productos as $producto) {
+
+                    //$Precio = precios_productos::where('id', $producto['idPrecio'])->where('estatus',2)->first();
+                    $Precio = $this->buscarPrecioRecoleccion($producto['idPrecio']);
+
+                    switch($Precio->precio){
+                        case '0.00':
+                            $precioenCero = $producto['idPrecio'];
+                        #no haga nada por que ya es 0
+                        break;
+                        default:
+
+                        $Precio->update([
+                            'estatus' => 0,
+                        ]);
+
+                        $nuevoPrecio = precios_productos::create([
+                            'id_producto' => $producto['id'],
+                            'precio' => 0,
+                            'estatus' => 2,
+                        ]);
+
+                        $precioenCero = $nuevoPrecio->id;
+                        break;
+                    }
+
+                     //ya una vez identificados le agregamos el id del precio actual y cantidad
+                        $servicio_venta = Servicios_preventas::firstOrCreate([
+                            'id_precio_producto' => $precioenCero, //id del precio producto que esta relacionado con el producto
+                            'id_preventa' => $preventa['id'], //le asignamos su nummero de preventa
+                            'descuento' => 0,
+                            'precio_unitario' => 0,
+                            'tipo_descuento' => 'Sin descuento',
+                            'cantidad' => $producto['cantidad'],  //borrar cuando cargue el migration
+                            'cantidad_total' => $producto['cantidad'], //le asignamos su cantidad
+                            'estatus' => 1 //le asignamos estatus 1
+                        ]);
+
+                }
+
                     //cambiamos el estatus de la recoleccion
                     $ordenRecoleccion->update([
                         'Fecha_recoleccion' => $HoraFechaRecoleccion,
                     ]);
                     $preventa->update([
+                        'nombre_quien_entrega' => $EntregaRecolecta,
                         'codigo' => $codigo,
                         'numero_recarga' => $nRecarga,
                         'estado' => $estatus,
                     ]);
-
                     break;
                 case 'Recolectar':
                     $preventa->update([
@@ -468,107 +695,160 @@ class OrdenRecoleccionController extends Controller
 
         $datosEnvio = Preventa::leftJoin('orden_recoleccions', function ($join) {
             $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
-                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id')
+                ->orOn('orden_recoleccions.id_preventaOrdenServicio', '=', 'preventas.id');
         })
-            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->leftJoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftJoin('folios_servicios','folios_servicios.id','=','orden_recoleccions.id_folio_servicio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
-            ->join('personas as clientePersona', 'clientePersona.id', '=', 'clientes.id_persona')
+            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->leftJoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
-            ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio'])
-            ->where('preventas.id', $id_preventa)
+            ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
+            ->where('preventas.id',  $id)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
+                'orden_recoleccions.created_at as fechaCreacion',
+                'folios.letra_actual as letraActual',
+                'folios.ultimo_valor as ultimoValor',
+                'folios_servicios.ultimo_valor',
+                'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
-                'preventas.estado as estatusPreventa',
-                'preventas.tipo_de_venta as tipoVenta',
-                'preventas.nombre_empleado as nombreEmpleado',
+                'preventas.factura',
+                'preventas.pago_efectivo as pagoEfectivo',
                 'preventas.nombre_atencion as nombreAtencion',
-                'preventas.nombre_quien_recibe as nombreRecibe',
-                'orden_recoleccions.id as idOrden_recoleccions',
-                'orden_recoleccions.Fecha_recoleccion as fechaRecoleccion',
-                'orden_recoleccions.id_cancelacion',
-                'ventas.created_at as fechaEntrega',
-                'orden_recoleccions.created_at',
-                'orden_recoleccions.id as id_recoleccion',
-                'orden_recoleccions.created_at',
-                'clientePersona.nombre as nombreCliente',
-                'clientePersona.apellido as apellidoCliente',
-                'clientePersona.telefono as telefonoCliente',
-                'clientePersona.email as emailCliente',
-                'clientes.comentario as rfc',
-                'catalago_ubicaciones.localidad as colonia',
+                'preventas.horario_trabajo_inicio as horarioTrabajoInicio',
+                'preventas.horario_trabajo_final as horarioTrabajoFinal',
+                'preventas.dia_semana as diaSemana',
+                'preventas.estado',
+                'preventas.tipo_de_venta as tipoVenta',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
                 'direcciones.referencia',
+                'catalago_ubicaciones.cp',
+                'catalago_ubicaciones.localidad',
+                'clientes.comentario as rfc',
+                'personaClientes.nombre as nombreCliente',
+                'personaClientes.apellido as apellidoCliente',
+                'personaClientes.telefono as telefonoCliente',
+                'personaClientes.email as correo',
             )
             ->first();
 
-        if ($datosEnvio->tipoVenta === 'Entrega') {
-            $productos = ventas_productos::join('precios_productos', 'precios_productos.id', '=', 'ventas_productos.id_precio_producto')
-                ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
-                ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-                ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
-                ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
-                ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
-                ->join('modos', 'modos.id', '=', 'productos.id_modo')
-                ->where('precios_productos.estatus', 1)
-                ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select(
-                    'productos.*',
-                    'precios_productos.precio',
-                    'marcas.nombre as marca',
-                    'tipos.nombre as tipo',
-                    'colors.nombre as color',
-                    'modos.nombre as nombreModo',
-                    'ventas_productos.cantidad',
-                    'ventas_productos.descuento',
-                    'ventas_productos.tipo_descuento as tipoDescuento',
-                )->get();
-        } else if ($datosEnvio->tipoVenta === 'Servicio') { //leftjoin me devolvera null si no hay relaciones
-            $productos = servicios_preventas::join('precios_productos', 'precios_productos.id', '=', 'servicios_preventas.id_precio_producto')
-                ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-                ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
-                ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
-                ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
-                ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
-                ->where('preventas.id', $datosEnvio->idPreventa)
-                ->select(
-                    'productos.*',
-                    'marcas.nombre as marca',
-                    'tipos.nombre as tipo',
-                    'colors.nombre as color',
-                    'servicios_preventas.cantidad_total as cantidad',
-                    'precios_productos.precio',
-                    'servicios_preventas.descuento',
-                    'servicios_preventas.tipo_descuento as tipoDescuento',
-                )
-                ->get();
-        }
+
+            switch ($datosEnvio->tipoVenta) {
+                case 'Entrega':
+                    $productos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+                        ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+                        ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                        ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->join('colors', 'colors.id', '=', 'productos.id_color')
+                        ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                        ->where('preventas.id', $datosEnvio->idPreventa)
+                        ->select(
+                            'productos.nombre_comercial',
+                            'precios_productos.precio',
+                            'ventas_productos.cantidad',
+                            'colors.nombre as nombreColor',
+                            'marcas.nombre as nombreMarca',
+                            'tipos.nombre as nombreTipo',
+                            'modos.nombre as nombreModo'
+                        )
+                        ->get();
+                    break;
+                    case 'Orden Servicio':
+                        $productos = precios_productos::leftjoin('servicios_preventas', 'servicios_preventas.id_precio_producto', '=', 'precios_productos.id')
+                        ->leftjoin('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+                        ->leftjoin('preventas as preventasServicio', 'preventasServicio.id', '=', 'servicios_preventas.id_preventa')
+                        ->leftjoin('preventas as preventasProducto', 'preventasProducto.id', '=', 'ventas_productos.id_preventa')
+                        ->leftjoin('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                        ->leftjoin('productos as productoenServicio', 'productoenServicio.id', '=', 'precios_productos.id_producto')
+                        ->leftjoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->leftjoin('colors', 'colors.id', '=', 'productos.id_color')
+                        ->leftjoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->leftjoin('modos', 'modos.id', '=', 'productos.id_modo')
+                        ->leftjoin('marcas as marcasServicio', 'marcasServicio.id', '=', 'productoenServicio.id_marca')
+                        ->leftjoin('colors as colorsServicio', 'colorsServicio.id', '=', 'productoenServicio.id_color')
+                        ->leftjoin('tipos as tiposServicio', 'tiposServicio.id', '=', 'productoenServicio.id_tipo')
+                        ->leftjoin('modos as modoServicios', 'modoServicios.id', '=', 'productoenServicio.id_modo')
+                        ->where('preventasServicio.id', $datosEnvio->idPreventa)
+                        ->orWhere('preventasProducto.id', $datosEnvio->idPreventa)
+                        ->select(
+                            'productos.nombre_comercial',
+                            'servicios_preventas.precio_unitario',
+                            'servicios_preventas.cantidad_total as cantidad',
+                            'ventas_productos.cantidad as cantidadProducto',
+                            'ventas_productos.tipo_descuento',
+                            'servicios_preventas.tipo_descuento as tipoDescuento',
+                            'servicios_preventas.descuento',
+                            'precios_productos.precio',
+                            'colors.nombre as nombreColor',
+                            'marcas.nombre as nombreMarca',
+                            'tipos.nombre as nombreTipo',
+                            'modos.nombre as nombreModo',
+                            'ventas_productos.descipcion',
+                            'servicios_preventas.descripcion',
+
+                        )
+                        ->get();
+
+                    break;
+
+                default:
+                    $productos = precios_productos::join('servicios_preventas', 'servicios_preventas.id_precio_producto', '=', 'precios_productos.id')
+                        ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+                        ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                        ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->join('colors', 'colors.id', '=', 'productos.id_color')
+                        ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                        ->where('preventas.id', $datosEnvio->idPreventa)
+                        ->select(
+                            'productos.nombre_comercial',
+                            'servicios_preventas.precio_unitario',
+                            'servicios_preventas.cantidad_total as cantidad',
+                            'servicios_preventas.tipo_descuento as tipoDescuento',
+                            'servicios_preventas.descuento',
+                            'precios_productos.precio',
+                            'colors.nombre as nombreColor',
+                            'marcas.nombre as nombreMarca',
+                            'tipos.nombre as nombreTipo',
+                            'modos.nombre as nombreModo'
+                        )
+                        ->get();
+                    break;
+            }
+
 
         $cancelar = Cancelaciones::where('estatus', 1)
             ->orderBy('cancelaciones.nombre', 'desc')->get();
 
         return view('Principal.ordenRecoleccion.cancelar', compact('productos', 'datosEnvio', 'cancelar'));
     }
-    public function cancelar(Orden_recoleccion $id, Request $request)
+    public function cancelar(Preventa $id, Request $request)
     {
-        $cancelado = $request->input('txtcancelado');
-        $categoriaCancelacion = $request->input('txtcategoriaCancelacion');
+
+    // Definir las reglas de validación
+    $rules = [
+        'txtcancelado' => 'required', // Asegúrate de usar la regla adecuada
+        'txtcategoriaCancelacion' => 'required|string', // Ajusta las reglas según tus necesidades
+    ];
+
+        // Validar los datos del request
+        $validatedData = $request->validate($rules);
+
+    // Acceder a los datos validados
+    $cancelado = $validatedData['txtcancelado'];
+    $categoriaCancelacion = $validatedData['txtcategoriaCancelacion'];
 
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
 
-            $preventa = Preventa::where('id', $id->id_preventa)
-                ->whereIn('estado', ['Revision', 'Entrega', 'Recolectar'])
-                ->first();
 
-
-            $id->deleted_at = now();
             $id->comentario = $cancelado;
             $id->id_cancelacion = $categoriaCancelacion;
-            $ordenCancelada = $id->save();
+            $id->save();
 
 
             //$preventa->deleted_at = now();
@@ -591,58 +871,109 @@ class OrdenRecoleccionController extends Controller
 
     public function generarPdf2(string $id)
     {
-        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
-            ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
-            ->join('empleados', 'empleados.id', '=', 'preventas.id_empleado')
-            ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->join('personas as personaEmpleado', 'personaEmpleado.id', '=', 'empleados.id_persona')
-            ->join('roles', 'roles.id', '=', 'empleados.id_rol')
-            ->where('orden_recoleccions.id', $id)
-            ->select(
-                'orden_recoleccions.id as idRecoleccion',
-                'orden_recoleccions.created_at as fechaCreacion',
-                'preventas.metodo_pago as metodoPago',
-                'preventas.id as idPreventa',
-                'preventas.factura',
-                'preventas.pago_efectivo as pagoEfectivo',
-                'preventas.costo_servicio',
-                'direcciones.calle',
-                'direcciones.num_exterior',
-                'direcciones.num_interior',
-                'direcciones.referencia',
-                'catalago_ubicaciones.cp',
-                'catalago_ubicaciones.localidad',
-                'clientes.comentario as rfc',
-                'personaClientes.nombre as nombreCliente',
-                'personaClientes.apellido as apellidoCliente',
-                'personaClientes.telefono as telefonoCliente',
-                'personaClientes.email as correo',
-                'personaEmpleado.nombre as nombreEmpleado',
-                'personaEmpleado.apellido as apellidoEmpleado',
-            )
-            ->first();
 
-        $productos = Catalago_recepcion::join('productos', 'productos.id', '=', 'catalago_recepcions.id_producto')
-            ->join('servicios_preventas', 'servicios_preventas.id_producto_recepcion', '=', 'catalago_recepcions.id')
-            ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
-            ->leftJoin('marcas', 'marcas.id', '=', 'productos.id_marca')
-            ->leftJoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
-            ->leftJoin('colors', 'colors.id', '=', 'productos.id_color')
-            ->leftJoin('modos', 'modos.id', '=', 'productos.id_modo')
-            ->where('preventas.id', $ordenRecoleccion->idPreventa)
-            ->where('servicios_preventas.estatus', 2)
-            ->select('productos.nombre_comercial', 'productos.descripcion', 'servicios_preventas.cantidad_total', 'marcas.nombre as marca', 'tipos.nombre as tipo', 'colors.nombre as color')
-            ->get();
+
+        $ordenRecoleccion = Preventa::join('orden_recoleccions', 'orden_recoleccions.id_preventaOrdenServicio', '=',  'preventas.id')
+        ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
+        ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
+        ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+        ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
+        ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
+        ->where('orden_recoleccions.id', $id)
+        ->select(
+            'orden_recoleccions.id as idRecoleccion',
+            'orden_recoleccions.created_at as fechaCreacion',
+            'orden_recoleccions.Fecha_entrega as fechaEntrega',
+            'folios_servicios.ultimo_valor as ultimoValor',
+            'preventas.metodo_pago as metodoPago',
+            'preventas.id as idPreventa',
+            'preventas.factura',
+            'preventas.pago_efectivo as pagoEfectivo',
+            'preventas.nombre_atencion as nombreAtencion',
+            'preventas.nombre_quien_recibe as recibe',
+            'preventas.nombre_empleado as nombreEmpleado',
+            'direcciones.calle',
+            'direcciones.num_exterior',
+            'direcciones.num_interior',
+            'direcciones.referencia',
+            'catalago_ubicaciones.municipio',
+            'catalago_ubicaciones.estado',
+            'catalago_ubicaciones.cp',
+            'catalago_ubicaciones.localidad',
+            'clientes.comentario as rfc',
+            'personaClientes.nombre as nombreCliente',
+            'personaClientes.apellido as apellidoCliente',
+            'personaClientes.telefono as telefonoCliente',
+            'personaClientes.email as correo',
+        )
+        ->first();
+
+
+    $listaProductos = precios_productos::leftjoin('servicios_preventas', 'servicios_preventas.id_precio_producto', '=', 'precios_productos.id')
+        ->leftjoin('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+        ->leftjoin('preventas as preventasServicio', 'preventasServicio.id', '=', 'servicios_preventas.id_preventa')
+        ->leftjoin('preventas as preventasProducto', 'preventasProducto.id', '=', 'ventas_productos.id_preventa')
+        ->leftjoin('productos', 'productos.id', '=', 'precios_productos.id_producto')
+        ->leftjoin('productos as productoenServicio', 'productoenServicio.id', '=', 'precios_productos.id_producto')
+        ->leftjoin('marcas', 'marcas.id', '=', 'productos.id_marca')
+        ->leftjoin('colors', 'colors.id', '=', 'productos.id_color')
+        ->leftjoin('tipos', 'tipos.id', '=', 'productos.id_tipo')
+        ->leftjoin('modos', 'modos.id', '=', 'productos.id_modo')
+        ->leftjoin('marcas as marcasServicio', 'marcasServicio.id', '=', 'productoenServicio.id_marca')
+        ->leftjoin('colors as colorsServicio', 'colorsServicio.id', '=', 'productoenServicio.id_color')
+        ->leftjoin('tipos as tiposServicio', 'tiposServicio.id', '=', 'productoenServicio.id_tipo')
+        ->leftjoin('modos as modoServicios', 'modoServicios.id', '=', 'productoenServicio.id_modo')
+        ->where('preventasServicio.id', $ordenRecoleccion->idPreventa)
+        ->orWhere('preventasProducto.id', $ordenRecoleccion->idPreventa)
+        ->select(
+            'productos.nombre_comercial',
+            'servicios_preventas.precio_unitario',
+            'servicios_preventas.cantidad_total as cantidad',
+            'ventas_productos.cantidad as cantidadProducto',
+            'ventas_productos.tipo_descuento',
+            'servicios_preventas.tipo_descuento as tipoDescuento',
+            'servicios_preventas.descuento',
+            'precios_productos.precio',
+            'colors.nombre as nombreColor',
+            'marcas.nombre as nombreMarca',
+            'tipos.nombre as nombreTipo',
+            'modos.nombre as nombreModo',
+            'ventas_productos.descipcion',
+            'servicios_preventas.descripcion',
+
+        )
+        ->get();
+
+        $fechaCreacion = \Carbon\Carbon::parse($ordenRecoleccion->fechaCreacion);
+
+        $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
+
+        $DatosdelNegocio = Info_tickets::first();
+
+        $largoDelTicket = 700; // Inicializa la variable
+
+
+        if ($listaProductos->count() > 1) {
+            $extra = max(0, $listaProductos->count() - 1);
+            $largoDelTicket += $extra * 50;
+        }
+
+        $diasSemana = explode(',', $ordenRecoleccion->diaSemana);
+
+        if (count($diasSemana) > 1) {
+            $largoDelTicket += 50;
+        }
+
 
         $pdf = PDF::loadView('Principal.ordenRecoleccion.vista_pdf', compact(
             'ordenRecoleccion',
-            'productos'
+            'listaProductos',
+            'Tiempo',
+            'DatosdelNegocio'
         ));
 
         // Establece el tamaño del papel a 80mm de ancho y 200mm de largo
-        $pdf->setPaper([0, 0, 226.77, 699.93], 'portrait'); // 80mm x 200mm en puntos
+        $pdf->setPaper([0, 0, 226.77, 750.00], 'portrait'); // 80mm x 200mm en puntos
 
         // Renderiza el documento PDF y lo envía al navegador
         return $pdf->stream();
@@ -676,6 +1007,7 @@ class OrdenRecoleccionController extends Controller
             })
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
+            ->leftjoin('folios as folio_r', 'folio_r.id', '=', 'orden_recoleccions.id_folio_recoleccion')
             ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio']) //whereIn para filtrar las preventas
             ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Cancelado'])
             ->WhereNull('preventas.deleted_at')
@@ -735,6 +1067,8 @@ class OrdenRecoleccionController extends Controller
             'folios.letra_actual as letraActual',
             'folios.ultimo_valor as ultimoValor',
             'folios_servicios.ultimo_valor as ultimoValorServicio',
+            'folio_r.letra_actual as letraActual_r',
+            'folio_r.ultimo_valor as ultimoValor_r',
             'preventas.id as idPreventa',
             'preventas.estado as estatusPreventa',
             'preventas.tipo_de_venta as tipoVenta',
@@ -785,8 +1119,10 @@ class OrdenRecoleccionController extends Controller
                     // Suponiendo que $row->ultimoValor contiene el valor numérico Ahora $valorConCeros contiene el valor de $row->ultimoValor con ceros a la izquierda.
                     $folio = $row->letraActual . str_pad($row->ultimoValor, 6, '0', STR_PAD_LEFT);
                 } else if ($row->tipoVenta === 'Servicio') {
+
                     $TipoServicio = 'Orden Servicio';
-                    $folio = str_pad($row->ultimoValorServicio, 6, '0', STR_PAD_LEFT);
+                    $folio = $row->letraActual_r . str_pad($row->ultimoValor_r, 6, '0', STR_PAD_LEFT);
+                    info('entro : ' . $folio);
                 }
 
                 $fechaCreacion = \Carbon\Carbon::parse($row->fechaCreacion);
@@ -923,6 +1259,13 @@ class OrdenRecoleccionController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function buscarPrecioRecoleccion($identificadorPrecio)
+    {
+
+      return  precios_productos::where('id', $identificadorPrecio)->whereIn('estatus',[2,1])->first();
+
     }
 
     /**

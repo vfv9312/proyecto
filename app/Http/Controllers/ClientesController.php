@@ -29,11 +29,12 @@ class ClientesController extends Controller
                     ->orWhere('personas.apellido', 'LIKE', "%{$busqueda}%")
                     ->orWhere('personas.email', 'LIKE', "%{$busqueda}%")
                     ->orWhere('clientes.comentario', 'LIKE', "%{$busqueda}%")
+                    ->orWhere('clientes.clave', 'LIKE', "%{$busqueda}%")
                     ->orWhere(DB::raw("CONCAT(personas.nombre, ' ', personas.apellido)"), 'LIKE', "%{$busqueda}%");
             })
-            ->select('clientes.id', 'clientes.comentario', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento')
+            ->select('clientes.id','clientes.clave', 'clientes.comentario', 'personas.nombre', 'personas.apellido', 'personas.telefono', 'personas.email', 'personas.fecha_nacimiento')
             ->orderBy('clientes.updated_at', 'desc')
-            ->paginate(5); // Mueve paginate() aquí para que funcione correctamente
+            ->paginate(5)->appends(['adminlteSearch' => $busqueda]); // Mueve paginate() aquí para que funcione correctamente
 
         //consulta para conseguir datos de la direccion
         $direcciones = direcciones::join('direcciones_clientes', 'direcciones_clientes.id_direccion', '=', 'direcciones.id')
@@ -47,7 +48,7 @@ class ClientesController extends Controller
         $catalogo_colonias = Catalago_ubicaciones::orderBy('localidad')->get();
 
         //vemos la vista index de clientes y le pasamos dos variables que son nuestas consultas
-        return view('clientes.index', compact('clientes', 'direcciones', 'catalogo_colonias'));
+        return view('clientes.index', compact('clientes', 'direcciones', 'catalogo_colonias', 'busqueda'));
     }
 
 
@@ -64,15 +65,18 @@ class ClientesController extends Controller
      */
     public function store(Request $request)
     {
+
+                    //En este código, required indica que el campo es obligatorio, valida que el campo solo contenga números, espacios, guiones, signos más y paréntesis, y min:10 valida que el campo tenga al menos 10 caracteres.
+                    $request->validate([
+                        'txttelefono' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+                        'txtclave' => 'max:8'
+                    ], [
+                        'txttelefono.required' => 'El telefono en Mexico debe tener 10 digitos',
+                        'txtclave.max' => 'Maximo 8 caracteres'
+                    ]);
+
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
-
-            //En este código, required indica que el campo es obligatorio, valida que el campo solo contenga números, espacios, guiones, signos más y paréntesis, y min:10 valida que el campo tenga al menos 10 caracteres.
-            $request->validate([
-                'txttelefono' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
-            ], [
-                'txttelefono.required' => 'El telefono en Mexico debe tener 10 digitos'
-            ]);
 
             // Insertar en la tabla 'personas'
             /**strtolower($request->txtnombre) convierte todo el nombre a minúsculas y
@@ -100,6 +104,7 @@ class ClientesController extends Controller
             // Insertar en la tabla 'clientes' usando el ID de persona
             //comentarios es el RFC al final si necesitan ese dato y comentarios no asi que uso ese campo para guardar RFC del cliente
             $cliente = clientes::create([
+                'clave' => $request->txtclave,
                 'id_persona' => $persona->id,
                 'comentario' => strtoupper($request->txtrfc),
                 'estatus' => 1
@@ -187,7 +192,8 @@ class ClientesController extends Controller
         $idCliente = $request->input('id_cliente');
         $idPersona = $request->input('id_persona');
         $nombreCliente = ucwords(strtolower($request->input('txtnombre')));
-        $apellidoCliente = ucwords(strtolower($request->input('txtapellido')));
+        $clave = $request->input('txtclave');
+
         $telefonoCliente = $request->input('txttelefono');
         $emailCliente = strtolower($request->input('txtemail'));
         $idDireccion = $request->input('id_direccion');
@@ -197,7 +203,17 @@ class ClientesController extends Controller
         $numInterior = $request->input('txtnum_interior');
         $numReferencia = $request->input('txtreferencia');
         $rfcCliente = strtoupper($request->input('txtrfc'));
+        $tipoCliente = $request->has('moralofisico') ? "moral" : "fisica";
 
+
+        switch ($tipoCliente) {
+            case 'moral':
+                $apellidoCliente = ".";
+                break;
+            default:
+            $apellidoCliente = ucwords(strtolower($request->input('txtapellido')));
+                break;
+        }
 
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
         try {
@@ -220,7 +236,12 @@ class ClientesController extends Controller
             if ($rfcCliente) {
                 //Actualizar la tabla cliente
                 $actualizadocliente = $tablaCliente->update([
+                    'clave' => $clave,
                     'comentario' => $rfcCliente,
+                ]);
+            }else{
+                $tablaCliente->update([
+                'clave' => $clave,
                 ]);
             }
 
