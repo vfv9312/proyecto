@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Orden_recoleccion;
+use App\Models\Preventa;
 use Illuminate\Http\Request;
 
 class WhatsAppController extends Controller
@@ -13,23 +14,24 @@ class WhatsAppController extends Controller
     public function enviarMensaje($id)
     {
 
-        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->leftjoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
+        $ordenRecoleccion = Preventa::leftJoin('orden_recoleccions', function ($join) {
+            $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
+                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+        })
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->where('orden_recoleccions.id', $id)
+            ->where('preventas.id', $id)
             ->select(
-                'ventas.estatus as estatusVenta',
-                'ventas.id as idVenta',
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
                 'preventas.pago_efectivo as pagoEfectivo',
-                'preventas.estatus as estatusPreventa',
+                'preventas.estado as estatusPreventa',
+                'preventas.tipo_de_venta as tipoVenta',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
@@ -47,9 +49,9 @@ class WhatsAppController extends Controller
             ->first();
         //9612602898
 
-        if ($ordenRecoleccion->estatusPreventa == 3) {
+        if ($ordenRecoleccion->tipoVenta === 'Entrega') {
             $enlace = "https://administrativo.ecotonerdelsureste.com/orden_entrega_pdf/$ordenRecoleccion->idRecoleccion/generarpdf";
-        } else if ($ordenRecoleccion->estatusPreventa == 4) {
+        } else if ($ordenRecoleccion->tipoVenta === 'Servicio') {
             $enlace = "https://administrativo.ecotonerdelsureste.com/orden_servicio_pdf/$ordenRecoleccion->idRecoleccion/generarpdf";
         }
 

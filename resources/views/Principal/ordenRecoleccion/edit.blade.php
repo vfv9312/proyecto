@@ -5,9 +5,8 @@
 
 
 @section('content')
-    <h1 class="mb-8 text-center">Estatus</h1>
-    <form class=""
-        action="{{ route('orden_recoleccion.edit', ['orden_recoleccion' => $datosEnvio->idOrden_recoleccions]) }}"
+    <h1 class=" mb-0 text-center font-bold">Estatus</h1>
+    <form class="" action="{{ route('orden_recoleccion.edit', ['orden_recoleccion' => $datosEnvio->idPreventa]) }}"
         method="GET">
         @csrf
         @include('Principal.ordenRecoleccion._form_edit');
@@ -25,9 +24,10 @@
 
 @push('js')
     <script>
-        var servicio = {!! json_encode($datosEnvio->estatusPreventa) !!};
+        let servicio = {!! json_encode($datosEnvio->tipoVenta) !!};
 
         function mostrarInputCosto(value) {
+            console.log(value);
             var inputCosto = document.getElementById('inputCosto');
             let inputFactura = document.querySelector('#inputFactura');
             let inputmetodopago = document.querySelector('#inputmetodopago');
@@ -35,9 +35,9 @@
             var inputs = document.querySelectorAll('input[name^="costo_unitario"]');
             let codigo = document.querySelector('#form_codigo');
             let observaciones = document.querySelector('#form_observaciones')
-
+            console.log(value);
             inputs.forEach(input => {
-                if (value == '2') {
+                if (value == 'Entrega') {
                     input.required = true;
                     input.readOnly = false;
                 } else {
@@ -46,25 +46,61 @@
                 }
             });
 
-            if (value == '1') { // Si se selecciona "Venta completa"
-                inputPersonaRecibe.style.display = 'block';
-            } else if (value == '2' && servicio ==
-                4) { // Si el valor seleccionado es "En entrega" y el estatus de preventa es servicio
-                inputCosto.style.display = 'block';
-                inputFactura.style.display = 'flex';
-                inputmetodopago.style.display = 'block';
-            } else if (value == '3') {
-                codigo.style.display = 'block';
-            } else if (value == '5') {
-                observaciones.clasList.add('flex');
-            } else {
-                inputCosto.style.display = 'none';
-                inputFactura.style.display = 'none';
-                inputmetodopago.display = 'none';
-                inputPersonaRecibe.style.display = 'none';
-                codigo.style.display = 'none';
-                observaciones.style.display = 'none';
+            console.log(value);
+            switch (value) { // Si se selecciona "Venta completa"
+                case 'Listo':
+                    inputCosto.style.display = 'none';
+                    inputFactura.style.display = 'none';
+                    inputmetodopago.display = 'none';
+                    codigo.style.display = 'none';
+                    observaciones.style.display = 'none';
+
+                    inputPersonaRecibe.style.display = 'block';
+                    break;
+                case 'Entrega':
+                    inputPersonaRecibe.style.display = 'none';
+                    codigo.style.display = 'none';
+                    observaciones.style.display = 'none';
+
+                    if (servicio == 'Servicio') {
+                        inputCosto.style.display = 'block';
+                        inputFactura.style.display = 'flex';
+                        inputmetodopago.style.display = 'block';
+                    }
+                    break;
+                case 'Revision':
+                    inputCosto.style.display = 'none';
+                    inputFactura.style.display = 'none';
+                    inputmetodopago.display = 'none';
+                    inputPersonaRecibe.style.display = 'none';
+                    observaciones.style.display = 'none';
+                    console.log(servicio);
+                    if (servicio == 'Servicio') {
+                        codigo.style.display = 'block';
+                    }
+
+                    break;
+
+                case 'Noentregado':
+                    inputCosto.style.display = 'none';
+                    inputFactura.style.display = 'none';
+                    inputmetodopago.display = 'none';
+                    inputPersonaRecibe.style.display = 'none';
+                    codigo.style.display = 'none';
+
+                    observaciones.clasList.add('flex');
+                    break;
+
+                default:
+                    inputCosto.style.display = 'none';
+                    inputFactura.style.display = 'none';
+                    inputmetodopago.display = 'none';
+                    inputPersonaRecibe.style.display = 'none';
+                    codigo.style.display = 'none';
+                    observaciones.style.display = 'none';
+                    break;
             }
+
         }
 
 

@@ -29,8 +29,14 @@
             <!--foreach ($productos as $producto)-->
             @foreach ($datosEnvio as $dato)
                 <tr class= " border-b border-gray-200 text-sm">
-                    <td class=" px-6 py-4">
-                        {{ $dato->letraAcutal }}{{ sprintf('%06d', $dato->ultimoValor) }}</td>
+                    @if ($dato->tipoVenta === 'Entrega')
+                        <td class="px-6 py-4">
+                            {{ $dato->letraActual }}{{ sprintf('%06d', $dato->ultimoValor) }}
+                        </td>
+                    @else
+                        <td class="px-6 py-4">{{ sprintf('%06d', $dato->ultimoValorServicio) }}
+                        </td>
+                    @endif
                     <td class="px-6 py-4">
                         {{ $dato->nombreCliente }} {{ $dato->apellidoCliente }}
                     </td>
@@ -50,13 +56,28 @@
 
 
                     <td>
+                        @switch($dato->tipoVenta)
+                            @case('Entrega')
+                                <button onclick="location.href='{{ route('generarpdf.ordenentrega', $dato->idRecoleccion) }}'"
+                                    class=" border rounded
+                            px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200
+                            ease-in-out">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                            @break
 
-                        <button onclick="location.href='{{ route('generarpdf.ordenentrega', $dato->idRecoleccion) }}'"
-                            class=" border rounded
-                        px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200
-                        ease-in-out">
-                            <i class="fas fa-file-pdf"></i>
-                        </button>
+                            @case('Servicio')
+                                <button onclick="location.href='{{ route('generarpdf.ordenservicio', $dato->idRecoleccion) }}'"
+                                    class=" border rounded
+                            px-6 py-4 bg-blue-500 text-white cursor-pointer hover:bg-blue-700 transition duration-200
+                            ease-in-out">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                            @break
+
+                            @default
+                        @endswitch
+
 
                     </td>
 

@@ -9,6 +9,7 @@ use App\Models\Descuentos;
 use App\Models\direcciones;
 use App\Models\direcciones_clientes;
 use App\Models\Folio;
+use App\Models\Folio_servicios;
 use App\Models\Info_tickets;
 use App\Models\Marcas;
 use App\Models\Modo;
@@ -90,7 +91,7 @@ class OrdenEntregaController extends Controller
             ->whereNotNull('nombre_atencion')
             ->get();
 
-        $HorarioTrabajo = Preventa::where('estatus', 3)
+        $HorarioTrabajo = Preventa::where('tipo_de_venta', 'Entrega')
             ->whereNotNull('horario_trabajo_inicio')
             ->select('id_cliente as idCliente', 'horario_trabajo_inicio as horaInicio', 'horario_trabajo_final as horaFinal', 'dia_semana as dias', 'nombre_quien_recibe as recibe')
             ->orderBy('updated_at', 'asc')->get();
@@ -151,14 +152,6 @@ class OrdenEntregaController extends Controller
     public function store(Request $request)
     {
 
-        /* $request->validate([
-            'txtnombreCliente' => 'required',
-            // otras reglas de validación...
-        ], [
-            'txtnombreCliente.required' => 'El nombre del cliente es obligatorio.',
-            // otros mensajes personalizados...
-        ]);*/
-
 
         $nombreEmpleado = strtoupper(Auth::user()->name);
         DB::beginTransaction(); //El código DB::beginTransaction(); en Laravel se utiliza para iniciar una nueva transacción de base de datos.
@@ -196,43 +189,20 @@ class OrdenEntregaController extends Controller
             $pagaRecarga = $request->input('pagaConRecarga'); //el pago de una recarga
             $LunesEntrada = $request->input('Lunes-Viernes_entrada');
             $LunesSalida = $request->input('Lunes-Viernes_salida');
-            // $MartesEntrada = $request->input('Lunes_entrada');
-            // $MartesSalida = $request->input('Lunes_salida');
-            // $MiercolesEntrada = $request->input('Lunes_entrada');
-            // $MiercolesSalida = $request->input('Lunes_salida');
-            // $JuevesEntrada = $request->input('Lunes_entrada');
-            // $JuevesSalida = $request->input('Lunes_salida');
-            // $ViernesEntrada = $request->input('Lunes_entrada');
-            // $ViernesSalida = $request->input('Lunes_salida');
             $SabadoEntrada = $request->input('Sabado_entrada');
             $SabadoSalida = $request->input('Sabado_salida');
             $DomingoEntrada = $request->input('Domingo_entrada');
             $DomingoSalida = $request->input('Domingo_salida');
-
-            // $horarioTrabajoInicio = $LunesEntrada . ',' . $MartesEntrada . ',' . $MiercolesEntrada . ',' . $JuevesEntrada . ',' . $ViernesEntrada . ',' . $SabadoEntrada . ',' . $DomingoEntrada;
-            // $horarioTrabajoFinal = $LunesSalida . ',' . $MartesSalida . ',' . $MiercolesSalida . ',' . $JuevesSalida . ',' . $ViernesSalida . ',' . $SabadoSalida . ',' . $DomingoSalida;
             $horarioTrabajoInicio = $LunesEntrada . ',' . $SabadoEntrada . ',' . $DomingoEntrada;
             $horarioTrabajoFinal = $LunesSalida . ',' . $SabadoSalida . ',' . $DomingoSalida;
 
 
             $diasConDatos = '';
 
-
             if (!empty($LunesEntrada)) {
                 $diasConDatos .= 'Lunes-Viernes,';
             }
-            // if (!empty($MartesEntrada)) {
-            //     $diasConDatos .= 'Martes,';
-            // }
-            // if (!empty($MiercolesEntrada)) {
-            //     $diasConDatos .= 'Miercoles,';
-            // }
-            // if (!empty($JuevesEntrada)) {
-            //     $diasConDatos .= 'Jueves,';
-            // }
-            // if (!empty($ViernesEntrada)) {
-            //     $diasConDatos .= 'Viernes,';
-            // }
+
             if (!empty($SabadoEntrada)) {
                 $diasConDatos .= 'Sabado,';
             }
@@ -355,7 +325,7 @@ class OrdenEntregaController extends Controller
 
                 switch ($articulo['estatus']) {
                     case '1':
-                        $preventaProducto = is_null($preventaProducto) ? $this->savePresale(3, $data) : $preventaProducto;
+                        $preventaProducto = is_null($preventaProducto) ? $this->savePresale('Entrega', 'Entrega', $data) : $preventaProducto;
 
                         //ya una vez identificados le agregamos el id del precio actual y cantidad
                         $producto_venta = ventas_productos::firstOrCreate([
@@ -369,7 +339,7 @@ class OrdenEntregaController extends Controller
                         break;
 
                     case '2':
-                        $preventaServicio = is_null($preventaServicio) ? $this->savePresale(4, $data) : $preventaServicio;
+                        $preventaServicio = is_null($preventaServicio) ? $this->savePresale('Servicio', 'Recolectar', $data) : $preventaServicio;
 
                         //ya una vez identificados le agregamos el id del precio actual y cantidad
                         $servicio_venta = Servicios_preventas::firstOrCreate([
@@ -391,8 +361,6 @@ class OrdenEntregaController extends Controller
             }
 
 
-
-
             $cliente = Clientes::find($idCliente);
             $ubicarpersona = personas::find($cliente->id_persona);
 
@@ -405,27 +373,34 @@ class OrdenEntregaController extends Controller
                 'email' => strtolower($email),
             ]);
 
-            if (!is_null($preventaProducto)) {
+            if (!is_null($preventaServicio) && !is_null($preventaProducto)) {
+
+                $folioServicio =  $this->folioServicio();
+                $folio = $this->folio();
+
+                $Ordenderecoleccion = Orden_recoleccion::create([
+                    'id_preventa' => $preventaProducto->id,
+                    'id_preventaServicio' => $preventaServicio->id,
+                    'id_folio_servicio' => $folioServicio->id,
+                    'id_folio' => $folio->id,
+                ]);
+            } else if (!is_null($preventaProducto)) {
                 $folio = $this->folio();
 
                 $Ordenderecoleccion = Orden_recoleccion::create([
                     'id_preventa' => $preventaProducto->id,
                     'id_folio' => $folio->id,
-                    'estatus' => 2 //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
                 ]);
-            }
-            if (!is_null($preventaServicio)) {
+            } else if (!is_null($preventaServicio)) {
 
-                $folio =  $this->folio();
+                $folioServicio =  $this->folioServicio();
 
                 $Ordenderecoleccion = Orden_recoleccion::create([
-                    'id_preventa' => $preventaServicio->id,
-                    'id_folio' => $folio->id,
-                    'estatus' => 4 //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
+                    'id_preventaServicio' => $preventaServicio->id,
+                    'id_folio_servicio' => $folioServicio->id,
+
                 ]);
             }
-
-
 
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
@@ -445,10 +420,10 @@ class OrdenEntregaController extends Controller
         //return redirect()->route('orden_recoleccion.vistaPreviaOrdenEntrega', $preventa->id); // Reemplaza 'ruta.nombre' con el nombre real de la ruta a la que deseas redirigir
     }
 
-    public function savePresale($estatus, $data)
+    public function savePresale($tipodeVenta, $estatus, $data)
     {
 
-        //crearemos una preventa con estatus 3
+        //crearemos una preventa con estatus
         $preventa = new Preventa();
         $preventa->id_cliente = $data['idCliente'];
         $preventa->nombre_empleado = $data['nombreEmpleado'];
@@ -458,8 +433,9 @@ class OrdenEntregaController extends Controller
         $preventa->dia_semana = $data['diasConDatos'];
         $preventa->metodo_pago = $data['metodoPago'];
         $preventa->factura = $data['factura'] === 'on' ? 1 : 0;
-        $preventa->pago_efectivo = $estatus === 3 ? $data['pagaCon'] : $data['pagaRecarga'];
-        $preventa->estatus = $estatus;
+        $preventa->pago_efectivo = $tipodeVenta === 'Entrega' ? $data['pagaCon'] : $data['pagaRecarga'];
+        $preventa->tipo_de_venta = $tipodeVenta;
+        $preventa->estado = $estatus;
         $preventa->nombre_quien_recibe = $data['recibe'];
         $preventa->id_direccion = $data['nuevaDireccion'];
         $preventa->save();
@@ -491,27 +467,43 @@ class OrdenEntregaController extends Controller
 
         return $folio;
     }
+
+    public function folioServicio()
+    {
+        $ultimoFolio = Folio_servicios::orderBy('id', 'desc')->first();
+
+        $valor = $ultimoFolio ? $ultimoFolio->ultimo_valor + 1 : 1;
+
+        //999999
+        if ($valor > 999999) {
+            $valor = 1;
+        }
+
+        $folio = Folio_servicios::create([
+            'ultimo_valor' => $valor,
+        ]);
+
+
+        $folio->update([
+            'ultimo_valor' => $valor,
+        ]);
+
+        return $folio;
+    }
     public function vistaPreviaTickets($idproducto, $idservicio)
     {
         $busqueda = Preventa::find($idproducto) ??  Preventa::find($idservicio);
-
 
         $cliente = clientes::join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->where('clientes.id', $busqueda->id_cliente)
             ->select('personas.*')
             ->first();
 
-        $producto = Preventa::find($idproducto);
-        $servicio = Preventa::find($idservicio);
-        if ($servicio) {
-            $ordenrecoleccionServicio = Orden_recoleccion::where('id_preventa', $servicio->id)->first();
-        } else {
-            $ordenrecoleccionServicio = null;
-        }
+        $producto = Preventa::find($idproducto) ?  Preventa::find($idproducto) : 0;
+        $servicio = Preventa::find($idservicio) ?  Preventa::find($idservicio) : 0;
 
 
-
-        return view('Principal.ordenEntrega.cantidad_ordenes', compact('producto', 'servicio', 'cliente', 'ordenrecoleccionServicio'));
+        return view('Principal.ordenEntrega.cantidad_ordenes', compact('producto', 'servicio', 'cliente'));
     }
     public function VistaPrevioOrdenEntrega($id)
     {

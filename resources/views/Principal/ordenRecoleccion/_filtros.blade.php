@@ -20,8 +20,10 @@
                  class="w-full md:w-auto  border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                  name="entrega_servicio" id="entrega_servicio">
                  <option value="">Selecciona una opcion</option>
-                 <option value="3" {{ old('entrega_servicio', $filtroES) == 3 ? 'selected' : '' }}>Entrega</option>
-                 <option value="4" {{ old('entrega_servicio', $filtroES) == 4 ? 'selected' : '' }}>Servicio
+                 <option value="Entrega" {{ old('entrega_servicio', $filtroES) === 'Entrega' ? 'selected' : '' }}>
+                     Entrega</option>
+                 <option value="Servicio" {{ old('entrega_servicio', $filtroES) === 'Servicio' ? 'selected' : '' }}>
+                     Servicio
                  </option>
                  <!-- Agrega más opciones según sea necesario -->
              </select>
@@ -49,11 +51,16 @@
                  class="w-full md:w-auto border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                  name="estatus" id="estatus">
                  <option value="">Selecciona una opción</option>
-                 <option value="5" {{ old('estatus', $filtroEstatus) == 5 ? 'selected' : '' }}>Cancelación</option>
-                 <option value="4" {{ old('estatus', $filtroEstatus) == 4 ? 'selected' : '' }}>Recoleccion</option>
-                 <option value="3" {{ old('estatus', $filtroEstatus) == 3 ? 'selected' : '' }}>Revision</option>
-                 <option value="2" {{ old('estatus', $filtroEstatus) == 2 ? 'selected' : '' }}>Entrega</option>
-                 <option value="1" {{ old('estatus', $filtroEstatus) == 1 ? 'selected' : '' }}>Orden Procesada
+                 <option value="Cancelado" {{ old('estatus', $filtroEstatus) == 'Cancelado' ? 'selected' : '' }}>
+                     Cancelación</option>
+                 <option value="Recolectar" {{ old('estatus', $filtroEstatus) == 'Recolectar' ? 'selected' : '' }}>
+                     Recoleccion</option>
+                 <option value="Revision" {{ old('estatus', $filtroEstatus) == 'Revision' ? 'selected' : '' }}>Revision
+                 </option>
+                 <option value="Entrega" {{ old('estatus', $filtroEstatus) == 'Entrega' ? 'selected' : '' }}>Entrega
+                 </option>
+                 <option value="Listo" {{ old('estatus', $filtroEstatus) === 'Listo' ? 'selected' : '' }}>Orden
+                     Procesada
                  </option>
              </select>
          </div>

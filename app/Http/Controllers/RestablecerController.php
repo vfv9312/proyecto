@@ -13,6 +13,7 @@ use App\Models\Modo;
 use App\Models\Orden_recoleccion;
 use App\Models\personas;
 use App\Models\precios_productos;
+use App\Models\Preventa;
 use App\Models\productos;
 use App\Models\Tipo;
 use Illuminate\Http\Request;
@@ -34,14 +35,23 @@ class RestablecerController extends Controller
         $filtroMotivo = $request->query('motivo');
         $filtroFecha_inicio = $request->query('fecha_inicio');
         $fecha_fin = $request->query('fecha_fin');
-        //
-        $datosEnvio = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+
+
+
+        $datosEnvio = Preventa::leftJoin('orden_recoleccions', function ($join) {
+            $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
+                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+        })
             ->join('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('personas as personasClientes', 'personasClientes.id', '=', 'clientes.id_persona')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->join('personas as personasClientes', 'personasClientes.id', '=', 'clientes.id_persona')
+            ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
+            ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio']) //whereIn para filtrar las preventas
+            ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Cancelado'])
+            ->WhereNull('preventas.deleted_at')
             ->where(function ($query) use ($busqueda) {
                 $query->where('personasClientes.telefono', 'LIKE', "%{$busqueda}%")
                     ->orWhere('personasClientes.nombre', 'LIKE', "%{$busqueda}%")
@@ -60,6 +70,8 @@ class RestablecerController extends Controller
             'orden_recoleccions.id as idRecoleccion',
             'folios.letra_actual as letraAcutal',
             'folios.ultimo_valor as ultimoValor',
+            'folios_servicios.ultimo_valor as ultimoValorServicio',
+            'preventas.tipo_de_venta as tipoVenta',
             'personasClientes.nombre as nombreCliente',
             'personasClientes.apellido as apellidoCliente',
             'orden_recoleccions.created_at as fechaCreacion',

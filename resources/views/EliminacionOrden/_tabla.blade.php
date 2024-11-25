@@ -18,7 +18,13 @@
                 $index++;
             @endphp
             <tr class= " border-b border-gray-200 text-sm">
-                <td class="px-6 py-4">{{ $pendiente->letraActual }}{{ sprintf('%06d', $pendiente->ultimoValor) }}</td>
+                @if ($pendiente->tipoVenta === 'Entrega')
+                    <td class="px-6 py-4">{{ $pendiente->letraActual }}{{ sprintf('%06d', $pendiente->ultimoValor) }}
+                    </td>
+                @else
+                    <td class="px-6 py-4">{{ sprintf('%06d', $pendiente->ultimoValorServicio) }}</td>
+                @endif
+
                 <td class="px-6 py-4">
                     {{ $pendiente->nombreCliente }} {{ $pendiente->apellidoCliente }}
                 </td>
@@ -36,29 +42,48 @@
                     {{ $datosEntregaCompromisos[$index]['horaEntregaCompromiso'] ? $datosEntregaCompromisos[$index]['horaEntregaCompromiso'] : 'No hay tiempo aproximado' }}
                 </td>
                 <td class="px-6 py-4">
-                    @if ($pendiente->estatusPreventa == 3)
-                        <span>Entrega</span>
-                    @elseif ($pendiente->estatusPreventa == 4)
-                        <span class="">Servicio</span>
-                    @endif
+                    @switch($pendiente->tipoVenta)
+                        @case('Entrega')
+                            <span>Entrega</span>
+                        @break
+
+                        @case('Servicio')
+                            <span class="">Servicio</span>
+                        @break
+
+                        @default
+                    @endswitch
+
                 </td>
                 <td class="px-6 py-4">
-                    @if (in_array($pendiente->estatus, [1, 2, 3, 4]) && $pendiente->id_cancelacion !== null)
+                    @if ($pendiente->id_cancelacion)
                         <div style="height:33px;width:33px;background-color:red;border-radius:50%;"></div>
                         <span>Cancelado</span>
-                    @elseif ($pendiente->estatus == 4)
-                        <div style="height:33px;width:33px;background-color:orange;border-radius:50%;"></div>
-                        <span>Recoleccion</span>
-                    @elseif ($pendiente->estatus == 3)
-                        <div style="height:33px;width:33px;background-color:rgb(219, 114, 9);border-radius:50%;">
-                        </div><span>En
-                            revision</span>
-                    @elseif ($pendiente->estatus == 2)
-                        <div style="height:33px;width:33px;background-color:yellow;border-radius:50%;"></div>
-                        <span>Entrega</span>
-                    @elseif ($pendiente->estatus == 1)
-                        <div style="height:33px;width:33px;background-color:green;border-radius:50%;"></div>
-                        <span>Orden Procesada</span>
+                    @else
+                        @switch($pendiente->estatusPreventa)
+                            @case('Recolectar')
+                                <div style="height:33px;width:33px;background-color:orange;border-radius:50%;"></div>
+                                <span>Recoleccion</span>
+                            @break
+
+                            @case('Revision')
+                                <div style="height:33px;width:33px;background-color:rgb(219, 114, 9);border-radius:50%;">
+                                </div><span>En
+                                    revision</span>
+                            @break
+
+                            @case('Entrega')
+                                <div style="height:33px;width:33px;background-color:yellow;border-radius:50%;"></div>
+                                <span>Entrega</span>
+                            @break
+
+                            @case('Listo')
+                                <div style="height:33px;width:33px;background-color:green;border-radius:50%;"></div>
+                                <span>Orden Procesada</span>
+                            @break
+
+                            @default
+                        @endswitch
                     @endif
                 </td>
                 <td>

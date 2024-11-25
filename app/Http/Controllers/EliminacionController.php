@@ -33,16 +33,20 @@ class EliminacionController extends Controller
             'horaEntregaCompromiso' => null,
         ];
 
+
         $preventas = Preventa::join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('personas', 'personas.id', '=', 'clientes.id_persona')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->join('orden_recoleccions', 'orden_recoleccions.id_preventa', '=', 'preventas.id')
+            ->leftJoin('orden_recoleccions', function ($join) {
+                $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
+                    ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+            })
             ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
-            ->whereNull('preventas.deleted_at')
-            ->whereIn('preventas.estatus', [3, 4]) //whereIn para filtrar las preventas donde el estatus es 3 o 4.
-            ->WhereIn('orden_recoleccions.estatus', [4, 3, 2, 1])
-            //->where('id_cancelacion', null)
+            ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
+            ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio']) //whereIn para filtrar las preventas
+            ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Cancelado'])
+            ->WhereNull('preventas.deleted_at')
             ->where(function ($query) use ($palabras) {
                 foreach ($palabras as $palabra) {
                     $query->where(function ($query) use ($palabra) {
@@ -54,6 +58,7 @@ class EliminacionController extends Controller
                     });
                 }
             });
+
         // Búsqueda por número de folio
         if (preg_match('/^[A-Z]\d+$/', $busqueda)) {
             $letra = substr($busqueda, 0, 1);
@@ -64,9 +69,17 @@ class EliminacionController extends Controller
                     ->where('folios.ultimo_valor', $numero);
             });
         }
+        if (ctype_digit($busqueda)) {
+
+            $numero = (int) $busqueda;
+
+            $preventas->orWhere(function ($query) use ($numero) {
+                $query->where('folios_servicios.ultimo_valor', $numero);
+            });
+        }
 
         if ($filtroES) { //E : Entrega , S: Servicio
-            $preventas->where('preventas.estatus', $filtroES);
+            $preventas->where('preventas.tipo_de_venta', $filtroES);
         }
 
         if ($filtroFecha_inicio && $fecha_fin) {
@@ -77,24 +90,22 @@ class EliminacionController extends Controller
             $preventas->whereBetween('orden_recoleccions.created_at', [$Inicio, $Fin]);
         }
 
-        //si es algun valor positivo entra 1: Listo, 2: Entrega, 3: Revision, 4: Recoleccion, 5: Cancelacion
+
         if ($filtroEstatus) {
-            if ($filtroEstatus == "5") { //si es 5 entonces entra al if y verifica si tiene algun id_cancelacion
-                $preventas->whereNotNull('orden_recoleccions.id_cancelacion');
-            } else {
-                $preventas->where('orden_recoleccions.estatus', $filtroEstatus);
-            }
+
+            $preventas->where('preventas.estado', $filtroEstatus);
         }
         $preventas = $preventas->select(
             'orden_recoleccions.id as idRecoleccion',
             'orden_recoleccions.created_at as fechaCreacion',
             'orden_recoleccions.id_cancelacion',
-            'orden_recoleccions.estatus', //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
             'orden_recoleccions.created_at',
             'folios.letra_actual as letraActual',
             'folios.ultimo_valor as ultimoValor',
+            'folios_servicios.ultimo_valor as ultimoValorServicio',
             'preventas.id as idPreventa',
-            'preventas.estatus as estatusPreventa',
+            'preventas.estado as estatusPreventa',
+            'preventas.tipo_de_venta as tipoVenta',
             'preventas.nombre_empleado as nombreEmpleado',
             'personas.nombre as nombreCliente',
             'personas.apellido as apellidoCliente',

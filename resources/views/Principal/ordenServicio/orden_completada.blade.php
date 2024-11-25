@@ -3,7 +3,7 @@
 @section('title', 'Inicio')
 
 @section('content')
-    <h1 class=" text-center">Orden de Servicio {{ $ordenRecoleccion->letraActual }}
+    <h1 class=" text-center">Orden de Servicio
         {{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</h1>
 
 
@@ -24,13 +24,13 @@
             Vista previa
         </button>
 
-        <a href='{{ route('Correo.enviar', ['id' => $ordenRecoleccion->idRecoleccion]) }}' target="_blank"
+        <a href='{{ route('Correo.enviar', ['id' => $ordenRecoleccion->idPreventa]) }}' target="_blank"
             class="mb-2 sm:mb-0 sm:mr-2 items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
             <i class="fas fa-envelope"></i>
             Correo
         </a>
 
-        <a href='{{ route('WhatsApp.enviar', ['id' => $ordenRecoleccion->idRecoleccion]) }}' target="_blank"
+        <a href='{{ route('WhatsApp.enviar', ['id' => $ordenRecoleccion->idPreventa]) }}' target="_blank"
             class="mb-2 sm:mb-0 sm:mr-2 items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
             <i class="fab fa-whatsapp"></i>
             WhatsApp

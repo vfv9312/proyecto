@@ -27,7 +27,6 @@
     <div class=" flex flex-col xl:py-40 xl:flex-row xl:space-x-12 xl:justify-center">
         @include('Principal._orden_servicio')
         @include('Principal._orden_entrega')
-
     </div>
 @endsection
 

@@ -88,11 +88,11 @@
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="precio" type="text" name="txtprecio"
-            @if ($datosEnvio->estatusPreventa == 4) @if ($datosEnvio->fechaRecoleccion == null)
+            @if ($datosEnvio->estatusPreventa === 'Recolectar') @if ($datosEnvio->fechaRecoleccion == null)
 value="hasta el momento no ha sido recolectado"
 @else
 value="{{ $datosEnvio->fechaRecoleccion }}" @endif
-        @elseif($datosEnvio->estatusPreventa == 3) value="Solo es un pedido para envio" @endif >
+        @elseif($datosEnvio->estatusPreventa === 'Entrega') value="Solo es un pedido para envio" @endif >
     </div>
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
@@ -101,9 +101,10 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="fecha" type="text" name="txtfecha"
-            @if ($datosEnvio->estatusRecoleccion == 4) value="Sin registro"
-            @elseif($datosEnvio->estatusRecoleccion == 3) value="En revision"
-            @elseif($datosEnvio->estatusRecoleccion == 2) value="{{ $datosEnvio->fechaEntrega }}" @endif
+            @if ($datosEnvio->estatusPreventa === 'Recolectar') value="hasta el momento no ha sido recolectado"
+            @elseif($datosEnvio->estatusPreventa == 'Revision') value="En revision"
+            @elseif($datosEnvio->estatusPreventa == 'Entrega') value="Por entregar"
+            @elseif($datosEnvio->estatusPreventa == 'Listo') value="{{ $datosEnvio->fechaEntrega }}" @endif
             readonly>
     </div>
 </div>
@@ -157,14 +158,27 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                     ${{ $producto->precio }}
                                 </td>
                                 <td>
+                                    @switch($producto->tipoDescuento)
+                                        @case('Porcentaje')
+                                            {{ intval($producto->descuento) }}%
+                                        @break
 
-                                    @if ($producto->tipoDescuento == 'Porcentaje')
-                                        {{ intval($producto->descuento) }}%
-                                    @elseif ($producto->tipoDescuento == 'cantidad')
-                                        ${{ $producto->descuento }}
-                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
-                                        {{ $producto->tipoDescuento }}
-                                    @endif
+                                        @case('cantidad')
+                                            ${{ $producto->descuento }}
+                                        @break
+
+                                        @case('alternativo')
+                                            ${{ ($producto->precio - $producto->descuento) * $producto->cantidad }}
+                                        @break
+
+                                        @case('Sin descuento')
+                                            {{ $producto->tipoDescuento }}
+                                        @break
+
+                                        @default
+                                    @endswitch
+
+
 
 
                                     {{-- <input type="number" name="costo_unitario[{{ $producto->id }}]"
@@ -173,14 +187,25 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                         value="{{ $producto->precio_unitario * $producto->cantidad }}" readonly> --}}
                                 </td>
                                 <td>
-                                    @if ($producto->tipoDescuento == 'Porcentaje')
-                                        ${{ $producto->precio * $producto->cantidad - ($producto->precio * $producto->cantidad * intval($producto->descuento)) / 100 }}
-                                    @elseif ($producto->tipoDescuento == 'cantidad')
-                                        ${{ $producto->precio * $producto->cantidad - $producto->descuento }}
-                                    @elseif ($producto->tipoDescuento == 'Sin descuento')
-                                        ${{ $producto->precio * $producto->cantidad }}
-                                    @endif
+                                    @switch($producto->tipoDescuento)
+                                        @case('Porcentaje')
+                                            ${{ $producto->precio * $producto->cantidad - ($producto->precio * $producto->cantidad * intval($producto->descuento)) / 100 }}
+                                        @break
 
+                                        @case('cantidad')
+                                            ${{ $producto->precio * $producto->cantidad - $producto->descuento * $producto->cantidad }}
+                                        @break
+
+                                        @case('alternativo')
+                                            ${{ $producto->descuento * $producto->cantidad }}
+                                        @break
+
+                                        @case('Sin descuento')
+                                            ${{ $producto->precio * $producto->cantidad }}
+                                        @break
+
+                                        @default
+                                    @endswitch
 
                                     {{-- @if ($producto->porcentaje === null)
                                     <td>
@@ -206,15 +231,25 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
         <div class="flex flex-col items-center mt-3">
             <div class="flex flex-col items-center">
                 <label for="miSelect">Estatus:</label>
-                @if ($datosEnvio->estatusRecoleccion == 4)
-                    <span>En recoleccion</span>
-                @elseif($datosEnvio->estatusRecoleccion == 3)
-                    <span>En revision</span>
-                @elseif($datosEnvio->estatusRecoleccion == 2)
-                    <span>En entrega</span>
-                @elseif($datosEnvio->estatusRecoleccion == 1)
-                    <span>Orden Procesada</span>
-                @endif
+                @switch($datosEnvio->estatusPreventa)
+                    @case('Recolectar')
+                        <span class=" font-bold">En recoleccion</span>
+                    @break
+
+                    @case('Revision')
+                        <span class=" font-bold">En revision</span>
+                    @break
+
+                    @case('Entrega')
+                        <span class=" font-bold">En entrega</span>
+                    @break
+
+                    @case('Listo')
+                        <span class=" font-bold">Orden Procesada</span>
+                    @break
+
+                    @default
+                @endswitch
             </div>
         </div>
         @if ($datosEnvio->id_cancelacion == null)

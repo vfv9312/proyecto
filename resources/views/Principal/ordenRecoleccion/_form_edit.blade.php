@@ -1,5 +1,5 @@
-<div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
-    <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+<div class="flex flex-wrap -mx-3 mt-4 whitespace-no-wrap border-b border-gray-200">
+    <div class="w-full md:w-1/4 px-3 mb-2 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Nombre del Cliente
         </label>
@@ -50,7 +50,7 @@
     <input
         class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         id="direccion" type="text" name="txtdireccion"
-        value=" {{ $datosEnvio->referencia ? 'Referencia ' . $datosEnvio->referencia : 'Sin Referencia' }}" readonly>
+        value=" {{ $datosEnvio->referencia ? strtoupper($datosEnvio->referencia) : 'Sin Referencia' }}" readonly>
 </div>
 <div class="flex flex-wrap -mx-3 mt-16 whitespace-no-wrap border-b border-gray-200">
     <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -95,11 +95,11 @@
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="precio" type="text" name="txtprecio"
-            @if ($datosEnvio->estatusPreventa == 4) @if ($datosEnvio->fechaRecoleccion == null)
-value="hasta el momento no ha sido recolectado"
+            @if ($datosEnvio->tipoVenta === 'Servicio') @if ($datosEnvio->fechaRecoleccion == null)
+value="Pendiente a recolectar"
 @else
 value="{{ $datosEnvio->fechaRecoleccion }}" @endif
-        @elseif($datosEnvio->estatusPreventa == 3) value="Solo es un pedido para envio" @endif >
+        @elseif($datosEnvio->tipoVenta === 'Entrega') value="Pedido para envio" @endif >
     </div>
     <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
@@ -108,10 +108,10 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
         <input
             class="w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="fecha" type="text" name="txtfecha"
-            @if ($datosEnvio->estatusRecoleccion == 4) value="Sin registro"
-            @elseif($datosEnvio->estatusRecoleccion == 3) value="En revision"
-            @elseif($datosEnvio->estatusRecoleccion == 2) value="{{ $datosEnvio->fechaEntrega }}"
-            @elseif($datosEnvio->estatusRecoleccion == 1) value="{{ $datosEnvio->fechaEntrega }}" @endif
+            @if ($datosEnvio->estado === 'Recolectar') value="Sin registro"
+            @elseif($datosEnvio->estado === 'Revision') value="En revision"
+            @elseif($datosEnvio->estado === 'Entrega') value="Pendiente de entrega"
+            @elseif($datosEnvio->estado === 'Listo') value="{{ $datosEnvio->fechaEntrega }}" @endif
             readonly>
     </div>
     <div class="w-full md:w-1/4 px-3 mb-6 md:mb-0">
@@ -161,9 +161,9 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                     {{ $producto->nombre_comercial }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if ($datosEnvio->estatusPreventa == 3)
+                                    @if ($datosEnvio->tipoVenta === 'Entrega')
                                         {{ $producto->cantidad }}
-                                    @elseif($datosEnvio->estatusPreventa == 4)
+                                    @elseif($datosEnvio->tipoVenta === 'Servicio')
                                         <input type="number" name="cantidad[{{ $producto->id }}]"
                                             data-cantidad="{{ $producto->cantidad }}" step="1"
                                             class="form-input mt-1 block w-full" placeholder="Cantidad"
@@ -196,7 +196,7 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                 </td>
 
                                 <td>
-                                    @if ($datosEnvio->estatusPreventa == 3)
+                                    @if ($datosEnvio->tipoVenta === 'Entrega')
                                         @if ($producto->tipoDescuento == 'Porcentaje')
                                             ${{ $producto->precio * $producto->cantidad - ($producto->precio * intval($producto->descuento)) / 100 }}
                                         @elseif ($producto->tipoDescuento == 'cantidad')
@@ -206,7 +206,7 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                                         @elseif ($producto->tipoDescuento == 'Sin descuento')
                                             ${{ $producto->precio * $producto->cantidad }}
                                         @endif
-                                    @elseif($datosEnvio->estatusPreventa == 4)
+                                    @elseif($datosEnvio->tipoVenta === 'Servicio')
                                         <input type="number" name="costo_unitario[{{ $producto->id }}]"
                                             data-cantidad="{{ $producto->cantidad }}" step="0.01"
                                             class="form-input mt-1 block w-full" placeholder="Costo unitario"
@@ -236,16 +236,16 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
         <div class="flex flex-col items-center">
             <label for="miSelect">Cambia el estatus:</label>
             <select id="miSelect" name="miSelect" onchange="mostrarInputCosto(this.value)">
-                @if ($datosEnvio->estatusRecoleccion == 4)
-                    <option value="4">En recoleccion</option>
-                    <option value="3">En revision</option>
-                @elseif($datosEnvio->estatusRecoleccion == 3)
-                    <option value="3">En revision</option>
-                    <option value="2">En entrega </option>
-                @elseif($datosEnvio->estatusRecoleccion == 2)
-                    <option value="2">En entrega </option>
+                @if ($datosEnvio->estado === 'Recolectar')
+                    <option value="Recolectar">En recoleccion</option>
+                    <option value="Revision">En revision</option>
+                @elseif($datosEnvio->estado === 'Revision')
+                    <option value="Revision">En revision</option>
+                    <option value="Entrega">En entrega </option>
+                @elseif($datosEnvio->estado === 'Entrega')
+                    <option value="Entrega">En entrega </option>
                     {{-- <option value="5">Observaciones</option> --}}
-                    <option value="1">Venta completa</option>
+                    <option value="Listo">Venta completa</option>
                 @endif
             </select>
         </div>
@@ -269,6 +269,12 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
                 <label for="numero_recarga">Número de recarga:</label>
                 <input type="text" id="numero_recarga" name="numero_recarga"
                     class="w-full border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mr-4">
+                <label for="fecha_recoleccion">Fecha y hora de recoleccion:</label>
+                <input
+                    class=" w-full px-3 py-2 border rounded shadow appearance-none text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="datetime-local" name="HoraFechaRecoleccion">
             </div>
         </div>
 
@@ -346,15 +352,25 @@ value="{{ $datosEnvio->fechaRecoleccion }}" @endif
     <div class="flex flex-col items-center mt-3">
         <div class="flex flex-col items-center">
             <label for="miSelect">Estatus:</label>
-            @if ($datosEnvio->estatusRecoleccion == 4)
-                <span>En recoleccion</span>
-            @elseif($datosEnvio->estatusRecoleccion == 3)
-                <span>En revision</span>
-            @elseif($datosEnvio->estatusRecoleccion == 2)
-                <span>En entrega</span>
-            @elseif($datosEnvio->estatusRecoleccion == 1)
-                <span>Orden Procesada</span>
-            @endif
+            @switch($datosEnvio->estado)
+                @case('Recolectar')
+                    <span>En recoleccion</span>
+                @break
+
+                @case('Revision')
+                    <span>En revision</span>
+                @break
+
+                @case('Entrega')
+                    <span>En entrega</span>
+                @break
+
+                @case('Listo')
+                    <span>Orden Procesada</span>
+                @break
+
+                @default
+            @endswitch
         </div>
     </div>
 @endif

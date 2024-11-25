@@ -36,7 +36,7 @@
         <div class=" flex flex-row justify-evenly mt-7">
             @if ($producto)
                 <div class="flex items-center">
-                    <a href="{{ route('orden_recoleccion.vistaPreviaOrdenEntrega', $producto->id) }}"
+                    <a href="{{ route('ordenEntrega.vistaGeneral', $producto->id) }}"
                         class="inline-flex items-center px-20 py-20 text-white rounded" style="background-color: #01652f;"
                         onmouseover="this.style.backgroundColor='#0F5132';"
                         onmouseout="this.style.backgroundColor='#01652f';">
@@ -54,7 +54,7 @@
 
             @if ($servicio)
                 <div class=" flex items-center">
-                    <a href="{{ route('ordenServicio.vistaGeneral', ['id' => $ordenrecoleccionServicio->id]) }}"
+                    <a href="{{ route('ordenServicio.vistaGeneral', ['id' => $servicio->id]) }}"
                         class="inline-flex items-center px-20 py-20 bg-green-700 text-white rounded hover:bg-green-800">
                         Recolección
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"

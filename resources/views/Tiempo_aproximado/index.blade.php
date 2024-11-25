@@ -54,9 +54,8 @@
         </div>
         @if ($existeTiempoHoy)
             <div class=" text-center">
-                <p class=" text-4xl font-bold "> Hoy {{ \Carbon\Carbon::now()->locale('es')->isoFormat('dddd') }} del
-                    {{ \Carbon\Carbon::parse($existeTiempoHoy->created_at)->format('Y-m-d') }} a las
-                    {{ \Carbon\Carbon::parse($existeTiempoHoy->created_at)->format('H:i:s') }} .</p>
+                <p class=" text-4xl font-bold ">{{ \Carbon\Carbon::now()->locale('es')->isoFormat('dddd') }},
+                    {{ date('d/m/Y') }}.</p>
 
                 El tiempo de espera asignado es de <p class=" text-6xl font-extrabold">
                     {{ substr($existeTiempoHoy->tiempo, 0, 5) }}</p>
@@ -64,8 +63,6 @@
             </div>
         @endif
     </section>
-
-    @include('Tiempo_aproximado._tabla')
 @endsection
 
 @push('css')

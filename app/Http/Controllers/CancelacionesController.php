@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cancelaciones;
 use App\Models\Orden_recoleccion;
+use App\Models\Preventa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -19,13 +20,20 @@ class CancelacionesController extends Controller
         $filtroFecha_inicio = $request->query('fecha_inicio');
         $fecha_fin = $request->query('fecha_fin');
         //
-        $datosEnvio = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+
+        $datosEnvio = Preventa::leftJoin('orden_recoleccions', function ($join) {
+            $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
+                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+        })
             ->join('cancelaciones', 'cancelaciones.id', '=', 'orden_recoleccions.id_cancelacion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
+            ->join('personas as personasClientes', 'personasClientes.id', '=', 'clientes.id_persona')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
-            ->join('personas as personasClientes', 'personasClientes.id', '=', 'clientes.id_persona')
+            ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+            ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
+            ->whereIn('preventas.tipo_de_venta', ['Entrega', 'Servicio']) //whereIn para filtrar las preventas
+            ->WhereIn('preventas.estado', ['Recolectar', 'Revision', 'Entrega', 'Listo', 'Cancelado'])
             ->whereNull('preventas.deleted_at')
             ->where(function ($query) use ($busqueda) {
                 $query->where('personasClientes.telefono', 'LIKE', "%{$busqueda}%")
@@ -46,8 +54,12 @@ class CancelacionesController extends Controller
             'preventas.nombre_empleado as nombreEmpleado',
             'preventas.nombre_atencion as nombreAtencion',
             'preventas.nombre_quien_recibe as nombreRecibe',
+            'preventas.id as idPreventa',
+            'preventas.estado as estatusPreventa',
+            'preventas.tipo_de_venta as tipoVenta',
             'folios.letra_actual as letraAcutal',
             'folios.ultimo_valor as ultimoValor',
+            'folios_servicios.ultimo_valor as ultimoValorServicio',
             'personasClientes.nombre as nombreCliente',
             'personasClientes.apellido as apellidoCliente',
             'orden_recoleccions.created_at as fechaCreacion',
@@ -58,7 +70,6 @@ class CancelacionesController extends Controller
             'direcciones.num_interior',
             'direcciones.referencia',
             'cancelaciones.nombre as categoriaCancelacion',
-
         )
             ->orderBy('clientes.updated_at', 'desc')
             ->paginate(5);

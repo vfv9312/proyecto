@@ -120,7 +120,7 @@ opacity: 0.5;">
         <div class="header">
             <img class="logo" src="{{ public_path('logo_ecotoner.png') }}" alt="Logo">
             <h1>{{ $ordenRecoleccion->comentario ? 'Orden Procesada' : 'Orden de servicio' }}</h1>
-            <span>Folio:{{ $ordenRecoleccion->letraActual }}{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
+            <span>Folio:{{ sprintf('%06d', $ordenRecoleccion->ultimoValor) }}</span>
             <p>Fecha recepcion: {{ $fecha }}</p>
             <p>{{ $ordenRecoleccion->idCancelacion ? 'Motivo de cancelación : ' . $ordenRecoleccion->nombreCancelacion : '' }}
             </p>
@@ -139,7 +139,7 @@ opacity: 0.5;">
                     #{{ $ordenRecoleccion->num_exterior }},
                     {{ $ordenRecoleccion->num_interior ? ' num interior ' . $ordenRecoleccion->num_interior : '' }}</p>
                 <p>CP :{{ $ordenRecoleccion->cp }}</p>
-                <p> Referencia : {{ $ordenRecoleccion->referencia }}</p>
+                <p> Referencia : {{ strtoupper($ordenRecoleccion->referencia) }}</p>
             </div>
             <div class="item">
                 @if ($ordenRecoleccion->estatus !== 2)
@@ -169,15 +169,15 @@ opacity: 0.5;">
                 @endforeach
 
                 @if ($ordenRecoleccion->codigo)
-                    <p>Codigo : {{ $ordenRecoleccion->codigo }}</p>
-                    <p>Recarga :{{ $ordenRecoleccion->nRecarga }}</p>
+                    <p>Codigo : {{ strtoupper($ordenRecoleccion->codigo) }}</p>
+                    <p>Recarga :{{ strtoupper($ordenRecoleccion->nRecarga) }}</p>
                 @endif
 
                 <p style="margin-bottom: 4px;"></p>
                 <h5> Datos del pago </h5>
                 @if ($ordenRecoleccion->metodoPago)
-                    <p>Requiere : {{ $ordenRecoleccion->factura ? 'Factura' : 'Nota' }}</p>
-                    <p>Metodo de pago : {{ $ordenRecoleccion->metodoPago }}</p>
+                    <p>Requiere : {{ $ordenRecoleccion->factura ? 'FACTURA' : 'NOTA' }}</p>
+                    <p>Metodo de pago : {{ strtoupper($ordenRecoleccion->metodoPago) }}</p>
                     @if ($ordenRecoleccion->estatus === 2 || $ordenRecoleccion->estatus === 1)
                         Costo total : ${{ $total }}<br>
                         {{ $ordenRecoleccion->metodoPago == 'Efectivo' ? 'Paga con : $' . $ordenRecoleccion->pagoEfectivo : '' }}

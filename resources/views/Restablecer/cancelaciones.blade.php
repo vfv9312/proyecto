@@ -37,7 +37,12 @@
                 @foreach ($datosEnvio as $dato)
                     <tr class= " border-b border-gray-200 text-sm">
                         <td class=" px-6 py-4">
-                            {{ $dato->letraAcutal }}{{ sprintf('%06d', $dato->ultimoValor) }}</td>
+                            @if ($dato->tipoVenta == 'Entrega')
+                                {{ $dato->letraAcutal }}{{ sprintf('%06d', $dato->ultimoValor) }}
+                            @else
+                                {{ sprintf('%06d', $dato->ultimoValorServicio) }}
+                            @endif
+                        </td>
                         <td class="px-6 py-4">
                             {{ $dato->nombreCliente }} {{ $dato->apellidoCliente }}
                         </td>

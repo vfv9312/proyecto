@@ -6,6 +6,7 @@ use App\Mail\correoMailable;
 use App\Models\Catalago_ubicaciones;
 use App\Models\Orden_recoleccion;
 use App\Models\precios_productos;
+use App\Models\Preventa;
 use App\Models\TiempoAproximado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -14,16 +15,20 @@ class EnviarCorreoController extends Controller
 {
     public function enviarCorreos($id)
     {
+
         // Enviar correo electrónico
         try {
 
-            $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
+            $ordenRecoleccion = Preventa::leftJoin('orden_recoleccions', function ($join) {
+                $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
+                    ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+            })
                 ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
                 ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
                 ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
                 ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
                 ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-                ->where('orden_recoleccions.id',  $id)
+                ->where('preventas.id',  $id)
                 ->select(
                     'orden_recoleccions.id as idRecoleccion',
                     'orden_recoleccions.created_at as fechaCreacion',
@@ -37,6 +42,8 @@ class EnviarCorreoController extends Controller
                     'preventas.horario_trabajo_inicio as horarioTrabajoInicio',
                     'preventas.horario_trabajo_final as horarioTrabajoFinal',
                     'preventas.dia_semana as diaSemana',
+                    'preventas.estado',
+                    'preventas.tipo_de_venta as tipoVenta',
                     'direcciones.calle',
                     'direcciones.num_exterior',
                     'direcciones.num_interior',
@@ -50,18 +57,55 @@ class EnviarCorreoController extends Controller
                     'personaClientes.email as correo',
                 )
                 ->first();
+dd($ordenRecoleccion);
 
+            switch ($ordenRecoleccion->tipoVenta) {
+                case 'Entrega':
+                    $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+                        ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+                        ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                        ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->join('colors', 'colors.id', '=', 'productos.id_color')
+                        ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                        ->where('preventas.id', $ordenRecoleccion->idPreventa)
+                        ->select(
+                            'productos.nombre_comercial',
+                            'precios_productos.precio',
+                            'ventas_productos.cantidad',
+                            'colors.nombre as nombreColor',
+                            'marcas.nombre as nombreMarca',
+                            'tipos.nombre as nombreTipo',
+                            'modos.nombre as nombreModo'
+                        )
+                        ->get();
+                    break;
 
-            $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
-                ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
-                ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-                ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
-                ->join('colors', 'colors.id', '=', 'productos.id_color')
-                ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
-                ->join('modos', 'modos.id', '=', 'productos.id_modo')
-                ->where('preventas.id', $ordenRecoleccion->idPreventa)
-                ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
-                ->get();
+                default:
+                    $listaProductos = precios_productos::join('servicios_preventas', 'servicios_preventas.id_precio_producto', '=', 'precios_productos.id')
+                        ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+                        ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                        ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                        ->join('colors', 'colors.id', '=', 'productos.id_color')
+                        ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                        ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                        ->where('preventas.id', $ordenRecoleccion->idPreventa)
+                        ->select(
+                            'productos.nombre_comercial',
+                            'servicios_preventas.precio_unitario',
+                            'servicios_preventas.cantidad_total as cantidad',
+                            'servicios_preventas.tipo_descuento as tipoDescuento',
+                            'servicios_preventas.descuento',
+                            'precios_productos.precio',
+                            'colors.nombre as nombreColor',
+                            'marcas.nombre as nombreMarca',
+                            'tipos.nombre as nombreTipo',
+                            'modos.nombre as nombreModo'
+                        )
+                        ->get();
+                    break;
+            }
+
 
             $fechaCreacion = \Carbon\Carbon::parse($ordenRecoleccion->fechaCreacion);
             $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
@@ -72,26 +116,26 @@ class EnviarCorreoController extends Controller
         } catch (\Exception $e) {
             $error = 1;
         }
+
         return redirect()->route('Correo.vistaPrevia', ['error' => $error, 'id' => $id]);
     }
 
     public function vistaPrevia($error, $id)
     {
 
-        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->leftJoin('ventas', 'ventas.id_recoleccion', '=', 'orden_recoleccions.id')
+        $ordenRecoleccion = Preventa::leftJoin('orden_recoleccions', function ($join) {
+            $join->on('orden_recoleccions.id_preventa', '=', 'preventas.id')
+                ->orOn('orden_recoleccions.id_preventaServicio', '=', 'preventas.id');
+        })
             ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->where('orden_recoleccions.id',  $id)
+            ->where('preventas.id',  $id)
             ->select(
-                'ventas.estatus as estatusVenta',
-                'ventas.id as idVenta',
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
-                'orden_recoleccions.estatus as estatusRecoleccion',
                 'folios.letra_actual as letraActual',
                 'folios.ultimo_valor as ultimoValor',
                 'preventas.metodo_pago as metodoPago',
@@ -102,6 +146,8 @@ class EnviarCorreoController extends Controller
                 'preventas.horario_trabajo_inicio as horarioTrabajoInicio',
                 'preventas.horario_trabajo_final as horarioTrabajoFinal',
                 'preventas.dia_semana as diaSemana',
+                'preventas.estado',
+                'preventas.tipo_de_venta as tipoVenta',
                 'direcciones.calle',
                 'direcciones.num_exterior',
                 'direcciones.num_interior',
@@ -117,16 +163,44 @@ class EnviarCorreoController extends Controller
             ->first();
 
 
-        $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
-            ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
-            ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
-            ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
-            ->join('colors', 'colors.id', '=', 'productos.id_color')
-            ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
-            ->join('modos', 'modos.id', '=', 'productos.id_modo')
-            ->where('preventas.id', $ordenRecoleccion->idPreventa)
-            ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
-            ->get();
+        switch ($ordenRecoleccion->tipoVenta) {
+            case 'Entrega':
+                $listaProductos = precios_productos::join('ventas_productos', 'ventas_productos.id_precio_producto', '=', 'precios_productos.id')
+                    ->join('preventas', 'preventas.id', '=', 'ventas_productos.id_preventa')
+                    ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                    ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                    ->join('colors', 'colors.id', '=', 'productos.id_color')
+                    ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                    ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                    ->where('preventas.id', $ordenRecoleccion->idPreventa)
+                    ->select('productos.nombre_comercial', 'precios_productos.precio', 'ventas_productos.cantidad', 'colors.nombre as nombreColor', 'marcas.nombre as nombreMarca', 'tipos.nombre as nombreTipo', 'modos.nombre as nombreModo')
+                    ->get();
+                break;
+
+            default:
+                $listaProductos = precios_productos::join('servicios_preventas', 'servicios_preventas.id_precio_producto', '=', 'precios_productos.id')
+                    ->join('preventas', 'preventas.id', '=', 'servicios_preventas.id_preventa')
+                    ->join('productos', 'productos.id', '=', 'precios_productos.id_producto')
+                    ->join('marcas', 'marcas.id', '=', 'productos.id_marca')
+                    ->join('colors', 'colors.id', '=', 'productos.id_color')
+                    ->join('tipos', 'tipos.id', '=', 'productos.id_tipo')
+                    ->join('modos', 'modos.id', '=', 'productos.id_modo')
+                    ->where('preventas.id', $ordenRecoleccion->idPreventa)
+                    ->select(
+                        'productos.nombre_comercial',
+                        'servicios_preventas.precio_unitario',
+                        'servicios_preventas.cantidad_total as cantidad',
+                        'servicios_preventas.tipo_descuento as tipoDescuento',
+                        'servicios_preventas.descuento',
+                        'precios_productos.precio',
+                        'colors.nombre as nombreColor',
+                        'marcas.nombre as nombreMarca',
+                        'tipos.nombre as nombreTipo',
+                        'modos.nombre as nombreModo'
+                    )
+                    ->get();
+                break;
+        }
 
         $fechaCreacion = \Carbon\Carbon::parse($ordenRecoleccion->fechaCreacion);
         $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();

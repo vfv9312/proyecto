@@ -247,7 +247,7 @@ class ordenServicioController extends Controller
             ];
 
 
-            $preventaProducto = null;
+
             $preventaServicio = null;
             // iteramos en un forech para ir agregando los productos seleccionados en el pedido para agregarlos en ventas_productos
             foreach ($relacion as $articulo) {
@@ -280,23 +280,15 @@ class ordenServicioController extends Controller
                         $descuento = 0;
                         break;
                 }
+
                 switch ($articulo['estatus']) {
                     case '1':
-                        $preventaProducto = is_null($preventaProducto) ? $this->savePresale(3, $data) : $preventaProducto;
-
-                        //ya una vez identificados le agregamos el id del precio actual y cantidad
-                        $producto_venta = ventas_productos::firstOrCreate([
-                            'id_precio_producto' => $articulo['idPrecio'], //id del precio producto que esta relacionado con el producto
-                            'id_preventa' => $preventaProducto->id, //le asignamos su nummero de preventa
-                            'cantidad' => $articulo['cantidad'], //le asignamos su cantidad
-                            'descuento' => $descuento,
-                            'tipo_descuento' => $tipoDescuento, //le asignamos Sin descuento si llega hacer null
-                            'estatus' => 3 //le asignamos estatus 3
-                        ]);
+                        $producto_venta = 'error';
                         break;
 
                     case '2':
-                        $preventaServicio = is_null($preventaServicio) ? $this->savePresale(4, $data) : $preventaServicio;
+
+                        $preventaServicio = is_null($preventaServicio) ? $this->savePresale('Servicio', 'Recolectar', $data) : $preventaServicio;
 
                         //ya una vez identificados le agregamos el id del precio actual y cantidad
                         $servicio_venta = Servicios_preventas::firstOrCreate([
@@ -316,6 +308,7 @@ class ordenServicioController extends Controller
                         break;
                 }
             }
+
             $cliente = Clientes::find($idCliente);
             $ubicarpersona = personas::find($cliente->id_persona);
 
@@ -328,15 +321,15 @@ class ordenServicioController extends Controller
                 'email' => strtolower($email),
             ]);
 
-            if (!$preventaProducto) {
-                $folio = $this->folio();
 
-                $Ordenderecoleccion = Orden_recoleccion::create([
-                    'id_preventa' => $preventaServicio->id,
-                    'id_folio_servicio' => $folio->id,
-                    'estatus' => 4 //5 pendiente 4 por recolectar, 3 revision 2 entrega 1 listo 0 eliminado
-                ]);
-            }
+            $folioServicio =  $this->folioServicio();
+
+            $Ordenderecoleccion = Orden_recoleccion::create([
+                'id_preventaServicio' => $preventaServicio->id,
+                'id_folio_servicio' => $folioServicio->id,
+
+            ]);
+
 
             DB::commit(); //El código DB::commit(); en Laravel se utiliza para confirmar todas las operaciones de la base de datos que se han realizado dentro de la transacción actual.
 
@@ -351,7 +344,7 @@ class ordenServicioController extends Controller
         return redirect()->route('ordenServicio.vistaGeneral', ['id' => $preventaServicio->id]);
     }
 
-    public function savePresale($estatus, $data)
+    public function savePresale($tipodeVenta, $estatus, $data)
     {
 
         //crearemos una preventa con estatus 3
@@ -365,7 +358,8 @@ class ordenServicioController extends Controller
         $preventa->metodo_pago = $data['metodoPago'];
         $preventa->factura = $data['factura'] === 'on' ? 1 : 0;
         $preventa->pago_efectivo = $estatus === 3 ? $data['pagaCon'] : $data['pagaRecarga'];
-        $preventa->estatus = $estatus;
+        $preventa->tipo_de_venta = $tipodeVenta;
+        $preventa->estado = $estatus;
         $preventa->nombre_quien_recibe = $data['recibe'];
         $preventa->nombre_quien_entrega = $data['entrega'];
         $preventa->id_direccion = $data['nuevaDireccion'];
@@ -373,7 +367,7 @@ class ordenServicioController extends Controller
 
         return $preventa;
     }
-    public function folio()
+    public function folioServicio()
     {
         $ultimoFolio = Folio_servicios::orderBy('id', 'desc')->first();
 
@@ -459,23 +453,22 @@ class ordenServicioController extends Controller
         }
         return redirect()->route('ordenServicio.vistaGeneral', ['id' => $recoleccion->id]);
     }
-    public function vistaGeneral(Orden_recoleccion $id)
+    public function vistaGeneral(Preventa $id)
     {
 
 
-        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->leftjoin('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+        $ordenRecoleccion = Preventa::join('orden_recoleccions', 'orden_recoleccions.id_preventaServicio', '=',  'preventas.id')
             ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
             ->join('personas as personaClientes', 'personaClientes.id', '=', 'clientes.id_persona')
-            ->where('orden_recoleccions.id', $id->id)
+            ->where('preventas.id', $id->id)
             ->select(
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
-                'folios.letra_actual as letraActual',
-                'folios.ultimo_valor as ultimoValor',
+                'orden_recoleccions.Fecha_entrega as fechaEntrega',
+                'folios_servicios.ultimo_valor as ultimoValor',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
@@ -633,8 +626,8 @@ class ordenServicioController extends Controller
     public function generarPdf(Orden_recoleccion $id)
     {
 
-        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventa')
-            ->join('folios', 'folios.id', '=', 'orden_recoleccions.id_folio')
+        $ordenRecoleccion = Orden_recoleccion::join('preventas', 'preventas.id', '=', 'orden_recoleccions.id_preventaServicio')
+            ->leftjoin('folios_servicios', 'folios_servicios.id', '=', 'orden_recoleccions.id_folio_servicio')
             ->join('direcciones', 'direcciones.id', '=', 'preventas.id_direccion')
             ->join('clientes', 'clientes.id', '=', 'preventas.id_cliente')
             ->join('catalago_ubicaciones', 'catalago_ubicaciones.id', '=', 'direcciones.id_ubicacion')
@@ -644,9 +637,9 @@ class ordenServicioController extends Controller
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
                 'orden_recoleccions.estatus',
-                'folios.letra_actual as letraActual',
-                'folios.ultimo_valor as ultimoValor',
-                'folios.created_at as fechaDelTiempoAproximado',
+                'orden_recoleccions.id_cancelacion as idCancelacion',
+                'folios_servicios.ultimo_valor as ultimoValor',
+                'folios_servicios.created_at as fechaDelTiempoAproximado',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
@@ -693,7 +686,6 @@ class ordenServicioController extends Controller
             )
             ->get();
 
-
         $fechaCreacion = \Carbon\Carbon::parse($ordenRecoleccion->fechaCreacion);
 
         $Tiempo = TiempoAproximado::whereDate('created_at', $fechaCreacion->toDateString())->orderBy('created_at', 'desc')->first();
@@ -730,6 +722,7 @@ class ordenServicioController extends Controller
                 'orden_recoleccions.id as idRecoleccion',
                 'orden_recoleccions.created_at as fechaCreacion',
                 'orden_recoleccions.estatus',
+                'orden_recoleccions.id_cancelacion as idCancelacion',
                 'preventas.metodo_pago as metodoPago',
                 'preventas.id as idPreventa',
                 'preventas.factura',
